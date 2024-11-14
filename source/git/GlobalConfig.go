@@ -1,6 +1,5 @@
 package git
 
-import "fmt"
 import "os"
 import "strings"
 
@@ -87,8 +86,7 @@ func (config *GlobalConfig) Parse() {
 					key := strings.TrimSpace(line[0:strings.Index(line, " = ")])
 					val := strings.TrimSpace(line[strings.Index(line, " = ")+3:])
 
-					fmt.Println("section:", section_type, section_name)
-					fmt.Println("\t" + key + ":", "\"" + val + "\"")
+					parseGlobalConfigValue(config, section_type, section_name, key, val)
 
 				}
 
