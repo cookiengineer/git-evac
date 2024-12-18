@@ -9,7 +9,6 @@ import "strconv"
 
 func Serve(filesystem fs.FS, port int) bool {
 
-	config := structs.InitConfig()
 	database := structs.NewDatabase()
 	result := false
 
@@ -19,7 +18,7 @@ func Serve(filesystem fs.FS, port int) bool {
 	http.HandleFunc("/api/index", func(response http.ResponseWriter, request *http.Request) {
 
 		if request.Method == http.MethodGet {
-			routes.Index(&config, &database, request, response)
+			routes.Index(nil, &database, request, response)
 		} else {
 			handlers.RespondWith(request, response, http.StatusMethodNotAllowed)
 		}
@@ -36,7 +35,7 @@ func Serve(filesystem fs.FS, port int) bool {
 			)
 
 			if config != nil {
-				routes.Status(config, request, response, orga, repo)
+				routes.Status(config, &database, request, response)
 			} else {
 				handlers.RespondWith(request, response, http.StatusNotFound)
 			}
