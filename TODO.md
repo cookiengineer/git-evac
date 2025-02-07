@@ -9,9 +9,15 @@ actions can be:
 
 - if local changes: commit
 - if no local changes: pull, push
+- if no github/gitlab/homeserver remote, then fix remotes
 
 | organization    | repository | remotes                  | branch | status        | actions  |
 | tholian-network | endpoint   | github gitlab homeserver | master | local changes | [commit] |
+
+
+Profile Settings have to have users and organizations map to remotes,
+meaning `map[string]*[]Remote` or something like that.
+
 
 # TODO
 
