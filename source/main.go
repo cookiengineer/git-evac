@@ -1,8 +1,8 @@
 package main
 
-import webview "github.com/webview/webview_go"
 import "git-evac/actions"
 import "git-evac/console"
+import "git-evac/webview"
 import "embed"
 import "io/fs"
 import "os"
