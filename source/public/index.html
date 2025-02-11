@@ -5,25 +5,69 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta http-equiv="Content-Security-Policy" content="worker-src 'self'; script-src 'self' 'unsafe-inline'; frame-src 'self'">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<title>git-evac</title>
-		<link rel="stylesheet" href="./design/index.css">
+		<title>git-evac - Manage Repositories</title>
+		<link rel="stylesheet" href="/design/pico.css">
+		<link rel="stylesheet" href="/design/index.css">
 	</head>
 	<body>
-		<aside>
-		</aside>
+		<header>
+			<ul>
+				<li class="active"><a href="/index.html">Manage</a></li>
+				<li><a href="pull.html">Pull</a></li>
+				<li><a href="push.html">Push</a></li>
+				<li><a href="backup.html">Backup</a></li>
+				<li><a href="restore.html">Restore</a></li>
+				<li><a href="settings.html">Settings</a></li>
+			</ul>
+		</header>
 		<main>
+			<span>Discovered 2 Users, 8 Organizations, 20 Repositories, 0 Submodules</span>
 			<table>
 				<thead>
 					<tr>
+						<th><input type="checkbox" title="Select All"></th>
 						<th>User / Orga</th>
 						<th>Repository</th>
 						<th>Remotes</th>
-						<th>Branch</th>
+						<th>Branches</th>
 						<th>Status</th>
-						<th>Actions</th>
+						<th>Action</th>
 					</tr>
 				</thead>
+				<tbody>
+					<tr>
+						<td><input type="checkbox"></td>
+						<td>@cookiengineer</td>
+						<td>dotfiles</td>
+						<td title="default remote: github">
+							<em>github</em>
+							<span>gitlab</span>
+							<span>homeserver</span>
+						</td>
+						<td title="current branch: master">
+							<em>master</em>
+							<span>development</span>
+						</td>
+						<td>
+							local changes
+						</td>
+						<td>
+							Stash
+						</td>
+					</tr>
+				</tbody>
 			</table>
 		</main>
+		<footer>
+			<b>Next Action</b>
+			<ul>
+				<li>@cookiengineer/dotfiles - Stash</li>
+				<li>tholian-network/stealth - Pull</li>
+			</ul>
+			<div>
+				<button disabled>Pull</button>
+				<button>Stash</button>
+			</div>
+		</footer>
 	</body>
 </html>

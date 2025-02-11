@@ -1,0 +1,37 @@
+
+header {
+	display: block;
+	position: relative;
+	margin: 0px;
+	padding: 16px;
+	background: #222222;
+}
+
+header ul {
+	display: block;
+	margin: 0px;
+	padding: 0px;
+	list-style: none;
+}
+
+header ul li {
+	display: inline-block;
+	margin: 0px;
+	padding: 0px;
+}
+
+footer {
+	display: block;
+	position: absolute;
+	top: auto;
+	right: 0px;
+	bottom: 0px;
+	left: 0px;
+	margin: 0px;
+	padding: 16px;
+	background: #222222;
+}
+
+footer div {
+	float: right;
+}

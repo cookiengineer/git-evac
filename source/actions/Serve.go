@@ -27,22 +27,22 @@ func Serve(filesystem fs.FS, port int) bool {
 
 	http.HandleFunc("/api/status/{orga}/{repo}", func(response http.ResponseWriter, request *http.Request) {
 
-		if request.Method == http.MethodGet {
+		// if request.Method == http.MethodGet {
 
-			config := database.GetConfig(
-				request.PathValue("orga"),
-				request.PathValue("repo"),
-			)
+		// 	config := database.GetConfig(
+		// 		request.PathValue("orga"),
+		// 		request.PathValue("repo"),
+		// 	)
 
-			if config != nil {
-				routes.Status(config, &database, request, response)
-			} else {
-				handlers.RespondWith(request, response, http.StatusNotFound)
-			}
+		// 	if config != nil {
+		// 		routes.Status(config, &database, request, response)
+		// 	} else {
+		// 		handlers.RespondWith(request, response, http.StatusNotFound)
+		// 	}
 
-		} else {
-			handlers.RespondWith(request, response, http.StatusMethodNotAllowed)
-		}
+		// } else {
+		// 	handlers.RespondWith(request, response, http.StatusMethodNotAllowed)
+		// }
 
 	})
 

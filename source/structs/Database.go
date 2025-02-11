@@ -12,13 +12,20 @@ func NewDatabase() Database {
 
 }
 
-func (database *Database) GetConfig(orga string, repo string) *Config {
+func (database *Database) Initialize(folder string) *Profile {
 
-	var config Config
+	var profile Profile
 
-	config.Orga = orga
-	config.Repo = repo
+	settings := Settings{
+		Folder: folder,
+	}
 
-	return &config
+	// TODO: Walk folders
+	// TODO: Walk organizations
+	// TODO: Walk users
+
+	profile.Settings = &settings
+
+	return &profile
 
 }
