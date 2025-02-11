@@ -1,0 +1,8 @@
+
+table {
+	display: table;
+	margin: 32px auto;
+	padding: 0px;
+	table-layout: fixed;
+	width: 100%;
+}

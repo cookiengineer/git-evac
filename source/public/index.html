@@ -6,8 +6,9 @@
 		<meta http-equiv="Content-Security-Policy" content="worker-src 'self'; script-src 'self' 'unsafe-inline'; frame-src 'self'">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>git-evac - Manage Repositories</title>
-		<link rel="stylesheet" href="/design/pico.css">
+		<!-- <link rel="stylesheet" href="/design/pico.css"> -->
 		<link rel="stylesheet" href="/design/index.css">
+		<script src="/design/index.js"></script>
 	</head>
 	<body>
 		<header>
@@ -21,7 +22,10 @@
 			</ul>
 		</header>
 		<main>
-			<span>Discovered 2 Users, 8 Organizations, 20 Repositories, 0 Submodules</span>
+			<article>
+				<h3>Statistics</h3>
+				<p>Discovered 2 Users, 8 Organizations, 20 Repositories, 0 Submodules</p>
+			</article>
 			<table>
 				<thead>
 					<tr>
@@ -67,6 +71,7 @@
 			<div>
 				<button disabled>Pull</button>
 				<button>Stash</button>
+				<button class="primary">Primary</button>
 			</div>
 		</footer>
 	</body>

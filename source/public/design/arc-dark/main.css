@@ -1,0 +1,30 @@
+
+main {
+	display: block;
+	position: relative;
+	margin: 0px;
+	padding: 0px 16px;
+	top: 0px;
+	right: 0px;
+	bottom: 0px;
+	left: 0px;
+	color: #ffffff;
+	background: #383c4a;
+	z-index: 10;
+}
+
+main article {
+	display: block;
+	position: static;
+	width: 66%;
+	margin: 32px auto;
+	padding: 0px 16px;
+	color: #ffffff;
+	background: #404552;
+	border: 1px solid #2b2e39;
+	border-radius: 8px;
+}
+
+main article:first-child {
+	margin-top: 16px;
+}

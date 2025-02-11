@@ -1,37 +1,13 @@
 
-header {
-	display: block;
-	position: relative;
-	margin: 0px;
-	padding: 16px;
-	background: #222222;
-}
+@import url("./arc-dark/header.css");
+@import url("./arc-dark/main.css");
+@import url("./arc-dark/main-table.css");
+@import url("./arc-dark/footer.css");
 
-header ul {
-	display: block;
+body {
 	margin: 0px;
 	padding: 0px;
-	list-style: none;
+	color: #ffffff;
+	background: #383c4a;
 }
 
-header ul li {
-	display: inline-block;
-	margin: 0px;
-	padding: 0px;
-}
-
-footer {
-	display: block;
-	position: absolute;
-	top: auto;
-	right: 0px;
-	bottom: 0px;
-	left: 0px;
-	margin: 0px;
-	padding: 16px;
-	background: #222222;
-}
-
-footer div {
-	float: right;
-}

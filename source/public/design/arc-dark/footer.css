@@ -1,0 +1,51 @@
+
+footer {
+	display: block;
+	position: absolute;
+	top: auto;
+	right: 0px;
+	bottom: 0px;
+	left: 0px;
+	margin: 0px;
+	padding: 16px;
+	color: #ffffff;
+	background: #2f343f;
+	z-index: 20;
+}
+
+footer div {
+	float: right;
+}
+
+
+footer button {
+	display: inline-block;
+	margin: 0px;
+	padding: 4px 8px;
+	color: #ffffff;
+	border: 1px solid #252932;
+	border-radius: 4px;
+	background: #444a58;
+	cursor: pointer;
+}
+
+footer button:hover {
+	background: #535a69;
+}
+
+footer button[disabled],
+footer button[disabled]:hover {
+	color: #888888;
+	background: #3f4452;
+	cursor: not-allowed;
+}
+
+footer button.primary {
+	color: #ffffff;
+	background: #5294e2;
+}
+
+footer button.primary[disabled] {
+	color: #888888;
+	background: #43648e;
+}
