@@ -6,3 +6,69 @@ table {
 	table-layout: fixed;
 	width: 100%;
 }
+
+table thead th {
+	margin: 0px;
+	padding: 0px;
+	border: 0px solid transparent;
+	font-family: 'cantarell';
+	font-weight: bold;
+	font-size: 20px;
+	text-align: center;
+}
+
+table thead th,
+table tbody td {
+	padding: 2px 8px;
+	border-left: 1px solid #252932;
+	border-bottom: 1px solid #252932;
+}
+
+table thead th:first-of-type,
+table tbody td:first-of-type {
+	width: 1em;
+	border-left: 0px solid transparent;
+	text-align: center;
+}
+
+table thead th:last-of-type,
+table tbody td:last-of-type {
+	width: 5em;
+	border-right: 0px solid transparent;
+	text-align: center;
+}
+
+table tbody tr:hover td {
+	background: #535a69;
+	cursor: pointer;
+}
+
+table tbody td {
+	font-family: 'vera-mono';
+	font-weight: normal;
+	font-size: 16px;
+}
+
+table tbody td em {
+	font-weight: bold;
+	font-style: normal;
+}
+
+table tbody td:nth-of-type(2) {
+	text-align: left;
+}
+
+table tbody td:nth-of-type(3),
+table tbody td:nth-of-type(4) {
+	width: auto;
+	text-align: center;
+}
+
+table thead th:nth-of-type(5),
+table tbody td:nth-of-type(5) {
+	width: 7em;
+	text-align: center;
+}
+
+table tbody td:nth-of-type(6) {
+}

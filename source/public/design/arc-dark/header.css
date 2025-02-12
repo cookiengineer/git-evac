@@ -40,27 +40,32 @@ header ul li:last-of-type {
 }
 
 header ul li {
-	background: #414857;
-}
-
-header ul li a {
-	color: #b2bdca;
+	color: var(--menu-default-text);
+	background: var(--menu-default-background);
 }
 
 header ul li:hover {
-	background: #535a69;
+	background: var(--menu-focus-background);
+}
+
+header ul li:hover a {
+	color: var(--menu-focus-text);
 }
 
 header ul li.active {
-	background: #5294e2;
+	background: var(--menu-active-background);
 }
 
 header ul li.active a {
-	color: #ffffff;
+	color: var(--menu-active-text);
 }
 
 header ul li a {
 	display: inline-block;
+	color: var(--menu-default-text);
+	font-family: 'cantarell';
+	font-weight: normal;
+	font-size: 16px;
 	text-decoration: none;
 	margin: 0px;
 	padding: 4px 8px;

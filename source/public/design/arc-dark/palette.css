@@ -1,0 +1,29 @@
+
+body {
+
+	--menu-default-color: #b2bdca;
+	--menu-default-background: #414857;
+
+	--menu-active-color: #ffffff;
+	--menu-active-background: #5294e2;
+
+	--menu-focus-color: #ffffff;
+	--menu-focus-background: #535a69;
+
+	--button-default-color: #ffffff;
+	--button-default-background: #444a58;
+
+	--button-focus-color: #ffffff;
+	--button-focus-background: #535a69;
+
+	--button-disabled-color: #888888;
+	--button-disabled-background: #3f4452;
+
+	--palette-primary-color: #ffffff;
+	--palette-primary-background: #5294e2;
+
+	--palette-secondary-color: #ffffff;
+	--palette-secondary-background: #e25252;
+
+}
+

@@ -1,6 +1,14 @@
 
 # TODO
 
+## Design
+
+- Vera Mono Bold font is needed for arc-dark theme
+- Vera Mono Italic font is needed for arc-dark theme
+
+
+## Notes
+
 Start View should show current local repositories in ~/Software
 
 Table like this:

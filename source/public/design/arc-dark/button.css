@@ -1,0 +1,49 @@
+
+button {
+	display: inline-block;
+	margin: 0px;
+	padding: 4px 8px;
+	color: var(--button-default-color);
+	border: 1px solid #252932;
+	border-radius: 4px;
+	background: var(--button-default-background);
+	cursor: pointer;
+}
+
+button:hover,
+button:focus {
+	color: var(--button-focus-color);
+	background: var(--button-focus-background);
+}
+
+button.primary {
+	color: var(--palette-primary-color);
+	background: var(--palette-primary-background);
+	cursor: pointer;
+}
+
+button.secondary {
+	color: var(--palette-secondary-color);
+	background: var(--palette-secondary-background);
+	/* TODO: Red shade for deny action */
+	cursor: no-drop;
+}
+
+button[disabled],
+button[disabled]:hover,
+button[disabled]:focus,
+button.primary[disabled],
+button.primary[disabled]:hover,
+button.primary[disabled]:focus,
+button.secondary[disabled],
+button.secondary[disabled]:hover,
+button.secondary[disabled]:focus {
+	color: var(--button-disabled-color);
+	background: var(--button-disabled-background);
+	cursor: not-allowed;
+}
+
+footer button.primary[disabled] {
+	color: #888888;
+	background: #43648e;
+}
