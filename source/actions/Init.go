@@ -3,22 +3,22 @@ package actions
 import "git-evac/handlers"
 import "git-evac/routes"
 import "git-evac/structs"
-import "io/fs"
 import "net/http"
 import "strconv"
 
-func Serve(filesystem fs.FS, port int) bool {
+func Init(profile *structs.Profile) bool {
 
-	database := structs.NewDatabase()
+	profile.Init()
+
 	result := false
 
-	fsrv := http.FileServer(http.FS(filesystem))
+	fsrv := http.FileServer(http.FS(*profile.Filesystem))
 	http.Handle("/", fsrv)
 
 	http.HandleFunc("/api/index", func(response http.ResponseWriter, request *http.Request) {
 
 		if request.Method == http.MethodGet {
-			routes.Index(nil, &database, request, response)
+			routes.Index(profile, request, response)
 		} else {
 			handlers.RespondWith(request, response, http.StatusMethodNotAllowed)
 		}
@@ -35,7 +35,7 @@ func Serve(filesystem fs.FS, port int) bool {
 		// 	)
 
 		// 	if config != nil {
-		// 		routes.Status(config, &database, request, response)
+		// 		routes.Status(config, profile, request, response)
 		// 	} else {
 		// 		handlers.RespondWith(request, response, http.StatusNotFound)
 		// 	}
@@ -66,7 +66,7 @@ func Serve(filesystem fs.FS, port int) bool {
 
 	})
 
-	err1 := http.ListenAndServe(":"+strconv.Itoa(port), nil)
+	err1 := http.ListenAndServe(":"+strconv.FormatUint(uint64(profile.Settings.Port), 10), nil)
 
 	if err1 == nil {
 		result = true

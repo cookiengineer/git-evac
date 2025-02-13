@@ -4,9 +4,9 @@ button {
 	margin: 0px;
 	padding: 4px 8px;
 	color: var(--button-default-color);
+	background: var(--button-default-background);
 	border: 1px solid #252932;
 	border-radius: 4px;
-	background: var(--button-default-background);
 	cursor: pointer;
 }
 

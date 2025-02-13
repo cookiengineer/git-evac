@@ -1,16 +1,6 @@
 
 # TODO
 
-## Design
-
-- Vera Mono Bold font is needed for arc-dark theme
-- Vera Mono Italic font is needed for arc-dark theme
-
-
-## Notes
-
-Start View should show current local repositories in ~/Software
-
 Table like this:
 
 actions can be:
@@ -32,8 +22,10 @@ meaning `map[string]*[]Remote` or something like that.
 - [ ] Implement `git.GlobalConfig.Parse()`
 - [ ] Implement `git.LocalConfig.Parse()`
 
-- [ ] Implement `structs.Config`
-- [ ] Implement `structs.Database`
+- [ ] Read `structs.Profile` from `~/Software/git-evac.json` if it exists already
+
+- [ ] Implement Settings UI to configure multiple git/gogs/github/gitlab servers
+- [ ] Implement `structs.Server`
 
 
 # Synchronize View

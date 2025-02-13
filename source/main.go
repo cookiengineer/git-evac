@@ -2,75 +2,149 @@ package main
 
 import "git-evac/actions"
 import "git-evac/console"
+import "git-evac/structs"
 import "git-evac/webview"
 import "embed"
 import "io/fs"
 import "os"
+import os_user "os/user"
+import "strconv"
+import "strings"
 
 //go:embed public/*
 var embedded_filesystem embed.FS
 
 func main() {
 
-	mode := ""
+	var mode string = ""
+	var folder string = "~/Software"
+	var port uint16 = 1234
 
-	if len(os.Args) == 2 {
+	if len(os.Args) >= 2 {
 
-		if os.Args[1] == "dev" || os.Args[1] == "development" {
-			mode = "development"
-		} else {
-			mode = "production"
+		parameters := os.Args[1:]
+
+		for p := 0; p < len(parameters); p++ {
+
+			parameter := parameters[p]
+
+			if strings.HasPrefix(parameter, "--folder=") {
+
+				tmp := strings.TrimSpace(parameter[9:])
+
+				if strings.HasPrefix(tmp, "\"") && strings.HasSuffix(tmp, "\"") {
+					tmp = strings.TrimSpace(tmp[1:len(tmp)-1])
+				} else {
+					tmp = strings.TrimSpace(tmp)
+				}
+
+				if strings.HasPrefix(tmp, "~/") {
+
+					user, err := os_user.Current()
+
+					if err == nil {
+						tmp = user.HomeDir + "/" + tmp[2:]
+					}
+
+				} else if strings.Contains(tmp, "~") {
+					console.Error("Malformed Folder Parameter: " + tmp)
+					tmp = ""
+				}
+
+				if tmp != "" {
+
+					stat, err := os.Stat(tmp)
+
+					if err == nil && stat.IsDir() {
+						folder = tmp
+					}
+
+				}
+
+			} else if strings.HasPrefix(parameter, "--port=") {
+
+				tmp := strings.TrimSpace(parameter[7:])
+
+				num, err := strconv.ParseUint(tmp, 10, 16)
+
+				if err == nil && num > 0 && num < 65535 {
+					port = uint16(num)
+				}
+
+			} else if parameter == "dev" || parameter == "development" {
+				mode = "development"
+			} else if parameter == "prod" || parameter == "production" {
+				mode = "production"
+			}
+
 		}
 
 	} else {
 		mode = "production"
 	}
 
-	if mode == "development" {
+	if mode != "" && folder != "" {
 
-		fsys := os.DirFS("public")
+		if mode == "development" {
 
-		console.Clear()
-		console.Group("git-evac: Command-Line Arguments")
-		console.Inspect(struct {
-			Mode string
-		}{
-			Mode: mode,
-		})
-		console.GroupEnd("")
+			fsys := os.DirFS("public")
+			profile := structs.NewProfile(folder, port)
+			profile.Filesystem = &fsys
 
-		console.Log("Listening on http://localhost:13337")
-		actions.Serve(fsys, 13337)
+			console.Clear()
+			console.Group("git-evac: Command-Line Arguments")
+			console.Inspect(struct {
+				Folder string
+				Mode   string
+				Port   uint16
+			}{
+				Folder: folder,
+				Mode:   mode,
+				Port:   port,
+			})
+			console.GroupEnd("")
 
-	} else if mode == "production" {
+			console.Log("Listening on http://localhost:" + strconv.FormatUint(uint64(port), 10))
 
-		fsys, _ := fs.Sub(embedded_filesystem, "public")
+			actions.Init(profile)
 
-		console.Clear()
-		console.Group("git-evac: Command-Line Arguments")
-		console.Inspect(struct {
-			Mode string
-		}{
-			Mode: mode,
-		})
-		console.GroupEnd("")
+		} else if mode == "production" {
 
-		console.Log("Listening on http://localhost:13337")
+			fsys, _ := fs.Sub(embedded_filesystem, "public")
+			profile := structs.NewProfile(folder, port)
+			profile.Filesystem = &fsys
 
-		go func() {
+			console.Clear()
+			console.Group("git-evac: Command-Line Arguments")
+			console.Inspect(struct {
+				Folder string
+				Mode   string
+				Port   uint16
+			}{
+				Folder: folder,
+				Mode:   mode,
+				Port:   port,
+			})
+			console.GroupEnd("")
 
-			console.Log("Opening WebView...")
+			console.Log("Listening on http://localhost:1234")
 
-			view := webview.New(true)
-			view.SetTitle("Git Evac")
-			view.SetSize(800, 600, webview.HintNone)
-			view.Navigate("http://localhost:13337/index.html")
-			view.Run()
-			// defer view.Destroy()
+			go func() {
 
-		}()
+				console.Log("Opening WebView...")
 
-		actions.Serve(fsys, 13337)
+				view := webview.New(true)
+				view.SetTitle("Git Evac")
+				view.SetSize(800, 600, webview.HintNone)
+				view.Navigate("http://localhost:1234/index.html")
+				view.Run()
+				// defer view.Destroy()
+
+			}()
+
+			actions.Init(profile)
+
+		}
 
 	}
 
