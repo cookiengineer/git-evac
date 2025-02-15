@@ -1,19 +1,41 @@
 
 footer {
 	display: block;
-	position: absolute;
+	position: fixed;
+	width: auto;
+	height: 50px;
+	line-height: 50px;
 	top: auto;
 	right: 0px;
 	bottom: 0px;
 	left: 0px;
 	margin: 0px;
-	padding: 16px;
+	padding: 0px 16px;
 	color: #ffffff;
 	background: #2f343f;
+	box-sizing: border-box;
 	z-index: 20;
 }
 
-footer div {
-	float: right;
+footer div:first-of-type {
+	display: inline-block;
+	width: 50%;
+	width: calc(50% - 1em - 20px);
+	margin: 0px;
+	margin-left: calc(1em + 20px);
+	padding: 0px 0px 0px 8px;
+	vertical-align: middle;
+	text-align: left;
+	box-sizing: border-box;
+}
+
+footer div:last-of-type {
+	display: inline-block;
+	width: 50%;
+	margin: 0px;
+	padding: 0px;
+	vertical-align: middle;
+	text-align: right;
+	box-sizing: border-box;
 }
 

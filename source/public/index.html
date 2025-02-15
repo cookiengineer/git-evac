@@ -1,33 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
+		<title>git-evac - Manage Repositories</title>
+
+		<!-- WebView -->
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta http-equiv="Content-Security-Policy" content="worker-src 'self'; script-src 'self' 'unsafe-inline'; frame-src 'self'">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<title>git-evac - Manage Repositories</title>
-		<!-- <link rel="stylesheet" href="/design/pico.css"> -->
+		<link rel="manifest" href="/site.webmanifest" />
+
+		<!-- Favicon -->
+		<link rel="icon" type="image/png" href="/favicon/common/favicon-96x96.png" sizes="96x96" />
+		<link rel="icon" type="image/svg+xml" href="/design/common/favicon.svg" />
+		<link rel="shortcut icon" href="/design/common/favicon.ico" />
+		<link rel="apple-touch-icon" href="/design/common/apple-touch-icon.png" sizes="180x180" />
+
+		<!-- Design -->
 		<link rel="stylesheet" href="/design/index.css">
 		<script src="/design/index.js"></script>
+		<script src="/source/index.js"></script>
 	</head>
 	<body>
 		<header>
 			<ul>
 				<li class="active"><a href="/index.html">Manage</a></li>
-				<li><a href="pull.html">Pull</a></li>
-				<li><a href="push.html">Push</a></li>
-				<li><a href="backup.html">Backup</a></li>
-				<li><a href="restore.html">Restore</a></li>
-				<li><a href="settings.html">Settings</a></li>
+				<li><a href="/backup.html">Backup</a></li>
+				<li><a href="/restore.html">Restore</a></li>
+				<li><a href="/settings.html">Settings</a></li>
 			</ul>
 		</header>
 		<main>
 			<article>
-				<h3>Statistics</h3>
-				<p>Discovered 2 Users, 8 Organizations, 20 Repositories, 0 Submodules</p>
-				<p>
-					<input placeholder="Placeholder">
-				</p>
+				<p id="statistics">0 Users, 0 Organizations, 0 Repositories</p>
 			</article>
 			<table>
 				<thead>
@@ -40,41 +45,20 @@
 						<th>Action</th>
 					</tr>
 				</thead>
-				<tbody>
-					<tr>
-						<td><input type="checkbox"></td>
-						<td>@cookiengineer/dotfiles</td>
-						<td title="default remote: github">
-							<em>github</em>
-							<span>gitlab</span>
-							<span>homeserver</span>
-						</td>
-						<td title="current branch: master">
-							<em>master</em>
-							<span>development</span>
-						</td>
-						<td>
-							local changes
-						</td>
-						<td>
-							Stash
-						</td>
-					</tr>
-				</tbody>
+				<tbody></tbody>
 			</table>
 		</main>
 		<footer>
-			<b>Next Action</b>
-			<ul>
-				<li>@cookiengineer/dotfiles - Stash</li>
-				<li>tholian-network/stealth - Pull</li>
-			</ul>
+			<div id="selection">0 selected Repositories</div>
+			<div id="actions"></div>
+			<!--
 			<div>
-				<button disabled>Pull</button>
-				<button>Stash</button>
-				<button class="secondary">Stop</button>
-				<button class="primary">Primary</button>
+				<button class="secondary">Fix Remotes</button>
+				<button disabled>Commit</button>
+				<button>Pull</button>
+				<button class="primary">Push</button>
 			</div>
+			-->
 		</footer>
 	</body>
 </html>

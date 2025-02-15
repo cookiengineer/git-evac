@@ -37,3 +37,18 @@ func (orga *Organization) GetRepository(name string) *Repository {
 	return result
 
 }
+
+func (orga *Organization) HasRepository(name string) bool {
+
+	var result bool = false
+
+	_, ok := orga.Repositories[name]
+
+	if ok == true {
+		result = true
+	}
+
+	return result
+
+}
+

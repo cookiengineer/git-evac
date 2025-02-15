@@ -145,3 +145,31 @@ func (profile *Profile) GetUser(name string, folder string) *User {
 
 }
 
+func (profile *Profile) HasOrganization(name string) bool {
+
+	var result bool = false
+
+	_, ok := profile.Organizations[name]
+
+	if ok == true {
+		result = true
+	}
+
+	return result
+
+}
+
+func (profile *Profile) HasUser(name string) bool {
+
+	var result bool = false
+
+	_, ok := profile.Users[name]
+
+	if ok == true {
+		result = true
+	}
+
+	return result
+
+}
+

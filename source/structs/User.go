@@ -41,3 +41,18 @@ func (user *User) GetRepository(name string) *Repository {
 	return result
 
 }
+
+func (user *User) HasRepository(name string) bool {
+
+	var result bool = false
+
+	_, ok := user.Repositories[name]
+
+	if ok == true {
+		result = true
+	}
+
+	return result
+
+}
+

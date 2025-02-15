@@ -4,9 +4,9 @@ main {
 	position: relative;
 	margin: 0px;
 	padding: 0px 16px;
-	top: 0px;
+	top: 50px;
 	right: 0px;
-	bottom: 0px;
+	bottom: 50px;
 	left: 0px;
 	color: #ffffff;
 	background: #383c4a;
@@ -23,6 +23,10 @@ main article {
 	background: #404552;
 	border: 1px solid #2b2e39;
 	border-radius: 8px;
+}
+
+main article p#statistics {
+	text-align: center;
 }
 
 main article:first-child {

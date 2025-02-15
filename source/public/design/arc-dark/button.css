@@ -8,12 +8,14 @@ button {
 	border: 1px solid #252932;
 	border-radius: 4px;
 	cursor: pointer;
+	transition: 250ms all ease-out;
 }
 
 button:hover,
 button:focus {
 	color: var(--button-focus-color);
 	background: var(--button-focus-background);
+	transition: 250ms all ease-out;
 }
 
 button.primary {
@@ -29,9 +31,27 @@ button.secondary {
 	cursor: no-drop;
 }
 
+button[data-action="commit"],
+button[data-action="fix"] {
+	color: var(--palette-secondary-color);
+	background: var(--palette-secondary-background);
+	cursor: pointer;
+}
+
+button[data-action="backup"],
+button[data-action="restore"] {
+	color: var(--palette-primary-color);
+	background: var(--palette-primary-background);
+	cursor: pointer;
+}
+
+
 button[disabled],
 button[disabled]:hover,
 button[disabled]:focus,
+button[data-action][disabled],
+button[data-action][disabled]:hover,
+button[data-action][disabled]:focus,
 button.primary[disabled],
 button.primary[disabled]:hover,
 button.primary[disabled]:focus,
@@ -43,7 +63,3 @@ button.secondary[disabled]:focus {
 	cursor: not-allowed;
 }
 
-footer button.primary[disabled] {
-	color: #888888;
-	background: #43648e;
-}

@@ -10,6 +10,7 @@ import "os"
 import os_user "os/user"
 import "strconv"
 import "strings"
+import "time"
 
 //go:embed public/*
 var embedded_filesystem embed.FS
@@ -17,7 +18,7 @@ var embedded_filesystem embed.FS
 func main() {
 
 	var mode string = ""
-	var folder string = "~/Software"
+	var folder string = ""
 	var port uint16 = 1234
 
 	if len(os.Args) >= 2 {
@@ -83,6 +84,16 @@ func main() {
 		mode = "production"
 	}
 
+	if folder == "" {
+
+		user, err := os_user.Current()
+
+		if err == nil {
+			folder = user.HomeDir + "/Software"
+		}
+
+	}
+
 	if mode != "" && folder != "" {
 
 		if mode == "development" {
@@ -127,16 +138,18 @@ func main() {
 			})
 			console.GroupEnd("")
 
-			console.Log("Listening on http://localhost:1234")
+			console.Log("Listening on http://localhost:" + strconv.FormatUint(uint64(port), 10))
 
 			go func() {
+
+				time.Sleep(1 * time.Second)
 
 				console.Log("Opening WebView...")
 
 				view := webview.New(true)
 				view.SetTitle("Git Evac")
 				view.SetSize(800, 600, webview.HintNone)
-				view.Navigate("http://localhost:1234/index.html")
+				view.Navigate("http://localhost:" + strconv.FormatUint(uint64(port), 10) + "/index.html")
 				view.Run()
 				// defer view.Destroy()
 

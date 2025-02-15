@@ -1,20 +1,11 @@
 
 # TODO
 
-Table like this:
+Overview Actions can be:
 
-actions can be:
-
-- if local changes: commit
-- if no local changes: pull, push
-- if no github/gitlab/homeserver remote, then fix remotes
-
-| organization    | repository | remotes                  | branch | status        | actions  |
-| tholian-network | endpoint   | github gitlab homeserver | master | local changes | [commit] |
-
-
-Profile Settings have to have users and organizations map to remotes,
-meaning `map[string]*[]Remote` or something like that.
+- if local changes: "commit"
+- if no local changes: "pull" or "push"
+- if no github/gitlab/homeserver remote: "fix remotes"
 
 
 # TODO
@@ -22,28 +13,40 @@ meaning `map[string]*[]Remote` or something like that.
 - [ ] Implement `git.GlobalConfig.Parse()`
 - [ ] Implement `git.LocalConfig.Parse()`
 
-- [ ] Read `structs.Profile` from `~/Software/git-evac.json` if it exists already
+- [ ] Read `Profile.Settings` from `~/Software/git-evac.json` if it exists already
 
 - [ ] Implement Settings UI to configure multiple git/gogs/github/gitlab servers
-- [ ] Implement `structs.Server`
+- [ ] Implement `structs.Server` to reflect GitHub / GitLab and Gogs/Gitea APIs
 
 
-# Synchronize View
+# Manage View
 
-- Select Repositories
-- Select Remotes
-- Synchronize Progress
+- [ ] Select Repositories
+
+- [ ] Commit Action
+- [ ] Dialog: Open Terminal, then call `/api/status/...`
+
+- [ ] Pull Action
+- [ ] Dialog: Select Remotes
+- [ ] Dialog: Pull Progress
+
+- [ ] Push Action
+- [ ] Dialog: Select Remotes
+- [ ] Dialog: Push Progress
 
 
 # Backup View
 
-- Select Repositories
-- Select Drives/Folders
-- Backup Progress
+- [ ] Select Repositories
+- [ ] Backup Action
+- [ ] Dialog: Select Drives/Folders
+- [ ] Dialog: Backup Progress
 
 
 # Restore View
 
-- Select Drives/Folders
-- Select Repositories
-- Restore Progress
+- [ ] Select Repositories
+- [ ] Restore Action
+- [ ] Dialog: Select Drives/Folders _or_ Remote
+- [ ] Dialog: Restore Progress
+

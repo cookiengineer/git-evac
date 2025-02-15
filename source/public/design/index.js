@@ -2,20 +2,29 @@
 document.addEventListener("DOMContentLoaded", () => {
 
 	const header = document.querySelector('header');
+	const footer = document.querySelector('footer');
 
-	let ul = header.querySelector('ul');
-	if (ul !== null) {
+	const cleanup = (node) => {
 
-		for (let c = 0; c < ul.childNodes.length; c++) {
+		for (let c = 0; c < node.childNodes.length; c++) {
 
-			let node = ul.childNodes[c];
-			if (node.nodeType === 3 && node.nodeValue.trim() === '') {
-				node.parentNode.removeChild(node);
+			let child = node.childNodes[c];
+			if (child.nodeType === 3 && child.nodeValue.trim() === '') {
+				child.parentNode.removeChild(child);
 				c--;
 			}
 
 		}
 
+	};
+
+	let ul = header.querySelector('ul');
+	if (ul !== null) {
+		cleanup(ul);
+	}
+
+	if (footer !== null) {
+		cleanup(footer);
 	}
 
 });

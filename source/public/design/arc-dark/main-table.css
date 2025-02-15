@@ -71,4 +71,13 @@ table tbody td:nth-of-type(5) {
 }
 
 table tbody td:nth-of-type(6) {
+	white-space: nowrap;
+}
+
+table:after {
+	display: block;
+	position: static;
+	content: " ";
+	width: 100%;
+	height: 64px;
 }
