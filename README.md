@@ -10,6 +10,11 @@ can start a backup procedure for all repositories and just leave the computer al
 else in the meantime.
 
 
+## Screenshot
+
+![Screenshot](./asset/screenshot.jpg)
+
+
 ## Opinions
 
 - Least common denominator action precedes. [1]
