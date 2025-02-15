@@ -25,7 +25,11 @@ main article {
 	border-radius: 8px;
 }
 
-main article p#statistics {
+main article [data-message="statistics"] {
+	font-family: 'vera-mono';
+	font-weight: normal;
+	font-style: normal;
+	font-size: 16px;
 	text-align: center;
 }
 

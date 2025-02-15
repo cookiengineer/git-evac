@@ -19,16 +19,32 @@ table thead th {
 
 table thead th,
 table tbody td {
-	padding: 2px 8px;
+	padding: 0px 8px;
 	border-left: 1px solid #252932;
 	border-bottom: 1px solid #252932;
+	line-height: 30px;
+	vertical-align: middle;
 }
 
 table thead th:first-of-type,
 table tbody td:first-of-type {
-	width: 1em;
+	width: 22px;
+	padding-top: 4px;
 	border-left: 0px solid transparent;
 	text-align: center;
+}
+
+table thead th:first-of-type input[type="checkbox"],
+table tbody td:first-of-type input[type="checkbox"] {
+	display: inline-block;
+	margin: 0px auto;
+	vertical-align: middle;
+	transform: translate(0px, -4px); /* WTF, Blink and WebKit, WTF??? */
+}
+
+table thead th:first-of-type input[type="checkbox"]:hover,
+table thead th:first-of-type input[type="checkbox"]:focus {
+	cursor: ns-resize;
 }
 
 table thead th:last-of-type,
@@ -38,9 +54,25 @@ table tbody td:last-of-type {
 	text-align: center;
 }
 
+table tbody td:last-of-type button {
+	margin: 0px 0px 0px 8px;
+}
+
+table tbody td:last-of-type button:first-of-type {
+	margin: 0px 0px 0px 0px;
+}
+
 table tbody tr:hover td {
-	background: #535a69;
+	background: rgba(255,255,255,0.1);
 	cursor: pointer;
+}
+
+table tbody tr[data-select="true"] td {
+	background: rgba(255,255,255,0.1);
+}
+
+table tbody tr[data-select="true"]:hover td {
+	cursor: no-drop;
 }
 
 table tbody td {

@@ -25,6 +25,8 @@ body {
 	--input-focus-color: #ffffff;
 	--input-focus-background: #535a69;
 
+	--input-active-background: #5294e2;
+
 	--input-disabled-color: #888888;
 	--input-disabled-background: #3f4452;
 

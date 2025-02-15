@@ -7,8 +7,8 @@ button {
 	background: var(--button-default-background);
 	border: 1px solid #252932;
 	border-radius: 4px;
-	cursor: pointer;
 	transition: 250ms all ease-out;
+	cursor: pointer;
 }
 
 button:hover,
