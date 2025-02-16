@@ -19,7 +19,11 @@
 		<!-- Design -->
 		<link rel="stylesheet" href="/design/index.css">
 		<script src="/design/index.js"></script>
-		<script src="/source/index.js"></script>
+		<script>
+			document.addEventListener("DOMContentLoaded", () => {
+				console.log("DOMContentLoaded");
+			});
+		</script>
 	</head>
 	<body>
 		<header>
@@ -51,14 +55,20 @@
 		<footer>
 			<div data-message="selections">Selected 0 Repositories</div>
 			<div></div>
-			<!--
-			<div>
-				<button class="secondary">Fix Remotes</button>
-				<button disabled>Commit</button>
-				<button>Pull</button>
-				<button class="primary">Push</button>
-			</div>
-			-->
 		</footer>
+		<dialog open>
+			<article>
+				<h3>Commit 12 Repositories <button data-action="close"></button></h3>
+				<table>
+					<tbody>
+						<tr>
+							<td>@cookiengineer/example</td>
+							<td><button data-action="commit">Commit</button></td>
+						</tr>
+					</tbody>
+				</table>
+			</article>
+		</dialog>
+		<script type="module" src="/source/index.mjs"></script>
 	</body>
 </html>

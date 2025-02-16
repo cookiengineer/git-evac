@@ -1,4 +1,4 @@
-package routes
+package api
 
 import "git-evac/structs"
 import "encoding/json"

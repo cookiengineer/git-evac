@@ -22,6 +22,7 @@ header ul {
 	margin: 0px;
 	padding: 0px;
 	list-style: none;
+	user-select: none;
 }
 
 header ul li {

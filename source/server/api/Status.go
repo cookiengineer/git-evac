@@ -1,4 +1,4 @@
-package routes
+package api
 
 import "git-evac/console"
 import "git-evac/structs"

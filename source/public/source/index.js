@@ -2,6 +2,7 @@
 document.addEventListener("DOMContentLoaded", () => {
 
 	const ELEMENTS = {
+		dialog: document.querySelector("dialog"),
 		toggle: document.querySelector("main table thead input[type=\"checkbox\"]"),
 		table:  document.querySelector("main table tbody"),
 		footer: document.querySelector("footer")
@@ -12,10 +13,15 @@ document.addEventListener("DOMContentLoaded", () => {
 		selections: document.querySelector("footer [data-message=\"selections\"]")
 	};
 
-	const openDialog = (settings) => {
+	const renderDialog = (settings) => {
+
 
 		// settings is map[repository] = action
 		console.warn("TODO: Open Dialog");
+
+		// TODO: render Dialog content
+
+		ELEMENTS.dialog.open();
 
 	};
 
@@ -187,6 +193,19 @@ document.addEventListener("DOMContentLoaded", () => {
 	};
 
 
+	if (ELEMENTS.dialog !== null) {
+
+		let button = ELEMENTS.dialog.querySelector("button");
+		if (button !== null) {
+
+			button.onclick = () => {
+				ELEMENTS.dialog.close();
+			};
+
+		}
+
+	}
+
 	if (ELEMENTS.toggle !== null) {
 
 		ELEMENTS.toggle.onchange = () => {
@@ -231,7 +250,7 @@ document.addEventListener("DOMContentLoaded", () => {
 					[id]: action
 				};
 
-				openDialog(settings);
+				renderDialog(settings);
 
 			} else if (tagname == "td") {
 
