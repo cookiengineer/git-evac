@@ -117,7 +117,9 @@ func main() {
 
 			console.Log("Listening on http://localhost:" + strconv.FormatUint(uint64(port), 10))
 
-			actions.Init(profile)
+			if actions.Init(profile) == false {
+				console.Error("Port " + strconv.FormatUint(uint64(port), 10) + " is already in use.")
+			}
 
 		} else if mode == "production" {
 
@@ -155,7 +157,9 @@ func main() {
 
 			}()
 
-			actions.Init(profile)
+			if actions.Init(profile) == false {
+				console.Error("Port " + strconv.FormatUint(uint64(port), 10) + " is already in use.")
+			}
 
 		}
 
