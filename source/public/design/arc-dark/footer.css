@@ -1,6 +1,6 @@
 
 footer {
-	display: block;
+	display: flex;
 	position: fixed;
 	width: auto;
 	height: 50px;
@@ -14,19 +14,13 @@ footer {
 	color: #ffffff;
 	background: #2f343f;
 	box-sizing: border-box;
+	justify-content: in-between;
 	z-index: 20;
-}
-
-footer::after {
-	display: block;
-	content: " ";
-	clear: both;
 }
 
 footer div:first-of-type {
 	display: inline-block;
-	float: left;
-	width: calc(50% - 8px);
+	width: auto;
 	margin: 0px;
 	padding: 0px;
 	vertical-align: middle;
@@ -40,9 +34,9 @@ footer div:first-of-type {
 
 footer div:last-of-type {
 	display: inline-block;
-	float: right;
-	width: calc(50% - 8px);
+	width: auto;
 	margin: 0px;
+	margin-left: auto;
 	padding: 0px;
 	vertical-align: middle;
 	text-align: right;

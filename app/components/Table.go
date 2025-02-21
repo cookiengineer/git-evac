@@ -1,6 +1,5 @@
 package components
 
-import "fmt"
 import "gooey"
 import "gooey/dom"
 import "git-evac/server/schemas"
@@ -41,8 +40,7 @@ func InitTable() {
 				input := row.QuerySelector("input[type=\"checkbox\"]")
 
 				if input != nil {
-					fmt.Println(input)
-					// input.Value.Set("checked", is_checked)
+					input.Value.Set("checked", is_checked)
 				}
 
 			}
@@ -79,9 +77,10 @@ func InitTable() {
 			actions := make(map[string]string)
 			actions[id] = action
 
-			RenderDialog(actions)
-
-			Dialog.Open()
+			if len(actions) > 0 {
+				RenderDialog(actions)
+				Dialog.Open()
+			}
 
 		} else if target.TagName == "TD" {
 

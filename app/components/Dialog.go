@@ -45,6 +45,7 @@ func RenderDialog(selected map[string]string) {
 		// TODO: Render Dialog content
 
 		fmt.Println("TODO: Render Dialog Contents")
+		fmt.Println(selected)
 
 	}
 
