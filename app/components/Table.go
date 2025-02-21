@@ -1,11 +1,11 @@
 package components
 
+import "fmt"
 import "gooey"
 import "gooey/dom"
 import "git-evac/server/schemas"
 import "git-evac/structs"
 import "sort"
-import "strings"
 
 var Table *dom.Element = nil
 
@@ -41,7 +41,8 @@ func InitTable() {
 				input := row.QuerySelector("input[type=\"checkbox\"]")
 
 				if input != nil {
-					input.Set("checked", is_checked)
+					fmt.Println(input)
+					// input.Value.Set("checked", is_checked)
 				}
 
 			}
@@ -179,6 +180,10 @@ func RenderTableRow(owner string, repository *structs.Repository) string {
 			result += "<span>" + remote + "</span>"
 		}
 
+		if r < len(remotes) - 1 {
+			result += " "
+		}
+
 	}
 
 	result += "</td>"
@@ -186,12 +191,16 @@ func RenderTableRow(owner string, repository *structs.Repository) string {
 
 	sort.Strings(repository.Branches)
 
-	for _, branch := range repository.Branches {
+	for b, branch := range repository.Branches {
 
 		if repository.CurrentBranch == branch {
 			result += "<em>" + branch + "</em>"
 		} else {
 			result += "<span>" + branch + "</span>"
+		}
+
+		if b < len(repository.Branches) - 1 {
+			result += " "
 		}
 
 	}

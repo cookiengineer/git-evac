@@ -1,16 +1,15 @@
 package main
 
-import "app/client/api"
-import "gooey"
 import "gooey/timers"
+import "app/client/api"
 import "app/components"
 import "app/storage"
 import "time"
 
 func main() {
 
-	main := gooey.Document.QuerySelector("main")
-	dialog := gooey.Document.QuerySelector("dialog")
+	// main := gooey.Document.QuerySelector("main")
+	// dialog := gooey.Document.QuerySelector("dialog")
 
 	timers.SetTimeout(func() {
 

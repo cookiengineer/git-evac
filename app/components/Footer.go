@@ -22,6 +22,8 @@ func InitFooter() {
 
 	// TODO: Bind Events
 
+	fmt.Println("TODO: Bind Footer Events")
+
 }
 
 func RenderFooter(selected map[string]string) {
