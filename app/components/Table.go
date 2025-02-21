@@ -21,14 +21,32 @@ func init() {
 
 func InitTable() {
 
-	Table.QuerySelector("thead input[type=\"checkbox\"]").AddEventListener("click", dom.ToEventListener(func(event dom.Event) {
+	Table.QuerySelector("thead input[type=\"checkbox\"]").AddEventListener("change", dom.ToEventListener(func(event dom.Event) {
 
-		element := event.Target
-		tagname := strings.ToLower(element.TagName)
+		target := event.Target
 
-		if tagname == "input" {
+		if target.TagName == "INPUT" {
 
-			// TODO: select all
+			is_checked := target.Value.Get("checked").Bool()
+			rows := Table.QuerySelectorAll("tr[data-id]")
+
+			for _, row := range rows {
+
+				if is_checked == true {
+					row.SetAttribute("data-select", "true")
+				} else {
+					row.SetAttribute("data-select", "false")
+				}
+
+				input := row.QuerySelector("input[type=\"checkbox\"]")
+
+				if input != nil {
+					input.Set("checked", is_checked)
+				}
+
+			}
+
+			Update()
 
 		}
 
@@ -36,13 +54,12 @@ func InitTable() {
 
 	Table.QuerySelector("tbody").AddEventListener("click", dom.ToEventListener(func(event dom.Event) {
 
-		element := event.Target
-		tagname := strings.ToLower(element.TagName)
+		target := event.Target
 
-		if tagname == "input" {
+		if target.TagName == "INPUT" {
 
-			row := element.ParentNode().ParentNode()
-			is_checked := element.Value.Get("checked").Bool()
+			row := target.ParentNode().ParentNode()
+			is_checked := target.Value.Get("checked").Bool()
 
 			if is_checked == true {
 				row.SetAttribute("data-select", "true")
@@ -52,11 +69,11 @@ func InitTable() {
 
 			Update()
 
-		} else if tagname == "button" {
+		} else if target.TagName == "BUTTON" {
 
-			row := element.ParentNode().ParentNode()
+			row := target.ParentNode().ParentNode()
 			id := row.GetAttribute("data-id")
-			action := element.GetAttribute("data-action")
+			action := target.GetAttribute("data-action")
 
 			actions := make(map[string]string)
 			actions[id] = action
@@ -65,9 +82,9 @@ func InitTable() {
 
 			Dialog.Open()
 
-		} else if tagname == "td" {
+		} else if target.TagName == "TD" {
 
-			row := element.ParentNode()
+			row := target.ParentNode()
 			is_checked := row.GetAttribute("data-select") == "true"
 
 			if is_checked == true {
@@ -80,9 +97,9 @@ func InitTable() {
 
 			Update()
 
-		} else if tagname == "em" || tagname == "span" {
+		} else if target.TagName == "EM" || target.TagName == "SPAN" {
 
-			row := element.ParentNode().ParentNode()
+			row := target.ParentNode().ParentNode()
 			is_checked := row.GetAttribute("data-select") == "true"
 
 			if is_checked == true {

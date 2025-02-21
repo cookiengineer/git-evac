@@ -2,6 +2,7 @@ package components
 
 import "gooey"
 import "gooey/dom"
+import "app/storage"
 import "fmt"
 import "strconv"
 
@@ -41,6 +42,8 @@ func RenderFooter(selected map[string]string) {
 
 	}
 
+	message := "Selected " + strconv.Itoa(len(selected)) + " of " + strconv.Itoa(len(storage.Repositories)) + " Repositories"
+
 	buttons := ""
 
 	if len(fixes) > 0 {
@@ -57,18 +60,16 @@ func RenderFooter(selected map[string]string) {
 		buttons += "<button data-action=\"push\">Push " + strconv.Itoa(len(pulls_or_pushes)) + "</button>"
 	}
 
-	element := Footer.QuerySelector("div:last-of-type")
+	element1 := Footer.QuerySelector("div:first-of-type")
 
-	fmt.Println(Footer)
-	fmt.Println(element)
-
-	if element != nil {
-		element.SetInnerHTML(buttons)
+	if element1 != nil {
+		element1.SetInnerHTML(message)
 	}
 
+	element2 := Footer.QuerySelector("div:last-of-type")
 
-	fmt.Println(selected)
-
-	// TODO: RenderFooter()
+	if element2 != nil {
+		element2.SetInnerHTML(buttons)
+	}
 
 }
