@@ -68,7 +68,7 @@ Currently, this tool is heavily experimental. Most things don't work yet, there'
 
 ## License
 
-This project is licensed under the [GNU AGPL 3.0](./AGPL-3.0md) license.
+This project is licensed under the [GNU AGPL 3.0](./AGPL-3.0.md) license.
 
 
 ## Sponsorship
