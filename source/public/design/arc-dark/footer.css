@@ -27,10 +27,8 @@ footer [data-message="selections"] {
 
 footer div:first-of-type {
 	display: inline-block;
-	width: 50%;
+	width: calc(100% - 260px - 4px);
 	margin: 0px;
-	/* width: calc(50% - 1em - 20px); */
-	/* margin-left: calc(1em + 20px); */
 	padding: 0px;
 	vertical-align: middle;
 	text-align: left;
@@ -39,7 +37,7 @@ footer div:first-of-type {
 
 footer div:last-of-type {
 	display: inline-block;
-	width: 50%;
+	width: 260px;
 	margin: 0px;
 	padding: 0px;
 	vertical-align: middle;

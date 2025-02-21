@@ -1,5 +1,6 @@
 package api
 
+import "git-evac/server/schemas"
 import "git-evac/structs"
 import "encoding/json"
 import "net/http"
@@ -8,10 +9,7 @@ func Index(profile *structs.Profile, request *http.Request, response http.Respon
 
 	if request.Method == http.MethodGet {
 
-		payload, err := json.MarshalIndent(struct {
-			Users         map[string]*structs.User         `json:"users"`
-			Organizations map[string]*structs.Organization `json:"organizations"`
-		}{
+		payload, err := json.MarshalIndent(schemas.Index{
 			Users:         profile.Users,
 			Organizations: profile.Organizations,
 		}, "", "\t")

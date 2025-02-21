@@ -28,7 +28,7 @@
 		<!-- <script src="/design/index.js"></script> -->
 	</head>
 	<body>
-		<header>
+		<header id="header">
 			<ul>
 				<li class="active"><a href="/index.html">Manage</a></li>
 				<li><a href="/backup.html">Backup</a></li>
@@ -36,11 +36,11 @@
 				<li><a href="/settings.html">Settings</a></li>
 			</ul>
 		</header>
-		<main>
+		<main id="main">
 			<article>
 				<p data-message="statistics">0 Users, 0 Organizations, 0 Repositories</p>
 			</article>
-			<table>
+			<table id="main-table">
 				<thead>
 					<tr>
 						<th><input type="checkbox" title="Toggle all repositories"></th>
@@ -54,14 +54,14 @@
 				<tbody></tbody>
 			</table>
 		</main>
-		<footer>
+		<footer id="footer">
 			<div data-message="selections">Selected 0 Repositories</div>
 			<div></div>
 		</footer>
-		<dialog open>
+		<dialog id="dialog" open>
 			<article>
 				<h3>Commit 12 Repositories <button data-action="close"></button></h3>
-				<table>
+				<table id="dialog-table">
 					<tbody>
 						<tr>
 							<td>@cookiengineer/example</td>
