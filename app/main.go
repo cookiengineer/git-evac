@@ -1,11 +1,10 @@
 package main
 
-import "fmt"
-
 import "app/client/api"
 import "gooey"
 import "gooey/timers"
 import "app/components"
+import "app/storage"
 import "time"
 
 func main() {
@@ -14,10 +13,12 @@ func main() {
 	dialog := gooey.Document.QuerySelector("dialog")
 
 	timers.SetTimeout(func() {
+
 		components.InitDialog()
 		// TODO: components.InitHeader()
 		components.InitTable()
 		components.InitFooter()
+
 	}, 0)
 
 	timers.SetTimeout(func() {
@@ -25,8 +26,10 @@ func main() {
 		index, err := api.Index()
 
 		if err == nil {
-			components.RenderTable(index)
+			storage.Index = index
 		}
+
+		components.RenderTable(storage.Index)
 
 	}, 500)
 

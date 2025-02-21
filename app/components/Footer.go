@@ -42,7 +42,21 @@ func RenderFooter(selected map[string]string) {
 
 	}
 
-	message := "Selected " + strconv.Itoa(len(selected)) + " of " + strconv.Itoa(len(storage.Repositories)) + " Repositories"
+	total_amount := 0
+
+	if storage.Index != nil {
+
+		for _, user := range storage.Index.Users {
+			total_amount += len(user.Repositories)
+		}
+
+		for _, orga := range storage.Index.Organizations {
+			total_amount += len(orga.Repositories)
+		}
+
+	}
+
+	message := "Selected " + strconv.Itoa(len(selected)) + " of " + strconv.Itoa(total_amount) + " Repositories"
 
 	buttons := ""
 
