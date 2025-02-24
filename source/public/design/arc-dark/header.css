@@ -35,6 +35,26 @@ header ul li {
 	border-left: 0px solid transparent;
 }
 
+header ul li a[data-view]:before {
+	display: inline-block;
+	width: auto;
+	margin: 0em 0.25em 0em 0em;
+	padding: 0px;
+	font-family: "icon";
+	font-size: 16px;
+	font-style: normal;
+	font-weight: normal;
+	text-align: center;
+	text-decoration: none;
+	text-transform: none;
+	font-smooth: antialiased;
+}
+
+header ul li a[data-view="manage"]:before   { content: '\f1e0'; }
+header ul li a[data-view="backup"]:before   { content: '\e808'; }
+header ul li a[data-view="restore"]:before  { content: '\e809'; }
+header ul li a[data-view="settings"]:before { content: '\e807'; }
+
 header ul li:first-of-type {
 	border-left: 1px solid #252932;
 	border-right: 0px solid transparent;
@@ -76,6 +96,6 @@ header ul li a {
 	font-size: 16px;
 	text-decoration: none;
 	margin: 0px;
-	padding: 4px 8px;
+	padding: 4px 12px;
 }
 

@@ -1,5 +1,5 @@
 
-table {
+main table {
 	display: table;
 	margin: 32px auto;
 	padding: 0px;
@@ -7,7 +7,7 @@ table {
 	width: 100%;
 }
 
-table thead th {
+main table thead th {
 	margin: 0px;
 	padding: 0px;
 	border: 0px solid transparent;
@@ -17,8 +17,8 @@ table thead th {
 	text-align: center;
 }
 
-table thead th,
-table tbody td {
+main table thead th,
+main table tbody td {
 	padding: 0px 8px;
 	border-left: 1px solid #252932;
 	border-bottom: 1px solid #252932;
@@ -26,87 +26,87 @@ table tbody td {
 	vertical-align: middle;
 }
 
-table thead th:first-of-type,
-table tbody td:first-of-type {
+main table thead th:first-of-type,
+main table tbody td:first-of-type {
 	width: 22px;
 	padding-top: 4px;
 	border-left: 0px solid transparent;
 	text-align: center;
 }
 
-table thead th:first-of-type input[type="checkbox"],
-table tbody td:first-of-type input[type="checkbox"] {
+main table thead th:first-of-type input[type="checkbox"],
+main table tbody td:first-of-type input[type="checkbox"] {
 	display: inline-block;
 	margin: 0px auto;
 	vertical-align: middle;
 	transform: translate(0px, -4px); /* WTF, Blink and WebKit, WTF??? */
 }
 
-table thead th:first-of-type input[type="checkbox"]:hover,
-table thead th:first-of-type input[type="checkbox"]:focus {
+main table thead th:first-of-type input[type="checkbox"]:hover,
+main table thead th:first-of-type input[type="checkbox"]:focus {
 	cursor: ns-resize;
 }
 
-table thead th:last-of-type,
-table tbody td:last-of-type {
-	width: 5em;
+main table thead th:last-of-type,
+main table tbody td:last-of-type {
+	width: 134px;
 	border-right: 0px solid transparent;
 	text-align: center;
 }
 
-table tbody td:last-of-type button {
+main table tbody td:last-of-type button {
 	margin: 0px 0px 0px 8px;
 }
 
-table tbody td:last-of-type button:first-of-type {
+main table tbody td:last-of-type button:first-of-type {
 	margin: 0px 0px 0px 0px;
 }
 
-table tbody tr:hover td {
+main table tbody tr:hover td {
 	background: rgba(255,255,255,0.1);
 	cursor: pointer;
 }
 
-table tbody tr[data-select="true"] td {
+main table tbody tr[data-select="true"] td {
 	background: rgba(255,255,255,0.1);
 }
 
-table tbody tr[data-select="true"]:hover td {
+main table tbody tr[data-select="true"]:hover td {
 	cursor: no-drop;
 }
 
-table tbody td {
+main table tbody td {
 	font-family: 'vera-mono';
 	font-weight: normal;
 	font-size: 16px;
 }
 
-table tbody td em {
+main table tbody td em {
 	font-weight: bold;
 	font-style: normal;
 }
 
-table tbody td:nth-of-type(2) {
+main table tbody td:nth-of-type(2) {
 	text-align: left;
 }
 
-table tbody td:nth-of-type(3),
-table tbody td:nth-of-type(4) {
+main table tbody td:nth-of-type(3),
+main table tbody td:nth-of-type(4) {
 	width: auto;
 	text-align: center;
 }
 
-table thead th:nth-of-type(5),
-table tbody td:nth-of-type(5) {
+main table thead th:nth-of-type(5),
+main table tbody td:nth-of-type(5) {
 	width: 7em;
 	text-align: center;
 }
 
-table tbody td:nth-of-type(6) {
+main table tbody td:nth-of-type(6) {
 	white-space: nowrap;
 }
 
-table:after {
+main table:after {
 	display: block;
 	position: static;
 	content: " ";

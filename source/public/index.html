@@ -30,10 +30,10 @@
 	<body>
 		<header id="header">
 			<ul>
-				<li class="active"><a href="/index.html">Manage</a></li>
-				<li><a href="/backup.html">Backup</a></li>
-				<li><a href="/restore.html">Restore</a></li>
-				<li><a href="/settings.html">Settings</a></li>
+				<li class="active"><a data-view="manage" href="/index.html">Manage</a></li>
+				<li><a data-view="backup" href="/backup.html">Backup</a></li>
+				<li><a data-view="restore" href="/restore.html">Restore</a></li>
+				<li><a data-view="settings" href="/settings.html">Settings</a></li>
 			</ul>
 		</header>
 		<main id="main">
@@ -55,16 +55,10 @@
 			<div>Selected 0 of 0 Repositories</div>
 			<div></div>
 		</footer>
-		<dialog id="dialog" open>
+		<dialog id="dialog">
 			<article>
-				<h3>Commit 12 Repositories <button data-action="close">X</button></h3>
+				<h3>Fix 0 Repositories <button data-action="close"></button></h3>
 				<table id="dialog-table">
-					<thead>
-						<tr>
-							<th>Repository</th>
-							<th>Done?</th>
-						</tr>
-					</thead>
 					<tbody></tbody>
 				</table>
 				<footer>

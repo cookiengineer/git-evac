@@ -61,6 +61,51 @@ dialog article h3 {
 dialog article h3 button[data-action="close"] {
 	display: block;
 	position: absolute;
-	top: 0px;
-	right: 0px;
+	top: 4px;
+	right: 4px;
+	margin: 0px;
+	padding: 4px 6px;
+}
+
+dialog article h3 button[data-action="close"]:before {
+	display: inline-block;
+	content: '\e800';
+	width: auto;
+	margin: 0px;
+	padding: 0px;
+	font-family: "icon";
+	font-size: 16px;
+	font-style: normal;
+	font-weight: normal;
+	text-align: center;
+	text-decoration: none;
+	text-transform: none;
+	font-smooth: antialiased;
+}
+
+
+dialog article table {
+	margin: 16px;
+}
+
+dialog article table tbody td {
+	padding: 0px 8px;
+	font-family: 'vera-mono';
+	font-weight: normal;
+	font-size: 16px;
+	line-height: 30px;
+	vertical-align: middle;
+}
+
+dialog article table tbody td:first-of-type {
+	border-bottom: 1px solid #252932;
+}
+
+dialog article table tbody td:last-of-type {
+	border-left: 1px solid #252932;
+	border-bottom: 1px solid #252932;
+}
+
+dialog article table tbody td input {
+	vertical-align: middle;
 }

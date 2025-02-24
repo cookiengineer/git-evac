@@ -1,6 +1,8 @@
 
 # TODO
 
+Dialog needs to render Headline!
+
 Overview Actions can be:
 
 - if local changes: "commit"

@@ -30,12 +30,10 @@ func InitDialog() {
 		if target.TagName == "BUTTON" {
 
 			if action == "open-terminal" {
-			} else if action == "fix-next" {
-			} else if action == "fix-all" {
-			} else if action == "commit-next" {
-			} else if action == "commit-all" {
-			} else if action == "pull-next" {
-			} else if action == "pull-all" {
+			} else if action == "fix" {
+			} else if action == "commit" {
+			} else if action == "pull" {
+			} else if action == "push" {
 			} else if action == "cancel" {
 				Dialog.Close()
 			} else if action == "close" {
@@ -104,20 +102,18 @@ func RenderDialogFooter(actions []string) {
 
 	if div != nil {
 
-		html_all := ""
-		html_next := ""
+		html := ""
 
 		for a := 0; a < len(actions); a++ {
 
 			action := actions[a]
 			label := strings.ToUpper(action[0:1]) + strings.ToLower(action[1:])
 
-			html_all += "<button data-action=\"" + action + "-all\">" + label + " All</button>"
-			html_next += "<button data-action=\"" + action + "-next\">" + label + " Next</button>"
+			html += "<button data-action=\"" + action + "\">" + label + "</button>"
 
 		}
 
-		div.SetInnerHTML(html_all + " " + html_next)
+		div.SetInnerHTML(html)
 
 	}
 

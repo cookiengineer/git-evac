@@ -1,21 +1,24 @@
 
-footer {
-	display: flex;
+body > footer {
 	position: fixed;
-	width: auto;
-	height: 50px;
-	line-height: 50px;
 	top: auto;
 	right: 0px;
 	bottom: 0px;
 	left: 0px;
+	z-index: 20;
+}
+
+footer {
+	display: flex;
+	width: auto;
+	height: 50px;
 	margin: 0px;
 	padding: 0px 16px;
+	line-height: 50px;
 	color: #ffffff;
 	background: #2f343f;
 	box-sizing: border-box;
 	justify-content: in-between;
-	z-index: 20;
 }
 
 footer div:first-of-type {

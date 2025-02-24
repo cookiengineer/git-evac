@@ -31,6 +31,29 @@ button.secondary {
 	cursor: no-drop;
 }
 
+button[data-action]:before {
+	display: inline-block;
+	width: auto;
+	line-height: inherit;
+	margin: 0em 0.25em 0em 0em;
+	padding: 0px;
+	font-family: "icon";
+	font-size: 16px;
+	font-style: normal;
+	font-weight: normal;
+	text-align: center;
+	text-decoration: none;
+	text-transform: none;
+	font-smooth: antialiased;
+	speak: never;
+}
+
+button[data-action="cancel"]:before { content: '\e800'; }
+button[data-action="commit"]:before { content: '\e813'; }
+button[data-action="fix"]:before    { content: '\e801'; }
+button[data-action="pull"]:before   { content: '\e811'; }
+button[data-action="push"]:before   { content: '\e814'; }
+
 button[data-action="commit"],
 button[data-action="fix"] {
 	color: var(--palette-secondary-color);
