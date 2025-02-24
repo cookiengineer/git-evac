@@ -59,13 +59,18 @@
 			<article>
 				<h3>Commit 12 Repositories <button data-action="close">X</button></h3>
 				<table id="dialog-table">
-					<tbody>
+					<thead>
 						<tr>
-							<td>@cookiengineer/example</td>
-							<td><button data-action="commit">Commit</button></td>
+							<th>Repository</th>
+							<th>Done?</th>
 						</tr>
-					</tbody>
+					</thead>
+					<tbody></tbody>
 				</table>
+				<footer>
+					<div><button class="secondary" data-action="cancel">Cancel</button></div>
+					<div></div>
+				</footer>
 			</article>
 		</dialog>
 		<script src="wasm_exec.js"></script>
