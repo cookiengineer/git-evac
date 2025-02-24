@@ -1,0 +1,68 @@
+
+label {
+}
+
+label[data-action]:before,
+label[data-connection]:before,
+label[data-remote]:before,
+label[data-state]:before,
+label[data-type]:before {
+	display: inline-block;
+	width: 1em;
+	line-height: inherit;
+	margin: 0px;
+	padding: 0px 0.25em;
+	font-family: "icon";
+	font-size: 16px;
+	font-style: normal;
+	font-weight: normal;
+	text-align: center;
+	text-decoration: none;
+	text-transform: none;
+	font-smooth: antialiased;
+	speak: never;
+}
+
+label[data-action="backup"]:before  { content: '\e803'; }
+label[data-action="clone"]:before   { content: '\e811'; }
+label[data-action="commit"]:before  { content: '\e809'; }
+label[data-action="fix"]:before     { content: '\e808'; }
+label[data-action="pull"]:before    { content: '\e803'; }
+label[data-action="push"]:before    { content: '\e802'; }
+label[data-action="redo"]:before    { content: '\e80b'; }
+label[data-action="refresh"]:before { content: '\e80d'; }
+label[data-action="restore"]:before { content: '\e802'; }
+label[data-action="undo"]:before    { content: '\e80c'; }
+
+label[data-action="cancel"]:before  { content: '\e800'; }
+label[data-action="confirm"]:before { content: '\e801'; }
+
+label[data-connection="online"]:before  { content: '\e80f'; }
+label[data-connection="offline"]:before { content: '\e810'; }
+
+label[data-remote="bitbucket"]:before { content: '\f171'; }
+label[data-remote="git"]:before       { content: '\f1d3'; }
+label[data-remote="gitea"]:before     { content: '\f0c3'; }
+label[data-remote="github"]:before    { content: '\f113'; }
+label[data-remote="gitlab"]:before    { content: '\f296'; }
+label[data-remote="gogs"]:before      { content: '\f0c3'; }
+
+label[data-state="bug"]:before     { content: '\f188'; }
+label[data-state="busy"]:before    { content: '\f254'; }
+label[data-state="error"]:before   { content: '\e804'; }
+label[data-state="success"]:before { content: '\e801'; }
+
+label[data-type="folder"]:before       { content: '\e806'; }
+label[data-type="archive"]:before      { content: '\f187'; }
+label[data-type="user"]:before         { content: '\e80e'; }
+label[data-type="organization"]:before { content: '\f275'; }
+label[data-type="remote"]:before       { content: '\e80a'; }
+
+
+/* TODO: Hourglass animation */
+/* .icon-hourglass-o:before { content: '\f250'; } */
+/* .icon-hourglass-1:before { content: '\f251'; } */
+/* .icon-hourglass-2:before { content: '\f252'; } */
+/* .icon-hourglass-3:before { content: '\f253'; } */
+/* .icon-hourglass-4:before { content: '\f254'; } */
+

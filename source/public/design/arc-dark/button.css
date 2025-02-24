@@ -48,11 +48,13 @@ button[data-action]:before {
 	speak: never;
 }
 
-button[data-action="cancel"]:before { content: '\e800'; }
-button[data-action="commit"]:before { content: '\e813'; }
-button[data-action="fix"]:before    { content: '\e801'; }
-button[data-action="pull"]:before   { content: '\e811'; }
-button[data-action="push"]:before   { content: '\e814'; }
+button[data-action="cancel"]:before  { content: '\e800'; }
+button[data-action="commit"]:before  { content: '\e809'; }
+button[data-action="fix"]:before     { content: '\e808'; }
+button[data-action="pull"]:before    { content: '\e803'; }
+button[data-action="push"]:before    { content: '\e802'; }
+button[data-action="backup"]:before  { content: '\e803'; }
+button[data-action="restore"]:before { content: '\e802'; }
 
 button[data-action="commit"],
 button[data-action="fix"] {

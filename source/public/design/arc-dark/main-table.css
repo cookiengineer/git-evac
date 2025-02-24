@@ -52,6 +52,7 @@ main table tbody td:last-of-type {
 	width: 134px;
 	border-right: 0px solid transparent;
 	text-align: center;
+	white-space: nowrap;
 }
 
 main table tbody td:last-of-type button {
@@ -81,7 +82,12 @@ main table tbody td {
 	font-size: 16px;
 }
 
-main table tbody td em {
+main table tbody td label {
+	font-weight: normal;
+	font-style: normal;
+}
+
+main table tbody td label.active {
 	font-weight: bold;
 	font-style: normal;
 }
@@ -100,10 +106,6 @@ main table thead th:nth-of-type(5),
 main table tbody td:nth-of-type(5) {
 	width: 7em;
 	text-align: center;
-}
-
-main table tbody td:nth-of-type(6) {
-	white-space: nowrap;
 }
 
 main table:after {

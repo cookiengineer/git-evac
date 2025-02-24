@@ -97,7 +97,7 @@ func InitTable() {
 
 			Update()
 
-		} else if target.TagName == "EM" || target.TagName == "SPAN" {
+		} else if target.TagName == "EM" {
 
 			row := target.ParentNode().ParentNode()
 			is_checked := row.GetAttribute("data-select") == "true"
@@ -125,7 +125,7 @@ func RenderTable(index *schemas.Index) {
 	for user_name, user := range index.Users {
 
 		for _, repo := range user.Repositories {
-			html += RenderTableRow("@" + user_name, repo)
+			html += RenderTableRow(user_name, "user", repo)
 		}
 
 	}
@@ -133,7 +133,7 @@ func RenderTable(index *schemas.Index) {
 	for orga_name, orga := range index.Organizations {
 
 		for _, repo := range orga.Repositories {
-			html += RenderTableRow(orga_name, repo)
+			html += RenderTableRow(orga_name, "organization", repo)
 		}
 
 	}
@@ -150,7 +150,7 @@ func RenderTable(index *schemas.Index) {
 
 }
 
-func RenderTableRow(owner string, repository *structs.Repository) string {
+func RenderTableRow(owner string, typ string, repository *structs.Repository) string {
 
 	var result string
 
@@ -158,7 +158,7 @@ func RenderTableRow(owner string, repository *structs.Repository) string {
 
 	result += "<tr data-id=\"" + id + "\" data-select=\"false\">";
 	result += "<td><input type=\"checkbox\" data-id=\"" + id + "\" name=\"" + id + "\"/></td>";
-	result += "<td>" + owner + "/" + repository.Name + "</td>";
+	result += "<td><label data-type=\"" + typ + "\">" + owner + "/" + repository.Name + "</label></td>";
 	result += "<td>"
 
 	remotes := make([]string, 0)
@@ -172,11 +172,25 @@ func RenderTableRow(owner string, repository *structs.Repository) string {
 	for r := 0; r < len(remotes); r++ {
 
 		remote := remotes[r]
+		url := repository.Remotes[remote].URL
+		label := toRemoteLabel(remote, url)
 
-		if repository.CurrentRemote == remote {
-			result += "<em>" + remote + "</em>"
+		if label != "" {
+
+			if repository.CurrentRemote == remote {
+				result += "<label data-remote=\"" + label + "\" class=\"active\">" + remote + "</label>"
+			} else {
+				result += "<label data-remote=\"" + label + "\">" + remote + "</label>"
+			}
+
 		} else {
-			result += "<span>" + remote + "</span>"
+
+			if repository.CurrentRemote == remote {
+				result += "<label class=\"active\">" + remote + "</label>"
+			} else {
+				result += "<label>" + remote + "</label>"
+			}
+
 		}
 
 		if r < len(remotes) - 1 {
@@ -193,26 +207,15 @@ func RenderTableRow(owner string, repository *structs.Repository) string {
 	for b, branch := range repository.Branches {
 
 		if repository.CurrentBranch == branch {
-			result += "<em>" + branch + "</em>"
+			result += "<label class=\"active\">" + branch + "</label>"
 		} else {
-			result += "<span>" + branch + "</span>"
+			result += "<label>" + branch + "</label>"
 		}
 
 		if b < len(repository.Branches) - 1 {
 			result += " "
 		}
 
-	}
-
-	result += "</td>"
-	result += "<td>"
-
-	if repository.HasRemoteChanges == true {
-		result += "<em>remote changes</em>"
-	} else if repository.HasLocalChanges == true {
-		result += "<em>local changes</em>"
-	} else {
-		result += ""
 	}
 
 	result += "</td>"
