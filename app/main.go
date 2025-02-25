@@ -1,36 +1,48 @@
 package main
 
+import "gooey"
+import "gooey/app"
 import "gooey/timers"
 import "app/client/api"
-import "app/components"
-import "app/storage"
+import "app/views"
 import "time"
 
 func main() {
 
-	// main := gooey.Document.QuerySelector("main")
-	// dialog := gooey.Document.QuerySelector("dialog")
+	element := gooey.Document.QuerySelector("main")
 
-	timers.SetTimeout(func() {
+	if element != nil {
 
-		components.InitDialog()
-		// TODO: components.InitHeader()
-		components.InitTable()
-		components.InitFooter()
+		main := app.Main{}
+		main.Init(element)
 
-	}, 0)
+		view := element.GetAttribute("data-view")
 
-	timers.SetTimeout(func() {
-
-		index, err := api.Index()
-
-		if err == nil {
-			storage.Index = index
+		if view == "manage" {
+			main.SetView("manage", views.NewManage(&main))
+		// } else if view == "backup" {
+		//	main.SetView("backup", views.NewBackup(&main))
+		// } else if view == "restore" {
+		//	main.SetView("restore", views.NewBackup())
+		//} else if view == "settings" {
+		//	main.SetView("settings", views.NewSettings())
 		}
 
-		components.RenderTable(storage.Index)
+		timers.SetTimeout(func() {
 
-	}, 500)
+			index, err := api.Index()
+
+			if err == nil {
+				main.SaveItem("index", index)
+			}
+
+			main.ChangeView(view)
+
+		}, 0)
+
+	}
+
+
 
 	for true {
 

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>git-evac - Manage Repositories</title>
+		<title>git-evac - Settings</title>
 
 		<!-- WebView -->
 		<meta charset="utf-8">
@@ -30,29 +30,22 @@
 	<body>
 		<header id="header">
 			<ul>
-				<li class="active"><a data-view="manage" href="/index.html">Manage</a></li>
+				<li><a data-view="manage" href="/index.html">Manage</a></li>
 				<li><a data-view="backup" href="/backup.html">Backup</a></li>
 				<li><a data-view="restore" href="/restore.html">Restore</a></li>
-				<li><a data-view="settings" href="/settings.html">Settings</a></li>
+				<li class="active"><a data-view="settings" href="/settings.html">Settings</a></li>
 			</ul>
 		</header>
-		<main id="main" data-view="manage">
-			<table id="main-table">
-				<thead>
-					<tr>
-						<th><input type="checkbox" title="Toggle all repositories"/></th>
-						<th>Repository</th>
-						<th>Remotes</th>
-						<th>Branches</th>
-						<th>Action</th>
-					</tr>
-				</thead>
-				<tbody></tbody>
-			</table>
+		<main id="main" data-view="settings">
+			<article>
+				<fieldset>
+					TODO: Folder Setting
+				</fieldset>
+			</article>
 		</main>
 		<footer id="footer">
-			<div>Selected 0 of 0 Repositories</div>
-			<div></div>
+			<div><button data-action="cancel">Cancel</button></div>
+			<div><button data-action="save">Save</button></div>
 		</footer>
 		<dialog id="dialog">
 			<article>

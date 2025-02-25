@@ -21,6 +21,11 @@ Overview Actions can be:
 - [ ] Implement `structs.Server` to reflect GitHub / GitLab and Gogs/Gitea APIs
 
 
+- [ ] Settings for Default Software Folder
+- [ ] Settings for Default Backup Folder
+- [ ] Settings for Archive Formats (tar.gz, tar.xz, zip?)
+- [ ] Settings for Remote Endpoints and Names (which should influence the `toServerLabel()` method)
+
 # Manage View
 
 - [ ] Select Repositories
