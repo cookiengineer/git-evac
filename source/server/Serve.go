@@ -90,7 +90,17 @@ func Serve(profile *structs.Profile) bool {
 	// })
 
 	http.HandleFunc("/api/repositories", func(response http.ResponseWriter, request *http.Request) {
+
+		for _, owner := range profile.Owners {
+
+			for _, repo := range owner.Repositories {
+				repo.Status()
+			}
+
+		}
+
 		api.Repositories(profile, request, response)
+
 	})
 
 	http.HandleFunc("/api/repositories/status/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {

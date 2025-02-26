@@ -1,6 +1,7 @@
 package views
 
 import "fmt"
+
 import "gooey"
 import "gooey/app"
 import "gooey/dom"
@@ -8,6 +9,7 @@ import "git-evac-app/api"
 import app_schemas "git-evac-app/schemas"
 import "git-evac/server/schemas"
 import "git-evac/structs"
+import "slices"
 import "sort"
 import "strconv"
 import "strings"
@@ -99,7 +101,9 @@ func (view Manage) Init() {
 				selected := app_schemas.Selected{}
 				selected[id] = action
 
-				view.renderDialog(selected)
+				view.Main.SaveItem("selected-batch", selected)
+				view.renderDialog()
+
 				dialog.SetAttribute("open", "")
 
 			} else if target.TagName == "TD" {
@@ -148,40 +152,59 @@ func (view Manage) Init() {
 			if target.TagName == "BUTTON" {
 
 				selected := app_schemas.Selected{}
-				view.Main.ReadItem("selected", &selected)
+				view.Main.ReadItem("selected-batch", &selected)
 
-				if action == "fix" {
+				if action == "confirm" {
 
-					selected.Filter("fix")
+					buttons := dialog.QuerySelectorAll("footer button[data-action]")
 
-					for id, _ := range selected {
+					for b := 0; b < len(buttons); b++ {
+						buttons[b].SetAttribute("disabled", "")
+					}
 
-						owner := id[0:strings.Index(id, "/")]
-						repo  := id[strings.Index(id, "/")+1:]
+					for id, action := range selected {
 
-						fmt.Println("Open Terminal:", owner, repo)
+						label      := dialog.QuerySelector("table tbody tr[data-id=\"" + id + "\"] label[data-state]")
+						owner      := id[0:strings.Index(id, "/")]
+						repository := id[strings.Index(id, "/")+1:]
 
-						api.TerminalOpen(owner, repo)
+						if action == "fix" {
+
+							response, err := api.TerminalOpen(owner, repository)
+
+							if err == nil {
+
+								if label != nil {
+									label.SetAttribute("data-state", "success")
+									label.SetAttribute("title", "success!")
+								}
+
+								view.UpdateRepository(*response)
+
+							} else {
+
+								if label != nil {
+									label.SetAttribute("data-state", "failure")
+									label.SetAttribute("title", "failure!")
+								}
+
+							}
+
+						} else if action == "commit" {
+							// TODO
+						} else if action == "pull" {
+							// TODO
+						} else if action == "push" {
+							// TODO
+						}
 
 					}
 
-					// TODO: Open Terminal
+					for b := 0; b < len(buttons); b++ {
+						buttons[b].RemoveAttribute("disabled")
+					}
 
-				} else if action == "clone" {
-
-					// TODO: Git Clone
-
-				} else if action == "commit" {
-
-					// TODO: Git Commit
-
-				} else if action == "pull" {
-
-					// TODO: Git Pull
-
-				} else if action == "push" {
-
-					// TODO: Git Push
+					view.Update()
 
 				} else if action == "cancel" {
 					dialog.RemoveAttribute("open")
@@ -210,8 +233,29 @@ func (view Manage) Init() {
 
 				if action != "" {
 
-					selected.Filter(action)
-					view.renderDialog(selected)
+					if action == "pull" {
+
+						selected.Filter("pull-or-push")
+
+						for name := range selected {
+							selected.Set(name, "pull")
+						}
+
+					} else if action == "push" {
+
+						selected.Filter("pull-or-push")
+
+						for name := range selected {
+							selected.Set(name, "push")
+						}
+
+					} else {
+						selected.Filter(action)
+					}
+
+					view.Main.SaveItem("selected-batch", selected)
+					view.renderDialog()
+
 					dialog.SetAttribute("open", "")
 
 				}
@@ -253,9 +297,12 @@ func (view Manage) Refresh() {
 	selected := app_schemas.Selected{}
 	view.Main.ReadItem("selected", &selected)
 
+	selected_batch := app_schemas.Selected{}
+	view.Main.SaveItem("selected-batch", selected_batch)
+
 	view.renderTable()
 	view.renderFooter()
-	view.renderDialog(selected)
+	view.renderDialog()
 
 }
 
@@ -302,21 +349,67 @@ func (view Manage) Update() {
 
 }
 
-func (view Manage) renderTable() {
+func (view Manage) UpdateRepository(updated schemas.Repository) {
 
 	repositories := schemas.Repositories{}
-	table := view.GetElement("table")
 
 	view.Main.ReadItem("repositories", &repositories)
+
+	found := false
+
+	for owner_name, owner := range repositories.Owners {
+
+		for repo_name, repo := range owner.Repositories {
+
+			if repo.Folder == updated.Repository.Folder {
+				repositories.Owners[owner_name].Repositories[repo_name] = &updated.Repository
+				found = true
+				break
+			}
+
+		}
+
+	}
+
+	if found == true {
+		view.Main.SaveItem("repositories", repositories)
+	}
+
+	view.renderTable()
+
+}
+
+func (view Manage) renderTable() {
+
+	schema := schemas.Repositories{}
+	table  := view.GetElement("table")
+
+	view.Main.ReadItem("repositories", &schema)
 
 	if table != nil {
 
 		html := ""
 
-		for name, owner := range repositories.Owners {
+		owners := make([]string, 0)
 
-			for _, repo := range owner.Repositories {
-				html += view.renderTableRow(name, repo)
+		for name := range schema.Owners {
+			owners = append(owners, name)
+		}
+
+		sort.Strings(owners)
+
+		for _, owner := range owners {
+
+			repositories := make([]string, 0)
+
+			for name := range schema.Owners[owner].Repositories {
+				repositories = append(repositories, name)
+			}
+
+			sort.Strings(repositories)
+
+			for _, repo := range repositories {
+				html += view.renderTableRow(owner, schema.Owners[owner].Repositories[repo])
 			}
 
 		}
@@ -418,9 +511,76 @@ func (view Manage) renderTableRow(owner string, repository *structs.Repository) 
 
 }
 
-func (view Manage) renderDialog(selected app_schemas.Selected) {
+func (view Manage) renderDialog() {
 
-	// TODO: Render Dialog Title and Contents
+	dialog   := view.GetElement("dialog")
+	selected := app_schemas.Selected{}
+
+	view.Main.ReadItem("selected-batch", &selected)
+
+	if dialog != nil {
+
+		ids := make([]string, 0)
+		actions := make([]string, 0)
+
+		for id, action := range selected {
+
+			ids = append(ids, id)
+
+			if !slices.Contains(actions, action) {
+				actions = append(actions, action)
+			}
+
+		}
+
+		sort.Strings(ids)
+
+		fmt.Println(selected)
+
+		h3 := dialog.QuerySelector("h3")
+
+		if h3 != nil {
+
+			title := ""
+
+			if len(actions) == 1 {
+				title = strings.ToUpper(actions[0][0:1]) + strings.ToLower(actions[0][1:]) + " " + strconv.Itoa(len(selected)) + " Repositories"
+			} else {
+				title = "Manage " + strconv.Itoa(len(selected)) + " Repositories"
+			}
+
+			h3.SetInnerHTML(title)
+
+		}
+
+		tbody := dialog.QuerySelector("table tbody")
+
+		if tbody != nil {
+
+			html := ""
+
+			for i := 0; i < len(ids); i++ {
+				html += view.renderDialogTableRow(ids[i], selected[ids[i]])
+			}
+
+			tbody.SetInnerHTML(html)
+
+		}
+
+	}
+
+}
+
+func (view Manage) renderDialogTableRow(identifier string, action string) string {
+
+	html := ""
+
+	html += "<tr data-id=\"" + identifier + "\">"
+	html += "<td><label data-state=\"waiting\" title=\"waiting...\"></label></td>"
+	html += "<td><label>" + identifier + "</label></td>"
+	html += "</tr>"
+
+	return html
 
 }
 

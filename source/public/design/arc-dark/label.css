@@ -51,6 +51,7 @@ label[data-state="bug"]:before     { content: '\f188'; }
 label[data-state="busy"]:before    { content: '\f254'; }
 label[data-state="error"]:before   { content: '\e804'; }
 label[data-state="success"]:before { content: '\e801'; }
+label[data-state="waiting"]:before { content: '\f250'; }
 
 label[data-type="folder"]:before       { content: '\e806'; }
 label[data-type="archive"]:before      { content: '\f187'; }
