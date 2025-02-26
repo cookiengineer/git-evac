@@ -1,4 +1,4 @@
-module app
+module git-evac-app
 
 go 1.24.0
 

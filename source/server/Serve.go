@@ -69,11 +69,15 @@ func Serve(profile *structs.Profile) bool {
 
 	})
 
-	http.HandleFunc("/api/index", func(response http.ResponseWriter, request *http.Request) {
+	http.HandleFunc("/api/repositories", func(response http.ResponseWriter, request *http.Request) {
 		api.Index(profile, request, response)
 	})
 
-	http.HandleFunc("/api/status/{organization}/{repository}", func(response http.ResponseWriter, request *http.Request) {
+	http.HandleFunc("/api/settings", func(response http.ResponseWriter, request *http.Request) {
+		api.Settings(profile, request, response)
+	})
+
+	http.HandleFunc("/api/repositories/{owner}/{repository}/status", func(response http.ResponseWriter, request *http.Request) {
 		api.Status(profile, request, response)
 	})
 

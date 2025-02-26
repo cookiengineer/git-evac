@@ -3,8 +3,8 @@ package main
 import "gooey"
 import "gooey/app"
 import "gooey/timers"
-import "app/client/api"
-import "app/views"
+import "git-evac-app/client/api"
+import "git-evac-app/views"
 import "time"
 
 func main() {

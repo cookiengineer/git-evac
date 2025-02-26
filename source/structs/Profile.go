@@ -3,31 +3,22 @@ package structs
 import "git-evac/console"
 import "io/fs"
 import "os"
-import os_user "os/user"
 
 type Profile struct {
-	Users         map[string]*User         `json:"users"`
-	Organizations map[string]*Organization `json:"organizations"`
-	Settings      Settings                 `json:"settings"`
-	Filesystem    *fs.FS
+	Owners     map[string]*RepositoryOwner `json:"owners"`
+	Settings   Settings          `json:"settings"`
+	Filesystem *fs.FS
 }
 
 func NewProfile(folder string, port uint16) *Profile {
 
 	var profile Profile
 
-	profile.Users = make(map[string]*User)
-	profile.Organizations = make(map[string]*Organization)
+	profile.Owners = make(map[string]*RepositoryOwner)
 	profile.Filesystem = nil
 
 	profile.Settings.Folder = folder
 	profile.Settings.Port = port
-
-	user, err := os_user.Current()
-	
-	if err == nil {
-		profile.Settings.User = user.Username
-	}
 
 	return &profile
 
@@ -63,26 +54,14 @@ func (profile *Profile) Init() {
 
 								if err3 == nil && stat.IsDir() {
 
-									// TODO: Better user detection, maybe with git commits?
+									// TODO: Read and parse .git/config
+									// TODO: Use the user.name or user.email setting to detect identity
 
-									if entry1.Name() == profile.Settings.User {
+									owner := profile.GetOwner(entry1.Name(), root + "/" + entry1.Name())
+									repo := owner.GetRepository(entry2.Name())
 
-										user := profile.GetUser(entry1.Name(), root + "/" + entry1.Name())
-										repo := user.GetRepository(entry2.Name())
-
-										if user != nil && repo != nil {
-											console.Log("> Discovered @" + user.Name + "/" + repo.Name)
-										}
-
-									} else {
-
-										orga := profile.GetOrganization(entry1.Name(), root + "/" + entry1.Name())
-										repo := orga.GetRepository(entry2.Name())
-
-										if orga != nil && repo != nil {
-											console.Log("> Discovered " + orga.Name + "/" + repo.Name)
-										}
-
+									if owner != nil && repo != nil {
+										console.Log("> Discovered " + owner.Name + "/" + repo.Name)
 									}
 
 								}
@@ -105,39 +84,19 @@ func (profile *Profile) Init() {
 
 }
 
-func (profile *Profile) GetOrganization(name string, folder string) *Organization {
+func (profile *Profile) GetOwner(name string, folder string) *RepositoryOwner {
 
-	var result *Organization = nil
+	var result *RepositoryOwner = nil
 
-	tmp, ok := profile.Organizations[name]
-
-	if ok == true {
-		result = tmp
-	} else {
-
-		orga := NewOrganization(name, folder)
-		profile.Organizations[name] = &orga
-		result = profile.Organizations[name]
-
-	}
-
-	return result
-
-}
-
-func (profile *Profile) GetUser(name string, folder string) *User {
-
-	var result *User = nil
-
-	tmp, ok := profile.Users[name]
+	tmp, ok := profile.Owners[name]
 
 	if ok == true {
 		result = tmp
 	} else {
 
-		user := NewUser(name, folder)
-		profile.Users[name] = &user
-		result = profile.Users[name]
+		owner := NewRepositoryOwner(name, folder)
+		profile.Owners[name] = &owner
+		result = profile.Owners[name]
 
 	}
 
@@ -145,25 +104,11 @@ func (profile *Profile) GetUser(name string, folder string) *User {
 
 }
 
-func (profile *Profile) HasOrganization(name string) bool {
+func (profile *Profile) HasOwner(name string) bool {
 
 	var result bool = false
 
-	_, ok := profile.Organizations[name]
-
-	if ok == true {
-		result = true
-	}
-
-	return result
-
-}
-
-func (profile *Profile) HasUser(name string) bool {
-
-	var result bool = false
-
-	_, ok := profile.Users[name]
+	_, ok := profile.Owners[name]
 
 	if ok == true {
 		result = true

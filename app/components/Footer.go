@@ -2,7 +2,6 @@ package components
 
 import "gooey"
 import "gooey/dom"
-import "app/storage"
 import "strconv"
 
 var Footer *dom.Element = nil

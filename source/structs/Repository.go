@@ -16,6 +16,7 @@ type Repository struct {
 	IsPublic         bool               `json:"is_public"`
 	HasLocalChanges  bool               `json:"has_local_changes"`
 	HasRemoteChanges bool               `json:"has_remote_changes"`
+	Identity         string             `json:"identity"`
 }
 
 func NewRepository(name string, folder string) Repository {
@@ -29,6 +30,7 @@ func NewRepository(name string, folder string) Repository {
 
 	repo.CurrentBranch = "master"
 	repo.CurrentRemote = "origin"
+	repo.Identity = ""
 
 	repo.Status()
 

@@ -5,12 +5,12 @@ import "git-evac/structs"
 import "encoding/json"
 import "net/http"
 
-func Index(profile *structs.Profile, request *http.Request, response http.ResponseWriter) {
+func Settings(profile *structs.Profile, request *http.Request, response http.ResponseWriter) {
 
 	if request.Method == http.MethodGet {
 
-		payload, err := json.MarshalIndent(schemas.Index{
-			Owners: profile.Owners,
+		payload, err := json.MarshalIndent(schemas.Settings{
+			Settings: profile.Settings,
 		}, "", "\t")
 
 		if err == nil {

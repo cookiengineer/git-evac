@@ -3,7 +3,7 @@ package views
 import "gooey"
 import "gooey/app"
 import "gooey/dom"
-import app_schemas "app/schemas"
+import app_schemas "git-evac-app/schemas"
 import "git-evac/server/schemas"
 import "git-evac/structs"
 import "sort"
@@ -205,18 +205,10 @@ func (view Manage) RenderTable() {
 
 		html := ""
 
-		for user_name, user := range index.Users {
+		for name, owner := range index.Owners {
 
-			for _, repo := range user.Repositories {
-				html += view.renderTableRow(user_name, "user", repo)
-			}
-
-		}
-
-		for orga_name, orga := range index.Organizations {
-
-			for _, repo := range orga.Repositories {
-				html += view.renderTableRow(orga_name, "organization", repo)
+			for _, repo := range owner.Repositories {
+				html += view.renderTableRow(name, repo)
 			}
 
 		}
@@ -231,7 +223,7 @@ func (view Manage) RenderTable() {
 
 }
 
-func (view Manage) renderTableRow(owner string, typ string, repository *structs.Repository) string {
+func (view Manage) renderTableRow(owner string, repository *structs.Repository) string {
 
 	var result string
 
@@ -239,7 +231,7 @@ func (view Manage) renderTableRow(owner string, typ string, repository *structs.
 
 	result += "<tr data-id=\"" + id + "\" data-select=\"false\">";
 	result += "<td><input type=\"checkbox\" data-id=\"" + id + "\" name=\"" + id + "\"/></td>";
-	result += "<td><label data-type=\"" + typ + "\">" + owner + "/" + repository.Name + "</label></td>";
+	result += "<td><label>" + owner + "/" + repository.Name + "</label></td>";
 	result += "<td>"
 
 	remotes := make([]string, 0)
@@ -342,12 +334,8 @@ func (view Manage) RenderFooter() {
 
 		total := 0
 
-		for _, user := range index.Users {
-			total += len(user.Repositories)
-		}
-
-		for _, orga := range index.Organizations {
-			total += len(orga.Repositories)
+		for _, owner := range index.Owners {
+			total += len(owner.Repositories)
 		}
 
 		message := "Selected " + strconv.Itoa(selected.Length()) + " of " + strconv.Itoa(total) + " Repositories"
