@@ -1,11 +1,13 @@
 package api
 
 import "git-evac/console"
+import "git-evac/server/schemas"
 import "git-evac/structs"
 import "encoding/json"
 import "net/http"
+import "os/exec"
 
-func Status(profile *structs.Profile, request *http.Request, response http.ResponseWriter) {
+func TerminalOpen(profile *structs.Profile, request *http.Request, response http.ResponseWriter) {
 
 	if request.Method == http.MethodGet {
 
@@ -20,15 +22,34 @@ func Status(profile *structs.Profile, request *http.Request, response http.Respo
 
 				repo := owner.Repositories[param2]
 
-				if repo.Status() {
-					console.Log("/api/status " + param1 + "/" + param2)
+				cmd := exec.Command("kitty")
+				cmd.Dir = repo.Folder[0:len(repo.Folder)-5]
+
+				_, err := cmd.Output()
+
+				if err == nil {
+
+					if repo.Status() {
+						console.Log("/api/terminal/open/" + param1 + "/" + param2)
+					}
+
+					response.Header().Set("Content-Type", "application/json")
+					response.WriteHeader(http.StatusOK)
+
+					payload, _ := json.MarshalIndent(schemas.Repository{
+						Repository: *repo,
+					}, "", "\t")
+					response.Write(payload)
+
+				} else {
+
+					console.Error("/api/terminal/open/" + param1 + "/" + param2)
+
+					response.Header().Set("Content-Type", "application/json")
+					response.WriteHeader(http.StatusInternalServerError)
+					response.Write([]byte("{}"))
+
 				}
-
-				response.Header().Set("Content-Type", "application/json")
-				response.WriteHeader(http.StatusOK)
-
-				payload, _ := json.MarshalIndent(repo, "", "\t")
-				response.Write(payload)
 
 			} else {
 
@@ -55,3 +76,4 @@ func Status(profile *structs.Profile, request *http.Request, response http.Respo
 	}
 
 }
+

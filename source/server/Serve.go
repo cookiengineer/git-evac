@@ -69,16 +69,36 @@ func Serve(profile *structs.Profile) bool {
 
 	})
 
+	http.HandleFunc("/api/terminal/open/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {
+		api.TerminalOpen(profile, request, response)
+	})
+
+	// http.HandleFunc("/api/git/clone/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {
+	// 	api.GitClone(profile, request, response)
+	// })
+
+	// http.HandleFunc("/api/git/commit/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {
+	// 	api.GitCommit(profile, request, response)
+	// })
+
+	// http.HandleFunc("/api/git/pull/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {
+	// 	api.GitPull(profile, request, response)
+	// })
+
+	// http.HandleFunc("/api/git/push/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {
+	// 	api.GitPush(profile, request, response)
+	// })
+
 	http.HandleFunc("/api/repositories", func(response http.ResponseWriter, request *http.Request) {
-		api.Index(profile, request, response)
+		api.Repositories(profile, request, response)
+	})
+
+	http.HandleFunc("/api/repositories/status/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {
+		api.RepositoryStatus(profile, request, response)
 	})
 
 	http.HandleFunc("/api/settings", func(response http.ResponseWriter, request *http.Request) {
 		api.Settings(profile, request, response)
-	})
-
-	http.HandleFunc("/api/repositories/{owner}/{repository}/status", func(response http.ResponseWriter, request *http.Request) {
-		api.Status(profile, request, response)
 	})
 
 	err1 := http.ListenAndServe(":"+strconv.FormatUint(uint64(profile.Settings.Port), 10), nil)

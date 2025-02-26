@@ -1,13 +1,16 @@
 package views
 
+import "fmt"
 import "gooey"
 import "gooey/app"
 import "gooey/dom"
+import "git-evac-app/api"
 import app_schemas "git-evac-app/schemas"
 import "git-evac/server/schemas"
 import "git-evac/structs"
 import "sort"
 import "strconv"
+import "strings"
 
 type Manage struct {
 	Main *app.Main `json:"main"`
@@ -33,6 +36,8 @@ func NewManage(main *app.Main) Manage {
 
 func (view Manage) Init() {
 
+	dialog := view.GetElement("dialog")
+	footer := view.GetElement("footer")
 	table := view.GetElement("table")
 
 	if table != nil {
@@ -91,14 +96,11 @@ func (view Manage) Init() {
 				id := row.GetAttribute("data-id")
 				action := target.GetAttribute("data-action")
 
-				actions := make(map[string]string)
-				actions[id] = action
+				selected := app_schemas.Selected{}
+				selected[id] = action
 
-				if len(actions) > 0 {
-					view.RenderDialog()
-					// TODO: RenderDialog(actions)
-					// TODO: Dialog.Open()
-				}
+				view.renderDialog(selected)
+				dialog.SetAttribute("open", "")
 
 			} else if target.TagName == "TD" {
 
@@ -115,7 +117,7 @@ func (view Manage) Init() {
 
 				view.Update()
 
-			} else if target.TagName == "EM" {
+			} else if target.TagName == "LABEL" {
 
 				row := target.ParentNode().ParentNode()
 				is_checked := row.GetAttribute("data-select") == "true"
@@ -136,12 +138,101 @@ func (view Manage) Init() {
 
 	}
 
+	if dialog != nil {
+
+		dialog.AddEventListener("click", dom.ToEventListener(func(event dom.Event) {
+
+			target := event.Target
+			action := target.GetAttribute("data-action")
+
+			if target.TagName == "BUTTON" {
+
+				selected := app_schemas.Selected{}
+				view.Main.ReadItem("selected", &selected)
+
+				if action == "fix" {
+
+					selected.Filter("fix")
+
+					for id, _ := range selected {
+
+						owner := id[0:strings.Index(id, "/")]
+						repo  := id[strings.Index(id, "/")+1:]
+
+						fmt.Println("Open Terminal:", owner, repo)
+
+						api.TerminalOpen(owner, repo)
+
+					}
+
+					// TODO: Open Terminal
+
+				} else if action == "clone" {
+
+					// TODO: Git Clone
+
+				} else if action == "commit" {
+
+					// TODO: Git Commit
+
+				} else if action == "pull" {
+
+					// TODO: Git Pull
+
+				} else if action == "push" {
+
+					// TODO: Git Push
+
+				} else if action == "cancel" {
+					dialog.RemoveAttribute("open")
+				} else if action == "close" {
+					dialog.RemoveAttribute("open")
+				}
+
+			}
+
+		}))
+
+	}
+
+	if footer != nil {
+
+		footer.AddEventListener("click", dom.ToEventListener(func(event dom.Event) {
+
+			target := event.Target
+
+			if target.TagName == "BUTTON" {
+
+				action := target.GetAttribute("data-action")
+				selected := app_schemas.Selected{}
+
+				view.Main.ReadItem("selected", &selected)
+
+				if action != "" {
+
+					selected.Filter(action)
+					view.renderDialog(selected)
+					dialog.SetAttribute("open", "")
+
+				}
+
+			}
+
+		}))
+
+	}
 
 }
 
 func (view Manage) Enter() bool {
 
-	view.RenderTable()
+	schema, err := api.Repositories()
+
+	if err == nil {
+		view.Main.SaveItem("repositories", schema)
+	}
+
+	view.renderTable()
 
 	return true
 
@@ -149,6 +240,23 @@ func (view Manage) Enter() bool {
 
 func (view Manage) Leave() bool {
 	return true
+}
+
+func (view Manage) Refresh() {
+
+	schema, err := api.Repositories()
+
+	if err == nil {
+		view.Main.SaveItem("repositories", schema)
+	}
+
+	selected := app_schemas.Selected{}
+	view.Main.ReadItem("selected", &selected)
+
+	view.renderTable()
+	view.renderFooter()
+	view.renderDialog(selected)
+
 }
 
 func (view Manage) Update() {
@@ -188,24 +296,24 @@ func (view Manage) Update() {
 		}
 
 		view.Main.SaveItem("selected", selected)
-		view.RenderFooter()
+		view.renderFooter()
 
 	}
 
 }
 
-func (view Manage) RenderTable() {
+func (view Manage) renderTable() {
 
-	index := schemas.Index{}
+	repositories := schemas.Repositories{}
 	table := view.GetElement("table")
 
-	view.Main.ReadItem("index", &index)
+	view.Main.ReadItem("repositories", &repositories)
 
 	if table != nil {
 
 		html := ""
 
-		for name, owner := range index.Owners {
+		for name, owner := range repositories.Owners {
 
 			for _, repo := range owner.Repositories {
 				html += view.renderTableRow(name, repo)
@@ -310,19 +418,19 @@ func (view Manage) renderTableRow(owner string, repository *structs.Repository) 
 
 }
 
-func (view Manage) RenderDialog() {
+func (view Manage) renderDialog(selected app_schemas.Selected) {
 
 	// TODO: Render Dialog Title and Contents
 
 }
 
-func (view Manage) RenderFooter() {
+func (view Manage) renderFooter() {
 
-	index    := schemas.Index{}
-	selected := app_schemas.Selected{}
-	footer   := view.GetElement("footer")
+	repositories := schemas.Repositories{}
+	selected     := app_schemas.Selected{}
+	footer       := view.GetElement("footer")
 
-	view.Main.ReadItem("index", &index)
+	view.Main.ReadItem("repositories", &repositories)
 	view.Main.ReadItem("selected", &selected)
 
 	if footer != nil {
@@ -334,7 +442,7 @@ func (view Manage) RenderFooter() {
 
 		total := 0
 
-		for _, owner := range index.Owners {
+		for _, owner := range repositories.Owners {
 			total += len(owner.Repositories)
 		}
 

@@ -5,11 +5,11 @@ import "git-evac/structs"
 import "encoding/json"
 import "net/http"
 
-func Index(profile *structs.Profile, request *http.Request, response http.ResponseWriter) {
+func Repositories(profile *structs.Profile, request *http.Request, response http.ResponseWriter) {
 
 	if request.Method == http.MethodGet {
 
-		payload, err := json.MarshalIndent(schemas.Index{
+		payload, err := json.MarshalIndent(schemas.Repositories{
 			Owners: profile.Owners,
 		}, "", "\t")
 

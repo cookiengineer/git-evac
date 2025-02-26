@@ -18,6 +18,20 @@ func (selected Selected) Count(search string) int {
 
 }
 
+func (selected Selected) Filter(search string) {
+
+	for id, value := range selected {
+
+		if search == value {
+			// Do Nothing
+		} else {
+			delete(selected, id)
+		}
+
+	}
+
+}
+
 func (selected Selected) Keys(search string) []string {
 
 	var result []string

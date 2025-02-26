@@ -2,8 +2,6 @@ package main
 
 import "gooey"
 import "gooey/app"
-import "gooey/timers"
-import "git-evac-app/client/api"
 import "git-evac-app/views"
 import "time"
 
@@ -20,6 +18,7 @@ func main() {
 
 		if view == "manage" {
 			main.SetView("manage", views.NewManage(&main))
+			main.ChangeView("manage")
 		// } else if view == "backup" {
 		//	main.SetView("backup", views.NewBackup(&main))
 		// } else if view == "restore" {
@@ -27,18 +26,6 @@ func main() {
 		//} else if view == "settings" {
 		//	main.SetView("settings", views.NewSettings())
 		}
-
-		timers.SetTimeout(func() {
-
-			index, err := api.Index()
-
-			if err == nil {
-				main.SaveItem("index", index)
-			}
-
-			main.ChangeView(view)
-
-		}, 0)
 
 	}
 
