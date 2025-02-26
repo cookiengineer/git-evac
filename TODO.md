@@ -1,48 +1,50 @@
 
 # TODO
 
-Dialog needs to render Headline!
 
-Overview Actions can be:
+# App
 
-- if local changes: "commit"
-- if no local changes: "pull" or "push"
-- if no github/gitlab/homeserver remote: "fix remotes"
+- [ ] Implement a `Client` that allows to use fetch asynchronously, using events and callbacks
+- [ ] `Client.Request(api, func(data any, err error))` method
+
+- [ ] Use `gooey.Fetch()` API
+- [ ] Refactor `api/Repositories.go`
+- [ ] Refactor `api/TerminalOpen.go`
+- [ ] Implement `api/GitClone.go`
+- [ ] Implement `api/GitPull.go`
+- [ ] Implement `api/GitPush.go`
+- [ ] Implement `api/GitCommit.go`
 
 
-# TODO
+# Backend
 
 - [ ] Implement `git.GlobalConfig.Parse()`
 - [ ] Implement `git.LocalConfig.Parse()`
-
-- [ ] Read `Profile.Settings` from `~/Software/git-evac.json` if it exists already
-
-- [ ] Implement Settings UI to configure multiple git/gogs/github/gitlab servers
-- [ ] Implement `structs.Server` to reflect GitHub / GitLab and Gogs/Gitea APIs
+- [ ] Read `~/Software/git-evac.json` if it exists
 
 
-- [ ] Settings for Default Software Folder
-- [ ] Settings for Default Backup Folder
-- [ ] Settings for Archive Formats (tar.gz, tar.xz, zip?)
-- [ ] Settings for Remote Endpoints and Names (which should influence the `toServerLabel()` method)
+# Views
 
-# Manage View
+## Manage View
 
-- [ ] Select Repositories
+- [ ] Fix Action
+- [ ] Dialog: Fix Remotes workflow
+- [ ] Dialog: Fix Terminal workflow
+
+- [ ] Clone Action
+- [ ] Dialog: Clone Progress
 
 - [ ] Commit Action
-- [ ] Dialog: Open Terminal, then call `/api/status/...`
+- [ ] Dialog: Commit Progress
 
 - [ ] Pull Action
-- [ ] Dialog: Select Remotes
 - [ ] Dialog: Pull Progress
 
 - [ ] Push Action
-- [ ] Dialog: Select Remotes
 - [ ] Dialog: Push Progress
 
 
-# Backup View
+## Backup View
 
 - [ ] Select Repositories
 - [ ] Backup Action
@@ -50,10 +52,18 @@ Overview Actions can be:
 - [ ] Dialog: Backup Progress
 
 
-# Restore View
+## Restore View
 
 - [ ] Select Repositories
 - [ ] Restore Action
 - [ ] Dialog: Select Drives/Folders _or_ Remote
 - [ ] Dialog: Restore Progress
+
+
+## Settings View
+
+- [ ] UI for `Folder` Setting
+- [ ] UI for `Port` Setting
+- [ ] UI for `Identities` Settings
+- [ ] UI fro `Remotes` Settings
 

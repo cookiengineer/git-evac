@@ -1,7 +1,6 @@
 package structs
 
 type Settings struct {
-	User       string                      `json:"user"`
 	Folder     string                      `json:"folder"`
 	Port       uint16                      `json:"port"`
 	Identities map[string]IdentitySettings `json:"identities"`
