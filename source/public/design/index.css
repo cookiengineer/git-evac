@@ -1,14 +1,6 @@
 
-@import url("./fonts/index.css");
-@import url("./arc-dark/palette.css");
-@import url("./arc-dark/header.css");
-@import url("./arc-dark/main.css");
-@import url("./arc-dark/main-table.css");
-@import url("./arc-dark/footer.css");
-@import url("./arc-dark/dialog.css");
-@import url("./arc-dark/button.css");
-@import url("./arc-dark/label.css");
-@import url("./arc-dark/input.css");
+@import url("./theme/index.css");
+@import url("./custom/index.css");
 
 body {
 	margin: 0px;

@@ -1,0 +1,47 @@
+
+dialog label[data-state]:before {
+	display: inline-block;
+	width: 1em;
+	line-height: inherit;
+	margin: 0px;
+	padding: 0px 0.25em;
+	font-family: "icon";
+	font-size: 16px;
+	font-style: normal;
+	font-weight: normal;
+	text-align: center;
+	text-decoration: none;
+	text-transform: none;
+	font-smooth: antialiased;
+	speak: never;
+}
+
+/* states */
+dialog label[data-state="bug"]:before     { content: '\f188'; }
+dialog label[data-state="error"]:before   { content: '\e80a'; }
+dialog label[data-state="success"]:before { content: '\e803'; }
+dialog label[data-state="waiting"]:before { content: '\f254'; }
+
+dialog label[data-state="waiting"]:before {
+	animation: hourglass infinite 3s linear;
+}
+
+dialog label[data-state="working"]:before {
+	content: '\f254';
+	animation: rotation infinite 3s linear;
+}
+
+@keyframes hourglass {
+	0%   { content: '\f250'; }
+	25%  { content: '\f251'; }
+	50%  { content: '\f252'; }
+	75%  { content: '\f253'; }
+	100% { content: '\f250'; }
+}
+
+@keyframes rotation {
+	0%   { transform: rotate(  0deg); }
+	50%  { transform: rotate(180deg); }
+	100% { transform: rotate(360deg); }
+}
+

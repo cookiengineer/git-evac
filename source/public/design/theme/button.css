@@ -48,19 +48,27 @@ button[data-action]:before {
 	speak: never;
 }
 
-button[data-action="backup"]:before  { content: '\e803'; }
-button[data-action="clone"]:before   { content: '\e811'; }
+/* git actions */
+button[data-action="clone"]:before   { content: '\e819'; }
+button[data-action="fix"]:before     { content: '\e80e'; }
 button[data-action="commit"]:before  { content: '\e809'; }
-button[data-action="fix"]:before     { content: '\e808'; }
-button[data-action="pull"]:before    { content: '\e803'; }
-button[data-action="push"]:before    { content: '\e802'; }
-button[data-action="redo"]:before    { content: '\e80b'; }
-button[data-action="refresh"]:before { content: '\e80d'; }
-button[data-action="restore"]:before { content: '\e802'; }
-button[data-action="undo"]:before    { content: '\e80c'; }
+button[data-action="pull"]:before    { content: '\f0ed'; }
+button[data-action="push"]:before    { content: '\f0ee'; }
 
-label[data-action="cancel"]:before  { content: '\e800'; }
-label[data-action="confirm"]:before { content: '\e801'; }
+/* backup actions */
+button[data-action="backup"]:before  { content: '\e807'; }
+button[data-action="restore"]:before { content: '\e808'; }
+
+/* dialog and footer actions */
+button[data-action="cancel"]:before  { content: '\e804'; }
+button[data-action="close"]:before   { content: '\e804'; }
+button[data-action="confirm"]:before { content: '\e803'; }
+button[data-action="save"]:before    { content: '\e803'; }
+
+/* general actions */
+button[data-action="redo"]:before    { content: '\e813'; }
+button[data-action="undo"]:before    { content: '\e814'; }
+button[data-action="refresh"]:before { content: '\e815'; }
 
 button[data-action="commit"],
 button[data-action="fix"] {
@@ -75,7 +83,6 @@ button[data-action="restore"] {
 	background: var(--palette-primary-background);
 	cursor: pointer;
 }
-
 
 button[disabled],
 button[disabled]:hover,

@@ -1,0 +1,25 @@
+
+/* settings */
+main[data-view="settings"] label[data-type="folder"]:before        { content: '\e80b'; }
+main[data-view="settings"] label[data-type="folder"].active:before { content: '\e80c'; }
+main[data-view="settings"] label[data-type="file"]:before          { content: '\f15b'; }
+main[data-view="settings"] label[data-type="file"].active:before   { content: '\f15c'; }
+main[data-view="settings"] label[data-type="port"]:before          { content: '\f0ec'; }
+
+/* settings > identities */
+main[data-view="settings"] label[data-type="user"]:before         { content: '\e801'; }
+main[data-view="settings"] label[data-type="organization"]:before { content: '\f275'; }
+main[data-view="settings"] label[data-type="key"]:before          { content: '\f132'; }
+main[data-view="settings"] label[data-type="name"]:before         { content: '\e801'; }
+main[data-view="settings"] label[data-type="email"]:before        { content: '\f0e0'; }
+
+/* settings > remotes */
+main[data-view="settings"] label[data-type="remote"]:before        { content: '\e81a'; }
+main[data-view="settings"] label[data-type="remote-name"]:before   { content: '\e81a'; }
+main[data-view="settings"] label[data-type="remote-type"]:before   { content: '\e816'; }
+
+/* XXX: UNUSED */
+main[data-view="settings"] label[data-type="proxy"]:before         { content: '\e816'; }
+
+
+/* TODO: input[type="radio"] variants */

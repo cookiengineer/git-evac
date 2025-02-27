@@ -25,7 +25,7 @@ main article {
 	border-radius: 8px;
 }
 
-main article [data-message="statistics"] {
+main article *[data-message] {
 	font-family: 'vera-mono';
 	font-weight: normal;
 	font-style: normal;
