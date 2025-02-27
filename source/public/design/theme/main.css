@@ -1,7 +1,7 @@
 
 main {
 	display: block;
-	position: relative;
+	position: fixed;
 	margin: 0px;
 	padding: 0px 16px;
 	top: 50px;
@@ -10,6 +10,7 @@ main {
 	left: 0px;
 	color: #ffffff;
 	background: #383c4a;
+	overflow: scroll;
 	z-index: 10;
 }
 
@@ -33,6 +34,3 @@ main article *[data-message] {
 	text-align: center;
 }
 
-main article:first-child {
-	margin-top: 16px;
-}

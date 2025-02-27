@@ -1,4 +1,20 @@
 
+main[data-view="settings"] article {
+	max-width: 500px;
+}
+
+main[data-view="settings"] article fieldset div label[data-type]:before {
+	margin: 0px 0.5em 0px 0px;
+}
+
+main[data-view="settings"] article footer {
+	margin: 0px -16px 0px -16px;
+	background: unset;
+}
+
+main[data-view="settings"] button[data-action="create-identity"]:before { content: '\e805'; vertical-align: bottom; }
+main[data-view="settings"] button[data-action="create-remote"]:before   { content: '\e805'; vertical-align: bottom; }
+
 /* settings */
 main[data-view="settings"] label[data-type="folder"]:before        { content: '\e80b'; }
 main[data-view="settings"] label[data-type="folder"].active:before { content: '\e80c'; }
@@ -21,5 +37,111 @@ main[data-view="settings"] label[data-type="remote-type"]:before   { content: '\
 /* XXX: UNUSED */
 main[data-view="settings"] label[data-type="proxy"]:before         { content: '\e816'; }
 
+main[data-view="settings"] input[type="radio"][data-remote] {
+	width: 2em;
+	height: 2em;
+	line-height: 2em;
+	text-align: center;
+	vertical-align: middle;
+}
 
-/* TODO: input[type="radio"] variants */
+main[data-view="settings"] input[type="radio"][data-remote="bitbucket"]:before,
+main[data-view="settings"] input[type="radio"][data-remote="git"]:before,
+main[data-view="settings"] input[type="radio"][data-remote="github"]:before,
+main[data-view="settings"] input[type="radio"][data-remote="gitlab"]:before,
+main[data-view="settings"] input[type="radio"][data-remote="gogs"]:before {
+	display: inline-block;
+	width: 1em;
+	height: 1em;
+	line-height: inherit;
+	margin: 0px;
+	padding: 0px;
+	font-family: "icon";
+	font-size: 16px;
+	font-style: normal;
+	font-weight: normal;
+	text-align: center;
+	text-decoration: none;
+	text-transform: none;
+	font-smooth: antialiased;
+	speak: never;
+}
+
+main[data-view="settings"] input[type="radio"][data-remote="bitbucket"]:before { content: '\f171'; }
+main[data-view="settings"] input[type="radio"][data-remote="git"]:before       { content: '\f1d3'; }
+/* main[data-view="settings"] input[type="radio"][data-remote="gitea"]:before     { content: '\f0c3'; } */
+main[data-view="settings"] input[type="radio"][data-remote="github"]:before    { content: '\f113'; }
+main[data-view="settings"] input[type="radio"][data-remote="gitlab"]:before    { content: '\f296'; }
+main[data-view="settings"] input[type="radio"][data-remote="gogs"]:before      { content: '\f0c3'; }
+
+main[data-view="settings"] input[type="radio"][data-remote="gitea"] {
+	display: inline-block;
+	content: " ";
+	width: 2em;
+	height: 2em;
+	line-height: 2em;
+	text-align: center;
+	line-height: inherit;
+	margin: 0px;
+	padding: 0px;
+	background-image: url("../icons/gitea.svg");
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+	background-size: 80% 80%;
+	speak: never;
+}
+
+main[data-view="settings"] legend[contenteditable] {
+	display: inline-block;
+	margin: 0px;
+	padding: 4px 8px;
+	font-family: 'vera-mono';
+	font-size: 16px;
+	font-style: normal;
+	font-weight: normal;
+	color: var(--input-default-color);
+	background: var(--input-default-background);
+	border: 1px solid #252932;
+	border-radius: 4px;
+	box-sizing: border-box;
+	appearance: none;
+	-moz-appearance: none;
+	-webkit-appearance: none;
+	user-select: text;
+	outline: unset;
+	cursor: text;
+}
+
+main[data-view="settings"] h3 {
+	display: block;
+	margin: 0px;
+	padding: 8px 0px;
+	font-family: "cantarell";
+	font-weight: bold;
+	font-size: 20px;
+	font-style: normal;
+	border-bottom: 1px solid #2b2e39;
+}
+
+main[data-view="settings"] h3[data-type]:before {
+	display: inline-block;
+	width: 1em;
+	line-height: inherit;
+	margin: 0px 0.5em 0px 0px;
+	padding: 0px;
+	font-family: "icon";
+	font-size: 16px;
+	font-style: normal;
+	font-weight: normal;
+	text-align: center;
+	text-decoration: none;
+	text-transform: none;
+	font-smooth: antialiased;
+	speak: never;
+}
+
+main[data-view="settings"] h3[data-type="identities"]:before { content: '\e802'; }
+main[data-view="settings"] h3[data-type="identity"]:before   { content: '\e801'; }
+main[data-view="settings"] h3[data-type="remotes"]:before    { content: '\f1e0'; }
+main[data-view="settings"] h3[data-type="settings"]:before   { content: '\e80d'; }
+

@@ -17,23 +17,7 @@ main article fieldset legend {
 	border: 1px solid #2b2e39;
 	border-radius: 8px;
 	box-sizing: border-box;
-}
-
-main article fieldset legend[data-type]:before {
-	display: inline-block;
-	width: 1em;
-	line-height: inherit;
-	margin: 0px 8px 0px 0px;
-	padding: 0px;
-	font-family: "icon";
-	font-size: 16px;
-	font-style: normal;
-	font-weight: normal;
-	text-align: center;
-	text-decoration: none;
-	text-transform: none;
-	font-smooth: antialiased;
-	speak: never;
+	user-select: none;
 }
 
 main article fieldset div {
@@ -64,15 +48,4 @@ main article fieldset div label + input {
 main article fieldset div label + div {
 	display: inline-block;
 }
-
-main article fieldset div label[data-type]:before {
-	margin: 0px 0.5em 0px 0px;
-	padding: 0px;
-}
-
-/* settings */
-legend[data-type="identities"]:before { content: '\e802'; }
-legend[data-type="identity"]:before   { content: '\e801'; }
-legend[data-type="remotes"]:before    { content: '\f1e0'; }
-legend[data-type="settings"]:before   { content: '\e80d'; }
 
