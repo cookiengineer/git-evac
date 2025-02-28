@@ -18,7 +18,7 @@ dialog label[data-state]:before {
 
 /* states */
 dialog label[data-state="bug"]:before     { content: '\f188'; }
-dialog label[data-state="error"]:before   { content: '\e80a'; }
+dialog label[data-state="failure"]:before { content: '\e804'; }
 dialog label[data-state="success"]:before { content: '\e803'; }
 dialog label[data-state="waiting"]:before { content: '\f254'; }
 

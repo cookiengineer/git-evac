@@ -1,7 +1,5 @@
 package views
 
-import "fmt"
-
 import "gooey"
 import "gooey/app"
 import "gooey/dom"
@@ -101,7 +99,7 @@ func (view Manage) Init() {
 				selected := app_schemas.Selected{}
 				selected[id] = action
 
-				view.Main.SaveItem("selected-batch", selected)
+				view.Main.Storage.Write("selected-batch", selected)
 				view.renderDialog()
 
 				dialog.SetAttribute("open", "")
@@ -152,7 +150,7 @@ func (view Manage) Init() {
 			if target.TagName == "BUTTON" {
 
 				selected := app_schemas.Selected{}
-				view.Main.ReadItem("selected-batch", &selected)
+				view.Main.Storage.Read("selected-batch", &selected)
 
 				if action == "confirm" {
 
@@ -170,41 +168,157 @@ func (view Manage) Init() {
 
 						if action == "fix" {
 
-							response, err := api.TerminalOpen(owner, repository)
+							go func(label *dom.Element, owner string, repository string) {
 
-							if err == nil {
+								response, err := api.TerminalOpen(owner, repository)
 
-								if label != nil {
-									label.SetAttribute("data-state", "success")
-									label.SetAttribute("title", "success!")
+								if err == nil {
+
+									if label != nil {
+										label.SetAttribute("data-state", "success")
+										label.SetAttribute("title", "success!")
+									}
+
+									view.UpdateRepository(*response)
+
+								} else {
+
+									if label != nil {
+										label.SetAttribute("data-state", "failure")
+										label.SetAttribute("title", "failure!")
+									}
+
 								}
 
-								view.UpdateRepository(*response)
-
-							} else {
-
-								if label != nil {
-									label.SetAttribute("data-state", "failure")
-									label.SetAttribute("title", "failure!")
+								for b := 0; b < len(buttons); b++ {
+									buttons[b].RemoveAttribute("disabled")
 								}
 
-							}
+							}(label, owner, repository)
+
+						} else if action == "clone" {
+
+							go func(label *dom.Element, owner string, repository string) {
+
+								response, err := api.GitClone(owner, repository)
+
+								if err == nil {
+
+									if label != nil {
+										label.SetAttribute("data-state", "success")
+										label.SetAttribute("title", "success!")
+									}
+
+									view.UpdateRepository(*response)
+
+								} else {
+
+									if label != nil {
+										label.SetAttribute("data-state", "failure")
+										label.SetAttribute("title", "failure!")
+									}
+
+								}
+
+								for b := 0; b < len(buttons); b++ {
+									buttons[b].RemoveAttribute("disabled")
+								}
+
+							}(label, owner, repository)
 
 						} else if action == "commit" {
-							// TODO
+
+							go func(label *dom.Element, owner string, repository string) {
+
+								response, err := api.GitCommit(owner, repository)
+
+								if err == nil {
+
+									if label != nil {
+										label.SetAttribute("data-state", "success")
+										label.SetAttribute("title", "success!")
+									}
+
+									view.UpdateRepository(*response)
+
+								} else {
+
+									if label != nil {
+										label.SetAttribute("data-state", "failure")
+										label.SetAttribute("title", "failure!")
+									}
+
+								}
+
+								for b := 0; b < len(buttons); b++ {
+									buttons[b].RemoveAttribute("disabled")
+								}
+
+							}(label, owner, repository)
+
 						} else if action == "pull" {
-							// TODO
+
+							go func(label *dom.Element, owner string, repository string) {
+
+								response, err := api.GitPull(owner, repository)
+
+								if err == nil {
+
+									if label != nil {
+										label.SetAttribute("data-state", "success")
+										label.SetAttribute("title", "success!")
+									}
+
+									view.UpdateRepository(*response)
+
+								} else {
+
+									if label != nil {
+										label.SetAttribute("data-state", "failure")
+										label.SetAttribute("title", "failure!")
+									}
+
+								}
+
+								for b := 0; b < len(buttons); b++ {
+									buttons[b].RemoveAttribute("disabled")
+								}
+
+							}(label, owner, repository)
+
 						} else if action == "push" {
-							// TODO
+
+							go func(label *dom.Element, owner string, repository string) {
+
+								response, err := api.GitPush(owner, repository)
+
+								if err == nil {
+
+									if label != nil {
+										label.SetAttribute("data-state", "success")
+										label.SetAttribute("title", "success!")
+									}
+
+									view.UpdateRepository(*response)
+
+								} else {
+
+									if label != nil {
+										label.SetAttribute("data-state", "failure")
+										label.SetAttribute("title", "failure!")
+									}
+
+								}
+
+								for b := 0; b < len(buttons); b++ {
+									buttons[b].RemoveAttribute("disabled")
+								}
+
+							}(label, owner, repository)
+
 						}
 
 					}
-
-					for b := 0; b < len(buttons); b++ {
-						buttons[b].RemoveAttribute("disabled")
-					}
-
-					view.Update()
 
 				} else if action == "cancel" {
 					dialog.RemoveAttribute("open")
@@ -229,7 +343,7 @@ func (view Manage) Init() {
 				action := target.GetAttribute("data-action")
 				selected := app_schemas.Selected{}
 
-				view.Main.ReadItem("selected", &selected)
+				view.Main.Storage.Read("selected", &selected)
 
 				if action != "" {
 
@@ -253,7 +367,7 @@ func (view Manage) Init() {
 						selected.Filter(action)
 					}
 
-					view.Main.SaveItem("selected-batch", selected)
+					view.Main.Storage.Write("selected-batch", selected)
 					view.renderDialog()
 
 					dialog.SetAttribute("open", "")
@@ -273,7 +387,7 @@ func (view Manage) Enter() bool {
 	schema, err := api.Repositories()
 
 	if err == nil {
-		view.Main.SaveItem("repositories", schema)
+		view.Main.Storage.Write("repositories", schema)
 	}
 
 	view.renderTable()
@@ -291,14 +405,14 @@ func (view Manage) Refresh() {
 	schema, err := api.Repositories()
 
 	if err == nil {
-		view.Main.SaveItem("repositories", schema)
+		view.Main.Storage.Write("repositories", schema)
 	}
 
 	selected := app_schemas.Selected{}
-	view.Main.ReadItem("selected", &selected)
+	view.Main.Storage.Read("selected", &selected)
 
 	selected_batch := app_schemas.Selected{}
-	view.Main.SaveItem("selected-batch", selected_batch)
+	view.Main.Storage.Write("selected-batch", selected_batch)
 
 	view.renderTable()
 	view.renderFooter()
@@ -311,7 +425,7 @@ func (view Manage) Update() {
 	selected := app_schemas.Selected{}
 	table    := view.GetElement("table")
 
-	view.Main.ReadItem("selected", &selected)
+	view.Main.Storage.Read("selected", &selected)
 
 	if table != nil {
 
@@ -342,7 +456,7 @@ func (view Manage) Update() {
 
 		}
 
-		view.Main.SaveItem("selected", selected)
+		view.Main.Storage.Write("selected", selected)
 		view.renderFooter()
 
 	}
@@ -353,7 +467,7 @@ func (view Manage) UpdateRepository(updated schemas.Repository) {
 
 	repositories := schemas.Repositories{}
 
-	view.Main.ReadItem("repositories", &repositories)
+	view.Main.Storage.Read("repositories", &repositories)
 
 	found := false
 
@@ -372,7 +486,7 @@ func (view Manage) UpdateRepository(updated schemas.Repository) {
 	}
 
 	if found == true {
-		view.Main.SaveItem("repositories", repositories)
+		view.Main.Storage.Write("repositories", repositories)
 	}
 
 	view.renderTable()
@@ -384,7 +498,7 @@ func (view Manage) renderTable() {
 	schema := schemas.Repositories{}
 	table  := view.GetElement("table")
 
-	view.Main.ReadItem("repositories", &schema)
+	view.Main.Storage.Read("repositories", &schema)
 
 	if table != nil {
 
@@ -516,7 +630,7 @@ func (view Manage) renderDialog() {
 	dialog   := view.GetElement("dialog")
 	selected := app_schemas.Selected{}
 
-	view.Main.ReadItem("selected-batch", &selected)
+	view.Main.Storage.Read("selected-batch", &selected)
 
 	if dialog != nil {
 
@@ -534,8 +648,6 @@ func (view Manage) renderDialog() {
 		}
 
 		sort.Strings(ids)
-
-		fmt.Println(selected)
 
 		h3 := dialog.QuerySelector("h3")
 
@@ -590,8 +702,8 @@ func (view Manage) renderFooter() {
 	selected     := app_schemas.Selected{}
 	footer       := view.GetElement("footer")
 
-	view.Main.ReadItem("repositories", &repositories)
-	view.Main.ReadItem("selected", &selected)
+	view.Main.Storage.Read("repositories", &repositories)
+	view.Main.Storage.Read("selected", &selected)
 
 	if footer != nil {
 

@@ -5,14 +5,14 @@ import "git-evac/server/schemas"
 import "encoding/json"
 import "strings"
 
-func TerminalOpen(owner string, repository string) (*schemas.Repository, error) {
+func GitPush(owner string, repository string) (*schemas.Repository, error) {
 
 	var result_schema *schemas.Repository = nil
 	var result_error error = nil
 
 	if !strings.Contains(owner, "/") && !strings.Contains(repository, "/") {
 
-		response, err1 := fetch.Fetch("/api/terminal/open/" + owner + "/" + repository, &fetch.Request{
+		response, err1 := fetch.Fetch("/api/git/push/" + owner + "/" + repository, &fetch.Request{
 			Method:   fetch.MethodGET,
 			Mode:     fetch.ModeSameOrigin,
 			Cache:    fetch.CacheDefault,

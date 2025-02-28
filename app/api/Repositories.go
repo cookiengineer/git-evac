@@ -1,46 +1,37 @@
 package api
 
-import "gooey/xhr"
+import "gooey/fetch"
 import "git-evac/server/schemas"
 import "encoding/json"
-import "errors"
 
 func Repositories() (*schemas.Repositories, error) {
 
 	var result_schema *schemas.Repositories = nil
 	var result_error error = nil
 
-	request := xhr.NewXMLHttpRequest()
-	request.OpenSync(xhr.MethodGET, "/api/repositories")
-	request.OnLoad = func(status int, response []byte) {
+	response, err1 := fetch.Fetch("/api/repositories", &fetch.Request{
+		Method:   fetch.MethodGET,
+		Mode:     fetch.ModeSameOrigin,
+		Cache:    fetch.CacheDefault,
+		Redirect: fetch.RedirectError,
+		Headers:  map[string]string{
+			"Accept": "application/json",
+		},
+	})
 
-		if status == 200 || status == 304 {
+	if err1 == nil {
 
-			var schema schemas.Repositories
+		schema := schemas.Repositories{}
+		err2   := json.Unmarshal(response.Body, &schema)
 
-			err := json.Unmarshal(response, &schema)
-
-			if err == nil {
-				result_schema = &schema
-			} else {
-				result_error = err
-			}
-
+		if err2 == nil {
+			result_schema = &schema
+			result_error  = nil
 		} else {
-			result_error = errors.New("TODO: Error Description")
+			result_error = err2
 		}
 
 	}
-
-	request.OnError = func() {
-		result_error = errors.New("TODO: Error Description")
-	}
-
-	request.OnTimeout = func() {
-		result_error = errors.New("TODO: Error Description for Timeout")
-	}
-
-	request.SendSync()
 
 	return result_schema, result_error
 

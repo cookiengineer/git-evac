@@ -9,7 +9,8 @@ type Settings struct {
 
 type IdentitySettings struct {
 
-	Name string `json:"name"`
+	Name   string `json:"name"`
+	SSHKey string `json:"ssh_key"`
 
 	Git struct {
 		Core struct {
