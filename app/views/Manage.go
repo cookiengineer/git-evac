@@ -3,7 +3,7 @@ package views
 import "gooey"
 import "gooey/app"
 import "gooey/dom"
-import "git-evac-app/api"
+import "git-evac-app/actions"
 import app_schemas "git-evac-app/schemas"
 import "git-evac/server/schemas"
 import "git-evac/structs"
@@ -170,7 +170,7 @@ func (view Manage) Init() {
 
 							go func(label *dom.Element, owner string, repository string) {
 
-								response, err := api.TerminalOpen(owner, repository)
+								response, err := actions.Fix(owner, repository)
 
 								if err == nil {
 
@@ -200,7 +200,7 @@ func (view Manage) Init() {
 
 							go func(label *dom.Element, owner string, repository string) {
 
-								response, err := api.GitClone(owner, repository)
+								response, err := actions.Clone(owner, repository)
 
 								if err == nil {
 
@@ -230,7 +230,7 @@ func (view Manage) Init() {
 
 							go func(label *dom.Element, owner string, repository string) {
 
-								response, err := api.GitCommit(owner, repository)
+								response, err := actions.Commit(owner, repository)
 
 								if err == nil {
 
@@ -260,7 +260,7 @@ func (view Manage) Init() {
 
 							go func(label *dom.Element, owner string, repository string) {
 
-								response, err := api.GitPull(owner, repository)
+								response, err := actions.Pull(owner, repository)
 
 								if err == nil {
 
@@ -290,7 +290,7 @@ func (view Manage) Init() {
 
 							go func(label *dom.Element, owner string, repository string) {
 
-								response, err := api.GitPush(owner, repository)
+								response, err := actions.Push(owner, repository)
 
 								if err == nil {
 
@@ -384,7 +384,7 @@ func (view Manage) Init() {
 
 func (view Manage) Enter() bool {
 
-	schema, err := api.Repositories()
+	schema, err := actions.Index()
 
 	if err == nil {
 		view.Main.Storage.Write("repositories", schema)
@@ -402,7 +402,7 @@ func (view Manage) Leave() bool {
 
 func (view Manage) Refresh() {
 
-	schema, err := api.Repositories()
+	schema, err := actions.Index()
 
 	if err == nil {
 		view.Main.Storage.Write("repositories", schema)

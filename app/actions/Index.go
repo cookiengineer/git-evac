@@ -1,15 +1,15 @@
-package api
+package actions
 
 import "gooey/fetch"
 import "git-evac/server/schemas"
 import "encoding/json"
 
-func Repositories() (*schemas.Repositories, error) {
+func Index() (*schemas.Repositories, error) {
 
 	var result_schema *schemas.Repositories = nil
 	var result_error error = nil
 
-	response, err1 := fetch.Fetch("/api/repositories", &fetch.Request{
+	response, err1 := fetch.Fetch("/api/index", &fetch.Request{
 		Method:   fetch.MethodGET,
 		Mode:     fetch.ModeSameOrigin,
 		Cache:    fetch.CacheDefault,

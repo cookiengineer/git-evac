@@ -6,7 +6,7 @@ import "git-evac/structs"
 import "encoding/json"
 import "net/http"
 
-func RepositoryStatus(profile *structs.Profile, request *http.Request, response http.ResponseWriter) {
+func Status(profile *structs.Profile, request *http.Request, response http.ResponseWriter) {
 
 	if request.Method == http.MethodGet {
 
@@ -22,7 +22,7 @@ func RepositoryStatus(profile *structs.Profile, request *http.Request, response 
 				repo := owner.Repositories[param2]
 
 				if repo.Status() {
-					console.Log("/api/repositories/status/" + param1 + "/" + param2)
+					console.Log("> api.Status(\"" + param1 + "\",\"" + param2 + "\")")
 				}
 
 				response.Header().Set("Content-Type", "application/json")
@@ -34,6 +34,8 @@ func RepositoryStatus(profile *structs.Profile, request *http.Request, response 
 				response.Write(payload)
 
 			} else {
+
+				console.Error("> api.Status(\"" + param1 + "\",\"" + param2 + "\")")
 
 				response.Header().Set("Content-Type", "application/json")
 				response.WriteHeader(http.StatusNotFound)

@@ -69,27 +69,32 @@ func Serve(profile *structs.Profile) bool {
 
 	})
 
-	http.HandleFunc("/api/terminal/open/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {
-		api.TerminalOpen(profile, request, response)
+	// Canonical to /api/terminal
+	http.HandleFunc("/api/fix/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {
+		api.Terminal(profile, request, response)
 	})
 
-	// http.HandleFunc("/api/git/clone/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {
-	// 	api.GitClone(profile, request, response)
+	http.HandleFunc("/api/terminal/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {
+		api.Terminal(profile, request, response)
+	})
+
+	// http.HandleFunc("/api/clone/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {
+	// 	api.Clone(profile, request, response)
 	// })
 
-	// http.HandleFunc("/api/git/commit/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {
-	// 	api.GitCommit(profile, request, response)
+	// http.HandleFunc("/api/commit/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {
+	// 	api.Commit(profile, request, response)
 	// })
 
-	// http.HandleFunc("/api/git/pull/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {
-	// 	api.GitPull(profile, request, response)
+	// http.HandleFunc("/api/pull/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {
+	// 	api.Pull(profile, request, response)
 	// })
 
-	// http.HandleFunc("/api/git/push/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {
-	// 	api.GitPush(profile, request, response)
+	// http.HandleFunc("/api/push/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {
+	// 	api.Push(profile, request, response)
 	// })
 
-	http.HandleFunc("/api/repositories", func(response http.ResponseWriter, request *http.Request) {
+	http.HandleFunc("/api/index", func(response http.ResponseWriter, request *http.Request) {
 
 		for _, owner := range profile.Owners {
 
@@ -99,12 +104,12 @@ func Serve(profile *structs.Profile) bool {
 
 		}
 
-		api.Repositories(profile, request, response)
+		api.Index(profile, request, response)
 
 	})
 
-	http.HandleFunc("/api/repositories/status/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {
-		api.RepositoryStatus(profile, request, response)
+	http.HandleFunc("/api/status/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {
+		api.Status(profile, request, response)
 	})
 
 	http.HandleFunc("/api/settings", func(response http.ResponseWriter, request *http.Request) {

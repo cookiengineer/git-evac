@@ -1,18 +1,18 @@
-package api
+package actions
 
 import "gooey/fetch"
 import "git-evac/server/schemas"
 import "encoding/json"
 import "strings"
 
-func GitClone(owner string, repository string) (*schemas.Repository, error) {
+func fetchAPI(path string, owner string, repository string) (*schemas.Repository, error) {
 
 	var result_schema *schemas.Repository = nil
 	var result_error error = nil
 
-	if !strings.Contains(owner, "/") && !strings.Contains(repository, "/") {
+	if strings.HasPrefix(path, "/api/") && !strings.Contains(owner, "/") && !strings.Contains(repository, "/") {
 
-		response, err1 := fetch.Fetch("/api/git/clone/" + owner + "/" + repository, &fetch.Request{
+		response, err1 := fetch.Fetch(path + "/" + owner + "/" + repository, &fetch.Request{
 			Method:   fetch.MethodGET,
 			Mode:     fetch.ModeSameOrigin,
 			Cache:    fetch.CacheDefault,

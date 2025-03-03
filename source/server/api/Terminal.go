@@ -7,7 +7,7 @@ import "encoding/json"
 import "net/http"
 import "os/exec"
 
-func TerminalOpen(profile *structs.Profile, request *http.Request, response http.ResponseWriter) {
+func Terminal(profile *structs.Profile, request *http.Request, response http.ResponseWriter) {
 
 	if request.Method == http.MethodGet {
 
@@ -30,7 +30,7 @@ func TerminalOpen(profile *structs.Profile, request *http.Request, response http
 				if err == nil {
 
 					if repo.Status() {
-						console.Log("/api/terminal/open/" + param1 + "/" + param2)
+						console.Log("> api.Terminal(\"" + param1 + "\",\"" + param2 + "\")")
 					}
 
 					response.Header().Set("Content-Type", "application/json")
@@ -43,7 +43,7 @@ func TerminalOpen(profile *structs.Profile, request *http.Request, response http
 
 				} else {
 
-					console.Error("/api/terminal/open/" + param1 + "/" + param2)
+					console.Error("> api.Terminal(\"" + param1 + "\",\"" + param2 + "\")")
 
 					response.Header().Set("Content-Type", "application/json")
 					response.WriteHeader(http.StatusInternalServerError)

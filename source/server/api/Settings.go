@@ -1,5 +1,6 @@
 package api
 
+import "git-evac/console"
 import "git-evac/server/schemas"
 import "git-evac/structs"
 import "encoding/json"
@@ -15,11 +16,15 @@ func Settings(profile *structs.Profile, request *http.Request, response http.Res
 
 		if err == nil {
 
+			console.Log("> api.Settings()")
+
 			response.Header().Set("Content-Type", "application/json")
 			response.WriteHeader(http.StatusOK)
 			response.Write(payload)
 
 		} else {
+
+			console.Error("> api.Settings()")
 
 			response.Header().Set("Content-Type", "application/json")
 			response.WriteHeader(http.StatusInternalServerError)
