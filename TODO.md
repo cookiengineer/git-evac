@@ -31,8 +31,10 @@
 - [ ] Dialog: Fix Remotes workflow
 - [ ] Dialog: Fix Terminal workflow
 
-- [ ] Clone Action
-- [ ] Dialog: Clone Progress
+- [ ] Diff Action
+- [ ] Dialog: Show Diff of Files
+- [ ] Dialog: Allow to check/select committed files
+- [ ] Dialog: Show label for "Commit x files, delete y files" depending on selection
 
 - [ ] Commit Action
 - [ ] Dialog: Commit Progress

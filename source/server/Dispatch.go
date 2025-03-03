@@ -82,14 +82,21 @@ func Dispatch(profile *structs.Profile) bool {
 		api.Terminal(profile, request, response)
 	})
 
-	// http.HandleFunc("/api/clone/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {
-	// 	api.Clone(profile, request, response)
+	http.HandleFunc("/api/clone/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {
+		api.Clone(profile, request, response)
+	})
+
+	// TODO: Diff API
+	// http.HandleFunc("/api/diff/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {
+	// 	api.Diff(profile, request, response)
 	// })
 
+	// TODO: Commit API
 	// http.HandleFunc("/api/commit/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {
 	// 	api.Commit(profile, request, response)
 	// })
 
+	// TODO: Pull API
 	// http.HandleFunc("/api/pull/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {
 	// 	api.Pull(profile, request, response)
 	// })
