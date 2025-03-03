@@ -6,7 +6,7 @@ import "os"
 
 type Profile struct {
 	Owners     map[string]*RepositoryOwner `json:"owners"`
-	Settings   Settings          `json:"settings"`
+	Settings   Settings                    `json:"settings"`
 	Filesystem *fs.FS
 }
 

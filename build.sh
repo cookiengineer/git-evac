@@ -27,11 +27,17 @@ build_wasm() {
 
 build_webview() {
 
-	local os="$1";
-	local arch="$2";
+	local cmd="$1";
+	local os="$2";
+	local arch="$3";
 	local folder="${ROOT}/build/${os}";
 
 	local ext="";
+	local ldflags="";
+
+	if [[ "${cmd}" == *"-debug" ]]; then
+		ldflags="-s -w";
+	fi;
 
 	if [[ "${os}" == "windows" ]]; then
 		ext="exe";
@@ -42,19 +48,19 @@ build_webview() {
 	cd "${ROOT}/source";
 
 	if [[ "${ext}" != "" ]]; then
-		env GOOS="${os}" GOARCH="${arch}" go build -o "${folder}/${os}-${arch}.${ext}" "${ROOT}/source/main.go";
+		env GOOS="${os}" GOARCH="${arch}" go build -ldflags="${ldflags}" -o "${folder}/${cmd}_${os}_${arch}.${ext}" "${ROOT}/source/cmds/${cmd}/main.go";
 	else
-		env GOOS="${os}" GOARCH="${arch}" go build -o "${folder}/${os}-${arch}" "${ROOT}/source/main.go";
+		env GOOS="${os}" GOARCH="${arch}" go build -ldflags="${ldflags}" -o "${folder}/${cmd}_${os}_${arch}" "${ROOT}/source/cmds/${cmd}/main.go";
 	fi;
 
 	if [[ "$?" == "0" ]]; then
 
-		echo -e "- Generate native binary: ${os} / ${arch} [\e[32mok\e[0m]";
+		echo -e "- Generate native binary: ${cmd} / ${os} / ${arch} [\e[32mok\e[0m]";
 		return 0
 
 	else
 
-		echo -e "- Generate native binary: ${os} / ${arch} [\e[31mfail\e[0m]";
+		echo -e "- Generate native binary: ${cmd} / ${os} / ${arch} [\e[31mfail\e[0m]";
 		return 1
 
 	fi;
@@ -62,5 +68,7 @@ build_webview() {
 }
 
 build_wasm;
-build_webview "linux" "amd64";
+
+build_webview "git-evac" "linux" "amd64";
+build_webview "git-evac-debug" "linux" "amd64";
 

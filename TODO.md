@@ -40,9 +40,6 @@
 - [ ] Pull Action
 - [ ] Dialog: Pull Progress
 
-- [ ] Push Action
-- [ ] Dialog: Push Progress
-
 
 ## Backup View
 

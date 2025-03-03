@@ -36,4 +36,5 @@ type RemoteSettings struct {
 	//   URL:  "https://github.com/{owner}/{repo}.git"
 	// }
 	Remotes map[string]*Remote `json:"remotes"`
+	Owners  []string           `json:"owners"`
 }

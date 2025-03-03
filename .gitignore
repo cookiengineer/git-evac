@@ -1,2 +1,5 @@
 /build
 !/build/.gitignore
+/source/public/main.wasm
+/source/public/wasm_exec.js
+

@@ -66,6 +66,43 @@ Currently, this tool is heavily experimental. Most things don't work yet, there'
 [TODO.md](/TODO.md) that tries to structure my cluttered ideas for this.
 
 
+## Building
+
+Use the [git-evac](/source/cmds/git-evac) for production usage, it will use the embedded
+[public.FS](/source/public/FS.go).
+
+```bash
+# Install go compiler/language
+sudo pacman -S go;
+
+# look ma, no sudo!
+bash build.sh;
+
+# starts a local server and opens a webview window
+./build/linux/git-evac_linux_amd64;
+```
+
+
+## Development Workflow (with Hot Reload)
+
+Use the [git-evac-debug](/source/cmds/git-evac-debug) for development purposes, it will use the
+local filesystem and doesn't use the embedded [public.FS](/source/public/FS.go). It will automatically
+rebuild the `wasm_exec.js` and `main.wasm` files in the [public](/source/public) folder.
+
+```bash
+cd ./source;
+
+# starts a local development server on http://localhost:1234
+go run cmds/git-evac-debug/main.go;
+```
+
+You can leave the development server running, and just reload/refresh the page to regenerate
+the new WebASM binary automatically. Build errors will be shown in the console.
+
+- Make sure the Browser Cache is disabled in the `Dev Tools > Network` tab.
+- For detailed errors, try to rebuild the `main.wasm` with the [build.sh](/build.sh) script.
+
+
 ## License
 
 This project is licensed under the [GNU AGPL 3.0](./AGPL-3.0.md) license.
