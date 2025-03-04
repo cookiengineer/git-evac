@@ -14,6 +14,7 @@ import "time"
 
 func main() {
 
+	var backup string = ""
 	var folder string = ""
 	var port uint16 = 1234
 
@@ -25,7 +26,40 @@ func main() {
 
 			parameter := parameters[p]
 
-			if strings.HasPrefix(parameter, "--folder=") {
+			if strings.HasPrefix(parameter, "--backup=") {
+
+				tmp := strings.TrimSpace(parameter[9:])
+
+				if strings.HasPrefix(tmp, "\"") && strings.HasSuffix(tmp, "\"") {
+					tmp = strings.TrimSpace(tmp[1:len(tmp)-1])
+				} else {
+					tmp = strings.TrimSpace(tmp)
+				}
+
+				if strings.HasPrefix(tmp, "~/") {
+
+					user, err := os_user.Current()
+
+					if err == nil {
+						tmp = user.HomeDir + "/" + tmp[2:]
+					}
+
+				} else if strings.Contains(tmp, "~") {
+					console.Error("Malformed Backup Parameter: " + tmp)
+					tmp = ""
+				}
+
+				if tmp != "" {
+
+					stat, err := os.Stat(tmp)
+
+					if err == nil && stat.IsDir() {
+						folder = tmp
+					}
+
+				}
+
+			} else if strings.HasPrefix(parameter, "--folder=") {
 
 				tmp := strings.TrimSpace(parameter[9:])
 
@@ -74,28 +108,36 @@ func main() {
 
 	}
 
-	if folder == "" {
 
-		user, err := os_user.Current()
+	user, err := os_user.Current()
 
-		if err == nil {
+	if err == nil {
+
+		if backup == "" {
+			folder = user.HomeDir + "/Backup"
+		}
+
+		if folder == "" {
 			folder = user.HomeDir + "/Software"
 		}
 
 	}
 
-	if folder != "" {
+
+	if backup != "" && folder != "" {
 
 		filesystem, _ := fs.Sub(public.FS, ".")
-		profile := structs.NewProfile(folder, port)
+		profile := structs.NewProfile(backup, folder, port)
 		profile.Filesystem = &filesystem
 
 		console.Clear()
 		console.Group("git-evac: Command-Line Arguments")
 		console.Inspect(struct {
+			Backup string
 			Folder string
 			Port   uint16
 		}{
+			Backup: backup,
 			Folder: folder,
 			Port:   port,
 		})

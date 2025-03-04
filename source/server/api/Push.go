@@ -42,7 +42,17 @@ func Push(profile *structs.Profile, request *http.Request, response http.Respons
 				}
 
 				if len(errors) == 0 {
+
 					console.Log("> api.Push(\"" + param1 + "\",\"" + param2 + "\")")
+
+					response.Header().Set("Content-Type", "application/json")
+					response.WriteHeader(http.StatusOK)
+
+					payload, _ := json.MarshalIndent(schemas.Repository{
+						Repository: *repo,
+					}, "", "\t")
+					response.Write(payload)
+
 				} else {
 
 					console.Error("> api.Push(\"" + param1 + "\",\"" + param2 + "\")")
@@ -52,15 +62,11 @@ func Push(profile *structs.Profile, request *http.Request, response http.Respons
 						console.Error(message)
 					}
 
+					response.Header().Set("Content-Type", "application/json")
+					response.WriteHeader(http.StatusInternalServerError)
+					response.Write([]byte("{}"))
+
 				}
-
-				response.Header().Set("Content-Type", "application/json")
-				response.WriteHeader(http.StatusOK)
-
-				payload, _ := json.MarshalIndent(schemas.Repository{
-					Repository: *repo,
-				}, "", "\t")
-				response.Write(payload)
 
 			} else {
 

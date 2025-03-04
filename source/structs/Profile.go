@@ -10,13 +10,14 @@ type Profile struct {
 	Filesystem *fs.FS
 }
 
-func NewProfile(folder string, port uint16) *Profile {
+func NewProfile(backup string, folder string, port uint16) *Profile {
 
 	var profile Profile
 
 	profile.Owners = make(map[string]*RepositoryOwner)
 	profile.Filesystem = nil
 
+	profile.Settings.Backup = backup
 	profile.Settings.Folder = folder
 	profile.Settings.Port = port
 

@@ -86,6 +86,14 @@ func Dispatch(profile *structs.Profile) bool {
 		api.Clone(profile, request, response)
 	})
 
+	http.HandleFunc("/api/backup/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {
+		api.Backup(profile, request, response)
+	})
+
+	http.HandleFunc("/api/restore/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {
+		api.Restore(profile, request, response)
+	})
+
 	// TODO: Diff API
 	// http.HandleFunc("/api/diff/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {
 	// 	api.Diff(profile, request, response)

@@ -83,15 +83,17 @@ func main() {
 	if folder != "" {
 
 		fsys := os.DirFS("public")
-		profile := structs.NewProfile(folder, port)
+		profile := structs.NewProfile("/tmp/backup", folder, port)
 		profile.Filesystem = &fsys
 
 		console.Clear()
 		console.Group("git-evac-debug: Command-Line Arguments")
 		console.Inspect(struct {
+			Backup string
 			Folder string
 			Port   uint16
 		}{
+			Backup: "/tmp/backup",
 			Folder: folder,
 			Port:   port,
 		})

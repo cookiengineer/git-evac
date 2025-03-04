@@ -8,12 +8,10 @@
 - [ ] `Client.Request(api, func(data any, err error))` method
 
 - [ ] Use `gooey.Fetch()` API
-- [ ] Refactor `api/Repositories.go`
-- [ ] Refactor `api/TerminalOpen.go`
-- [ ] Implement `api/GitClone.go`
-- [ ] Implement `api/GitPull.go`
-- [ ] Implement `api/GitPush.go`
-- [ ] Implement `api/GitCommit.go`
+- [ ] Implement `api/Restore.go` to use tar.gz
+- [ ] Implement `api/Diff.go`
+- [ ] Implement `api/Pull.go`
+- [ ] Implement `api/Commit.go`
 
 
 # Backend

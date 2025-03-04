@@ -1,6 +1,7 @@
 package structs
 
 type Settings struct {
+	Backup     string                      `json:"backup"`
 	Folder     string                      `json:"folder"`
 	Port       uint16                      `json:"port"`
 	Identities map[string]IdentitySettings `json:"identities"`
