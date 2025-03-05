@@ -73,38 +73,42 @@ func Dispatch(profile *structs.Profile) bool {
 		response.Write([]byte(""))
 	})
 
-	// Canonical to /api/terminal
+	// Canonical to GET /api/terminal
 	http.HandleFunc("/api/fix/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {
 		api.Terminal(profile, request, response)
 	})
 
+	// GET /api/terminal
 	http.HandleFunc("/api/terminal/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {
 		api.Terminal(profile, request, response)
 	})
 
+	// GET /api/clone
 	http.HandleFunc("/api/clone/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {
 		api.Clone(profile, request, response)
 	})
 
+	// GET /api/backup || POST /api/backup
 	http.HandleFunc("/api/backup/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {
 		api.Backup(profile, request, response)
 	})
 
+	// PATCH /api/restore
 	http.HandleFunc("/api/restore/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {
 		api.Restore(profile, request, response)
 	})
 
-	// TODO: Diff API
+	// TODO: GET /api/diff
 	// http.HandleFunc("/api/diff/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {
 	// 	api.Diff(profile, request, response)
 	// })
 
-	// TODO: Commit API
+	// TODO: POST /api/commit
 	// http.HandleFunc("/api/commit/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {
 	// 	api.Commit(profile, request, response)
 	// })
 
-	// TODO: Pull API
+	// TODO: PATCH /api/pull
 	// http.HandleFunc("/api/pull/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {
 	// 	api.Pull(profile, request, response)
 	// })

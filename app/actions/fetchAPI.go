@@ -5,7 +5,7 @@ import "git-evac/server/schemas"
 import "encoding/json"
 import "strings"
 
-func fetchAPI(path string, owner string, repository string) (*schemas.Repository, error) {
+func fetchAPI(method string, path string, owner string, repository string) (*schemas.Repository, error) {
 
 	var result_schema *schemas.Repository = nil
 	var result_error error = nil
@@ -13,7 +13,7 @@ func fetchAPI(path string, owner string, repository string) (*schemas.Repository
 	if strings.HasPrefix(path, "/api/") && !strings.Contains(owner, "/") && !strings.Contains(repository, "/") {
 
 		response, err1 := fetch.Fetch(path + "/" + owner + "/" + repository, &fetch.Request{
-			Method:   fetch.MethodGET,
+			Method:   fetch.Method(method),
 			Mode:     fetch.ModeSameOrigin,
 			Cache:    fetch.CacheDefault,
 			Redirect: fetch.RedirectError,

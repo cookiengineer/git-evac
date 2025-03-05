@@ -66,6 +66,27 @@ Currently, this tool is heavily experimental. Most things don't work yet, there'
 [TODO.md](/TODO.md) that tries to structure my cluttered ideas for this.
 
 
+## API
+
+Basic APIs:
+
+- [x] GET [/api/index](/source/server/api/Index.go) responds with [schemas.Repositories](/source/server/schemas/Repositories.go)
+- [x] GET [/api/settings](/source/server/api/Settings.go) reads the Profile Settings and responds with [schemas.Settings](/source/server/schemas/Settings.go)
+- [ ] POST [/api/settings](/source/server/api/Settings.go) saves the Profile Settings and responds with [schemas.Settings](/source/server/schemas/Settings.go)
+
+Repository Interaction APIs:
+
+- [x] GET [/api/clone](/source/server/api/Clone.go) clones a repository and responds with [schemas.Repository](/source/server/schemas/Repository.go)
+- [x] GET [/api/terminal](/source/server/api/Terminal.go) opens a terminal, and after it closes responds with [schemas.Repository](/source/server/schemas/Repository.go)
+- [ ] POST [/api/commit](/source/server/api/Commit.go) commits uncommited changes and responds with [schemas.Repository](/source/server/schemas/Repository.go)
+- [ ] GET [/api/diff](/source/server/api/Diff.go) responds with [schemas.Diff](/source/server/api/schemas/Diff.go)
+- [ ] PATCH [/api/pull](/source/server/api/Pull.go) fetches, diffs and merges from all remotes and responds with [schemas.Repository](/source/server/schemas/Repository.go)
+- [x] GET [/api/push](/source/server/api/Push.go) pushes to all remotes and responds with [schemas.Repository](/source/server/schemas/Repository.go)
+- [x] PATCH [/api/backup](/source/server/api/Backup.go) creates a backup and responds with [schemas.Repository](/source/server/schemas/Repository.go)
+- [x] PATCH [/api/restore](/source/server/api/Restore.go) restores a backup and responds with [schemas.Repository](/source/server/schemas/Repository.go)
+- [x] GET [/api/status](/source/server/api/Status.go) responds with [schemas.Repository](/source/server/schemas/Repository.go)
+
+
 ## Building
 
 Use the [git-evac](/source/cmds/git-evac) for production usage, it will use the embedded

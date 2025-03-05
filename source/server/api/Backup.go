@@ -10,7 +10,7 @@ import "os/exec"
 
 func Backup(profile *structs.Profile, request *http.Request, response http.ResponseWriter) {
 
-	if request.Method == http.MethodGet || request.Method == http.MethodPost {
+	if request.Method == http.MethodPatch || request.Method == http.MethodPost {
 
 		param1 := request.PathValue("owner")
 		param2 := request.PathValue("repository")

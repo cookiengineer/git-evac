@@ -7,10 +7,12 @@ import "git-evac/structs"
 import "git-evac/webview"
 import "io/fs"
 import "os"
+import "os/signal"
 import os_user "os/user"
 import "strconv"
 import "strings"
 import "time"
+import "syscall"
 
 func main() {
 
@@ -54,7 +56,7 @@ func main() {
 					stat, err := os.Stat(tmp)
 
 					if err == nil && stat.IsDir() {
-						folder = tmp
+						backup = tmp
 					}
 
 				}
@@ -114,7 +116,7 @@ func main() {
 	if err == nil {
 
 		if backup == "" {
-			folder = user.HomeDir + "/Backup"
+			backup = user.HomeDir + "/Backup"
 		}
 
 		if folder == "" {
@@ -122,7 +124,6 @@ func main() {
 		}
 
 	}
-
 
 	if backup != "" && folder != "" {
 
@@ -143,6 +144,31 @@ func main() {
 		})
 		console.GroupEnd("")
 
+		signal_channel := make(chan os.Signal, 1)
+		signal.Notify(
+			signal_channel,
+			syscall.SIGINT,
+			syscall.SIGKILL,
+			syscall.SIGTERM,
+		)
+
+		done := make(chan bool, 2)
+
+		go func() {
+
+			profile.Init()
+			server.Dispatch(profile)
+
+			result := server.Serve(profile)
+
+			if result == false {
+				console.Error("Port " + strconv.FormatUint(uint64(port), 10) + " is probably already in use?")
+			}
+
+			done <- result
+
+		}()
+
 		go func() {
 
 			time.Sleep(1 * time.Second)
@@ -153,20 +179,22 @@ func main() {
 			view.SetTitle("Git Evac")
 			view.SetSize(800, 600, webview.HintNone)
 			view.Navigate("http://localhost:" + strconv.FormatUint(uint64(port), 10) + "/index.html")
+
 			view.Run()
-			// defer view.Destroy()
+
+			done <- true
 
 		}()
 
-		profile.Init()
-		server.Dispatch(profile)
-
-		if server.Serve(profile) == false {
-			console.Error("Port " + strconv.FormatUint(uint64(port), 10) + " is already in use.")
-			os.Exit(1)
-		} else {
-			os.Exit(0)
+		select {
+		case <-done:
+			console.Log("The WebView or Server has been closed, exiting...")
+		case <-signal_channel:
+			console.Log("Received OS signal, exiting...")
 		}
+
+		// give webview time to cleanup
+		time.Sleep(250 * time.Millisecond)
 
 	}
 
