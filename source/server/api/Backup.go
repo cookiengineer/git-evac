@@ -69,6 +69,8 @@ func Backup(profile *structs.Profile, request *http.Request, response http.Respo
 
 					} else {
 
+						console.Error("> api.Backup(\"" + param1 + "\",\"" + param2 + "\")")
+
 						response.Header().Set("Content-Type", "application/json")
 						response.WriteHeader(http.StatusConflict)
 						response.Write([]byte("{}"))
@@ -84,9 +86,6 @@ func Backup(profile *structs.Profile, request *http.Request, response http.Respo
 					response.Write([]byte("{}"))
 
 				}
-
-
-
 
 			} else {
 

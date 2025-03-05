@@ -21,7 +21,7 @@ func NewProfile(backup string, folder string, port uint16) *Profile {
 	profile.Settings.Folder     = folder
 	profile.Settings.Port       = port
 	profile.Settings.Identities = make(map[string]IdentitySettings)
-	profile.Settings.Remotes    = make(map[string][]RemoteSettings)
+	profile.Settings.Remotes    = make(map[string]RemoteSettings)
 
 	return &profile
 

@@ -2,22 +2,24 @@
 # TODO
 
 
+# Backend
+
+- [ ] Finish Implementation of `server/api/Restore.go`
+- [ ] Finish Implementation of `server/api/Pull.go`
+
+
+- [ ] Parse `~/Software/git-evac.json` as `Profile` if it exists, do that in `main.go`
+- [ ] Implement `git.GlobalConfig.Parse()`
+- [ ] Implement `git.LocalConfig.Parse()`
+
+- [ ] Implement `api/Diff.go`
+- [ ] Implement `api/Commit.go`
+
+
 # App
 
 - [ ] Implement `actions/Diff.go` when Schema is ready
 - [ ] Implement `actions/FixRemotes.go` when Workflow and Schema are ready
-
-
-# Backend
-
-- [ ] Read `~/Software/git-evac.json` as `Profile` if it exists
-- [ ] Implement `git.GlobalConfig.Parse()`
-- [ ] Implement `git.LocalConfig.Parse()`
-
-- [ ] Implement `api/Restore.go` to use tar.gz
-- [ ] Implement `api/Diff.go`
-- [ ] Implement `api/Pull.go`
-- [ ] Implement `api/Commit.go`
 
 
 # Views
