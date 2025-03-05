@@ -118,17 +118,8 @@ func Dispatch(profile *structs.Profile) bool {
 	})
 
 	http.HandleFunc("/api/index", func(response http.ResponseWriter, request *http.Request) {
-
-		for _, owner := range profile.Owners {
-
-			for _, repo := range owner.Repositories {
-				repo.Status()
-			}
-
-		}
-
+		profile.Refresh()
 		api.Index(profile, request, response)
-
 	})
 
 	http.HandleFunc("/api/status/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {

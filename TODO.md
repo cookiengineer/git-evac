@@ -4,6 +4,10 @@
 
 # Backend
 
+- [ ] `Profile.Refresh()` needs to create new RepositoryOwner instances if there are new ones
+- [ ] `Profile.Refresh()` needs to remove owners if they were deleted
+- [ ] `Profile.Refresh()` needs to remove repos if they were deleted
+
 - [ ] Finish Implementation of `server/api/Restore.go`
 - [ ] Finish Implementation of `server/api/Pull.go`
 

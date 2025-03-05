@@ -5,6 +5,7 @@ import "git-evac/console"
 import "git-evac/structs"
 // import "encoding/json"
 import "net/http"
+import "os"
 // import "os/exec"
 
 func Restore(profile *structs.Profile, request *http.Request, response http.ResponseWriter) {
@@ -20,24 +21,57 @@ func Restore(profile *structs.Profile, request *http.Request, response http.Resp
 
 			if owner.HasRepository(param2) {
 
+				// TODO: Move repository to .bak?
 				console.Error("> api.Restore(\"" + param1 + "\",\"" + param2 + "\")")
 
 				response.Header().Set("Content-Type", "application/json")
 				response.WriteHeader(http.StatusConflict)
 				response.Write([]byte("{}"))
 
-				// TODO: Move repository to .bak?
-
 			} else {
 
-				// TODO: Extract backup inside owner folder
+				backup := profile.Settings.Backup
+				file   := backup + "/" + owner.Name + "/" + param2 + ".tar.gz"
+
+				stat, err0 := os.Stat(file)
+
+				if err0 == nil && !stat.IsDir() {
+
+					// TODO: Extract backup inside owner folder
+
+				} else {
+
+					response.Header().Set("Content-Type", "application/json")
+					response.WriteHeader(http.StatusNotFound)
+					response.Write([]byte("{}"))
+
+				}
 
 			}
 
 		} else {
 
-			// TODO: Create owner folder first
-			// TODO: Extract backup inside owner folder
+			folder := profile.Settings.Folder
+			backup := profile.Settings.Backup
+			file   := backup + "/" + param1 + "/" + param2 + ".tar.gz"
+
+			if _, err := os.Stat(folder + "/" + param1); os.IsNotExist(err) {
+				os.MkdirAll(backup + "/" + param1, 0755)
+			}
+
+			stat, err0 := os.Stat(file)
+
+			if err0 == nil && !stat.IsDir() {
+
+				// TODO: Extract backup inside owner folder
+
+			} else {
+
+				response.Header().Set("Content-Type", "application/json")
+				response.WriteHeader(http.StatusNotFound)
+				response.Write([]byte("{}"))
+
+			}
 
 		}
 

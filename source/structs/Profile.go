@@ -87,6 +87,21 @@ func (profile *Profile) Init() {
 
 }
 
+func (profile *Profile) Refresh() {
+
+	// TODO: Refresh owners if there are new ones
+	// TODO: For each owner refresh repo Status
+
+	for _, owner := range profile.Owners {
+
+		for _, repo := range owner.Repositories {
+			repo.Status()
+		}
+
+	}
+
+}
+
 func (profile *Profile) GetOwner(name string, folder string) *RepositoryOwner {
 
 	var result *RepositoryOwner = nil
