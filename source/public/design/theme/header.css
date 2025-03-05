@@ -50,12 +50,6 @@ header ul li a[data-view]:before {
 	font-smooth: antialiased;
 }
 
-/* views */
-header ul li a[data-view="manage"]:before   { content: '\f1e0'; }
-header ul li a[data-view="backup"]:before   { content: '\e807'; }
-header ul li a[data-view="restore"]:before  { content: '\e808'; }
-header ul li a[data-view="settings"]:before { content: '\e80d'; }
-
 header ul li:first-of-type {
 	border-left: 1px solid #252932;
 	border-right: 0px solid transparent;

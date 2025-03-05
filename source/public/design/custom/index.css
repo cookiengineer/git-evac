@@ -1,6 +1,8 @@
 
-@import url("./views/manage.css");
+@import url("./views/repositories.css");
+@import url("./views/backups.css");
 @import url("./views/settings.css");
+@import url("./header.css");
 @import url("./dialog.css");
 
 body {

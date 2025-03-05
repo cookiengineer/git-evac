@@ -12,14 +12,14 @@ import "sort"
 import "strconv"
 import "strings"
 
-type Manage struct {
+type Repositories struct {
 	Main *app.Main `json:"main"`
 	app.BaseView
 }
 
-func NewManage(main *app.Main) Manage {
+func NewRepositories(main *app.Main) Repositories {
 
-	var view Manage
+	var view Repositories
 
 	view.Main     = main
 	view.Elements = make(map[string]*dom.Element)
@@ -34,7 +34,7 @@ func NewManage(main *app.Main) Manage {
 
 }
 
-func (view Manage) Init() {
+func (view Repositories) Init() {
 
 	dialog := view.GetElement("dialog")
 	footer := view.GetElement("footer")
@@ -382,7 +382,7 @@ func (view Manage) Init() {
 
 }
 
-func (view Manage) Enter() bool {
+func (view Repositories) Enter() bool {
 
 	schema, err := actions.Index()
 
@@ -390,37 +390,17 @@ func (view Manage) Enter() bool {
 		view.Main.Storage.Write("repositories", schema)
 	}
 
-	view.renderTable()
+	view.Render()
 
 	return true
 
 }
 
-func (view Manage) Leave() bool {
+func (view Repositories) Leave() bool {
 	return true
 }
 
-func (view Manage) Refresh() {
-
-	schema, err := actions.Index()
-
-	if err == nil {
-		view.Main.Storage.Write("repositories", schema)
-	}
-
-	selected := app_schemas.Selected{}
-	view.Main.Storage.Read("selected", &selected)
-
-	selected_batch := app_schemas.Selected{}
-	view.Main.Storage.Write("selected-batch", selected_batch)
-
-	view.renderTable()
-	view.renderFooter()
-	view.renderDialog()
-
-}
-
-func (view Manage) Update() {
+func (view Repositories) Update() {
 
 	selected := app_schemas.Selected{}
 	table    := view.GetElement("table")
@@ -463,7 +443,7 @@ func (view Manage) Update() {
 
 }
 
-func (view Manage) UpdateRepository(updated schemas.Repository) {
+func (view Repositories) UpdateRepository(updated schemas.Repository) {
 
 	repositories := schemas.Repositories{}
 
@@ -489,11 +469,11 @@ func (view Manage) UpdateRepository(updated schemas.Repository) {
 		view.Main.Storage.Write("repositories", repositories)
 	}
 
-	view.renderTable()
+	view.Render()
 
 }
 
-func (view Manage) renderTable() {
+func (view Repositories) Render() {
 
 	schema := schemas.Repositories{}
 	table  := view.GetElement("table")
@@ -538,7 +518,7 @@ func (view Manage) renderTable() {
 
 }
 
-func (view Manage) renderTableRow(owner string, repository *structs.Repository) string {
+func (view Repositories) renderTableRow(owner string, repository *structs.Repository) string {
 
 	var result string
 
@@ -625,7 +605,7 @@ func (view Manage) renderTableRow(owner string, repository *structs.Repository) 
 
 }
 
-func (view Manage) renderDialog() {
+func (view Repositories) renderDialog() {
 
 	dialog   := view.GetElement("dialog")
 	selected := app_schemas.Selected{}
@@ -683,7 +663,7 @@ func (view Manage) renderDialog() {
 
 }
 
-func (view Manage) renderDialogTableRow(identifier string, action string) string {
+func (view Repositories) renderDialogTableRow(identifier string, action string) string {
 
 	html := ""
 
@@ -696,7 +676,7 @@ func (view Manage) renderDialogTableRow(identifier string, action string) string
 
 }
 
-func (view Manage) renderFooter() {
+func (view Repositories) renderFooter() {
 
 	repositories := schemas.Repositories{}
 	selected     := app_schemas.Selected{}

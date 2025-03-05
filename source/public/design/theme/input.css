@@ -17,6 +17,10 @@ input[type="week"] {
 	padding: 4px 8px;
 	color: var(--input-default-color);
 	background: var(--input-default-background);
+	font-family: 'vera-mono';
+	font-size: 16px;
+	font-weight: normal;
+	font-style: normal;
 	border: 1px solid #252932;
 	border-radius: 4px;
 	box-sizing: border-box;

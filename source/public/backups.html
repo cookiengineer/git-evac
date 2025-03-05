@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>git-evac - Manage Repositories</title>
+		<title>git-evac - Manage Backups</title>
 
 		<!-- WebView -->
 		<meta charset="utf-8">
@@ -30,19 +30,19 @@
 	<body>
 		<header id="header">
 			<ul>
-				<li class="active"><a data-view="repositories" href="/index.html">Repositories</a></li>
-				<li><a data-view="backups" href="/backups.html">Backups</a></li>
+				<li><a data-view="repositories" href="/index.html">Repositories</a></li>
+				<li class="active"><a data-view="backups" href="/backups.html">Backups</a></li>
 				<li><a data-view="settings" href="/settings.html">Settings</a></li>
 			</ul>
 		</header>
-		<main id="main" data-view="repositories">
+		<main id="main" data-view="backups">
 			<table id="main-table">
 				<thead>
 					<tr>
 						<th><input type="checkbox" title="Toggle all repositories"/></th>
 						<th>Repository</th>
-						<th>Remotes</th>
-						<th>Branches</th>
+						<th>Backup</th>
+						<th>Size</th>
 						<th>Action</th>
 					</tr>
 				</thead>
@@ -56,7 +56,7 @@
 		<dialog id="dialog">
 			<article>
 				<button data-action="close"></button>
-				<h3>Fix 0 Repositories</h3>
+				<h3>Backup 0 Repositories</h3>
 				<table id="dialog-table">
 					<tbody></tbody>
 				</table>

@@ -45,6 +45,11 @@ main article fieldset div label + input {
 	width: 260px;
 }
 
+main article fieldset div label + textarea {
+	width: 260px;
+	min-height: 4em;
+}
+
 main article fieldset div label + div {
 	display: inline-block;
 }

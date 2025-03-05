@@ -30,9 +30,8 @@
 	<body>
 		<header id="header">
 			<ul>
-				<li><a data-view="manage" href="/index.html">Manage</a></li>
-				<li><a data-view="backup" href="/backup.html">Backup</a></li>
-				<li><a data-view="restore" href="/restore.html">Restore</a></li>
+				<li><a data-view="repositories" href="/index.html">Repositories</a></li>
+				<li><a data-view="backups" href="/backups.html">Backups</a></li>
 				<li class="active"><a data-view="settings" href="/settings.html">Settings</a></li>
 			</ul>
 		</header>
@@ -40,6 +39,10 @@
 			<article>
 				<h3 data-type="settings">Settings</h3>
 				<fieldset>
+					<div>
+						<label for="settings-backup" data-type="folder">Backup</label>
+						<input id="settings-backup" type="text" placeholder="~/Backup"/>
+					</div>
 					<div>
 						<label for="settings-folder" data-type="folder">Folder</label>
 						<input id="settings-folder" type="text" placeholder="~/Software"/>
@@ -92,10 +95,8 @@
 					</div>
 					<div>
 						<label for="remote-owners" data-type="organization">Owners <abbr title="Users or Organizations mirrored on this remote">?</abbr></label>
-						<div>
-							<textarea name="remote-owner">cookiengineer
+						<textarea name="remote-owner">cookiengineer
 tholian-network</textarea>
-						</div>
 					</div>
 				</fieldset>
 				<footer>

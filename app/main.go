@@ -16,15 +16,15 @@ func main() {
 
 		view := element.GetAttribute("data-view")
 
-		if view == "manage" {
-			main.SetView("manage", views.NewManage(&main))
-			main.ChangeView("manage")
-		// } else if view == "backup" {
-		//	main.SetView("backup", views.NewBackup(&main))
-		// } else if view == "restore" {
-		//	main.SetView("restore", views.NewBackup())
-		//} else if view == "settings" {
-		//	main.SetView("settings", views.NewSettings())
+		if view == "repositories" {
+			main.SetView("repositories", views.NewRepositories(&main))
+			main.ChangeView("repositories")
+		} else if view == "backups" {
+			main.SetView("backups", views.NewBackups(&main))
+			main.ChangeView("backups")
+		} else if view == "settings" {
+			main.SetView("settings", views.NewSettings(&main))
+			main.ChangeView("settings")
 		}
 
 	}
