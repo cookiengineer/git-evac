@@ -20,8 +20,8 @@ main table thead th {
 main table thead th,
 main table tbody td {
 	padding: 0px 8px;
-	border-left: 1px solid #252932;
-	border-bottom: 1px solid #252932;
+	border-left: 1px solid var(--input-default-border);
+	border-bottom: 1px solid var(--input-default-border);
 	line-height: 30px;
 	vertical-align: middle;
 }

@@ -15,8 +15,8 @@ footer {
 	margin: 0px;
 	padding: 0px 16px;
 	line-height: 50px;
-	color: #ffffff;
-	background: #2f343f;
+	color: var(--footer-color);
+	background: var(--footer-background);
 	box-sizing: border-box;
 	justify-content: in-between;
 }
@@ -69,5 +69,6 @@ footer button[data-action="push"][disabled]:hover,
 footer button[data-action="push"][disabled]:focus {
 	color: var(--button-disabled-color);
 	background: var(--button-disabled-background);
+	border: 1px solid var(--button-default-border);
 	cursor: not-allowed;
 }

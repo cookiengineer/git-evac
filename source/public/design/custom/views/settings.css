@@ -101,7 +101,7 @@ main[data-view="settings"] legend[contenteditable] {
 	font-weight: normal;
 	color: var(--input-default-color);
 	background: var(--input-default-background);
-	border: 1px solid #252932;
+	border: 1px solid var(--input-default-border);
 	border-radius: 4px;
 	box-sizing: border-box;
 	appearance: none;

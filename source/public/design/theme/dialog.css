@@ -35,10 +35,10 @@ dialog article {
 	left: 50%;
 	transform: translate(-50%, -50%);
 	transition: all 250ms ease-out;
-	border: 1px solid #2b2e39;
+	color: var(--article-color);
+	background: var(--article-background);
+	border: 1px solid var(--article-border);
 	border-radius: 8px;
-	color: #ffffff;
-	background: #404552;
 	z-index: 31;
 }
 
@@ -51,8 +51,8 @@ dialog article h3 {
 	font-weight: bold;
 	font-size: 16px;
 	text-align: center;
-	color: #ffffff;
-	background: #2f343f;
+	color: var(--header-color);
+	background: var(--header-background);
 	border-radius: 8px 8px 0px 0px;
 	user-select: none;
 }
@@ -85,12 +85,12 @@ dialog article table tbody td {
 }
 
 dialog article table tbody td:first-of-type {
-	border-bottom: 1px solid #252932;
+	border-bottom: 1px solid var(--input-default-border);
 }
 
 dialog article table tbody td:last-of-type {
-	border-left: 1px solid #252932;
-	border-bottom: 1px solid #252932;
+	border-left: 1px solid var(--input-default-border);
+	border-bottom: 1px solid var(--input-default-border);
 }
 
 dialog article table tbody td input {

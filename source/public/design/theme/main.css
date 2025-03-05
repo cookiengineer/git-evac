@@ -8,8 +8,8 @@ main {
 	right: 0px;
 	bottom: 50px;
 	left: 0px;
-	color: #ffffff;
-	background: #383c4a;
+	color: var(--main-color);
+	background: var(--main-background);
 	overflow: hidden auto;
 	z-index: 10;
 }
@@ -20,9 +20,9 @@ main article {
 	width: 66%;
 	margin: 32px auto;
 	padding: 0px 16px;
-	color: #ffffff;
-	background: #404552;
-	border: 1px solid #2b2e39;
+	color: var(--article-color);
+	background: var(--article-background);
+	border: 1px solid var(--article-border);
 	border-radius: 8px;
 }
 

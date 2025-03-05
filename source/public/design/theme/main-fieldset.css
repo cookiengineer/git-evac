@@ -2,7 +2,7 @@
 main article fieldset {
 	margin: 32px 0px 32px 0px;
 	padding: 16px;
-	border: 1px solid #2b2e39;
+	border: 1px solid var(--article-border);
 	border-radius: 8px;
 }
 
@@ -14,7 +14,7 @@ main article fieldset legend {
 	font-style: normal;
 	font-size: 20px;
 	text-align: center;
-	border: 1px solid #2b2e39;
+	border: 1px solid var(--article-border);
 	border-radius: 8px;
 	box-sizing: border-box;
 	user-select: none;

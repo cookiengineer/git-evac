@@ -1,37 +1,46 @@
 
 body {
 
-	--menu-default-color: #b2bdca;
-	--menu-default-background: #414857;
+	--header-color: #ffffff;
+	--header-background: #303040;
 
-	--menu-active-color: #ffffff;
-	--menu-active-background: #5294e2;
+	--main-color: #ffffff;
+	--main-background: #404050;
 
-	--menu-focus-color: #ffffff;
-	--menu-focus-background: #535a69;
+	--article-color: #ffffff;
+	--article-background: #404050;
+	--article-border: #203030;
+
+	--footer-color: #ffffff;
+	--footer-background: #303040;
 
 	--button-default-color: #ffffff;
-	--button-default-background: #444a58;
+	--button-default-background: #405060;
+	--button-default-border: #203030;
 
 	--button-focus-color: #ffffff;
-	--button-focus-background: #535a69;
+	--button-focus-background: #506070;
 
-	--button-disabled-color: #888888;
-	--button-disabled-background: #3f4452;
+	--button-disabled-color: #909090;
+	--button-disabled-background: #304050;
 
 	--input-default-color: #ffffff;
-	--input-default-background: #444a58;
+	--input-default-background: #405060;
+	--input-default-border: #203030;
 
 	--input-focus-color: #ffffff;
-	--input-focus-background: #535a69;
+	--input-focus-background: #506070;
 
-	--input-active-background: #5294e2;
+	--input-invalid-color: #ff4040;
+	--input-invalid-background: #705050;
 
-	--input-disabled-color: #888888;
-	--input-disabled-background: #3f4452;
+	--input-active-background: #55aaee;
+
+	--input-disabled-color: #909090;
+	--input-disabled-background: #304050;
 
 	--palette-primary-color: #ffffff;
-	--palette-primary-background: #5294e2;
+	--palette-primary-background: #55aaee;
 
 	--palette-secondary-color: #ffffff;
 	--palette-secondary-background: #e25252;

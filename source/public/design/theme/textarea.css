@@ -9,7 +9,7 @@ textarea {
 	font-size: 16px;
 	font-weight: normal;
 	font-style: normal;
-	border: 1px solid #252932;
+	border: 1px solid var(--input-default-border);
 	border-radius: 4px;
 	box-sizing: border-box;
 	appearance: none;
@@ -32,6 +32,7 @@ textarea[disabled]:hover,
 textarea[disabled]:focus {
 	color: var(--input-disabled-color);
 	background: var(--input-disabled-background);
+	border: 1px solid var(--input-default-border);
 	cursor: not-allowed;
 }
 

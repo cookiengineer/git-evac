@@ -21,7 +21,7 @@ input[type="week"] {
 	font-size: 16px;
 	font-weight: normal;
 	font-style: normal;
-	border: 1px solid #252932;
+	border: 1px solid var(--input-default-border);
 	border-radius: 4px;
 	box-sizing: border-box;
 	appearance: none;
@@ -60,6 +60,25 @@ input[type="week"]:focus {
 	color: var(--input-focus-color);
 	background: var(--input-focus-background);
 	border: 1px solid var(--palette-primary-background);
+	outline: unset;
+}
+
+input[type="date"]:invalid,
+input[type="datetime-local"]:invalid,
+input[type="email"]:invalid,
+input[type="file"]:invalid,
+input[type="month"]:invalid,
+input[type="number"]:invalid,
+input[type="password"]:invalid,
+input[type="search"]:invalid,
+input[type="tel"]:invalid,
+input[type="text"]:invalid,
+input[type="time"]:invalid,
+input[type="url"]:invalid,
+input[type="week"]:invalid {
+	color: var(--input-invalid-color);
+	background: var(--input-invalid-background);
+	border: 1px solid var(--input-invalid-color);
 	outline: unset;
 }
 
@@ -104,6 +123,7 @@ input[type="url"][disabled]:focus,
 input[type="week"][disabled]:focus {
 	color: var(--input-disabled-color);
 	background: var(--input-disabled-background);
+	border: 1px solid var(--input-default-border);
 	cursor: not-allowed;
 }
 
@@ -116,7 +136,7 @@ input[type="radio"] {
 	padding: 0px;
 	color: var(--input-default-color);
 	background: var(--input-default-background);
-	border: 1px solid #252932;
+	border: 1px solid var(--input-default-border);
 	border-radius: 4px;
 	appearance: none;
 	-moz-appearance: none;

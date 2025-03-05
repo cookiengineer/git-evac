@@ -10,8 +10,8 @@ header {
 	left: 0px;
 	margin: 0px;
 	padding: 9px 16px;
-	color: #ffffff;
-	background: #2f343f;
+	color: var(--header-color);
+	background: var(--header-background);
 	text-align: center;
 	box-sizing: border-box;
 	z-index: 20;
@@ -29,9 +29,9 @@ header ul li {
 	display: inline-block;
 	margin: 0px;
 	padding: 0px;
-	border-top: 1px solid #252932;
+	border-top: 1px solid var(--button-default-border);
 	border-right: 0px solid transparent;
-	border-bottom: 1px solid #252932;
+	border-bottom: 1px solid var(--button-default-border);
 	border-left: 0px solid transparent;
 }
 
@@ -51,41 +51,41 @@ header ul li a[data-view]:before {
 }
 
 header ul li:first-of-type {
-	border-left: 1px solid #252932;
+	border-left: 1px solid var(--button-default-border);
 	border-right: 0px solid transparent;
 	border-radius: 4px 0px 0px 4px;
 }
 
 header ul li:last-of-type {
 	border-left: 0px solid transparent;
-	border-right: 1px solid #252932;
+	border-right: 1px solid var(--button-default-border);
 	border-radius: 0px 4px 4px 0px;
 }
 
 header ul li {
-	color: var(--menu-default-text);
-	background: var(--menu-default-background);
+	color: var(--button-default-color);
+	background: var(--button-default-background);
 }
 
 header ul li:hover {
-	background: var(--menu-focus-background);
+	background: var(--button-focus-background);
 }
 
 header ul li:hover a {
-	color: var(--menu-focus-text);
+	color: var(--button-focus-color);
 }
 
 header ul li.active {
-	background: var(--menu-active-background);
+	background: var(--palette-primary-background);
 }
 
 header ul li.active a {
-	color: var(--menu-active-text);
+	color: var(--palette-primary-color);
 }
 
 header ul li a {
 	display: inline-block;
-	color: var(--menu-default-text);
+	color: var(--button-default-color);
 	font-family: 'cantarell';
 	font-weight: normal;
 	font-size: 16px;

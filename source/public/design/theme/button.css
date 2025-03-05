@@ -5,7 +5,7 @@ button {
 	padding: 4px 8px;
 	color: var(--button-default-color);
 	background: var(--button-default-background);
-	border: 1px solid #252932;
+	border: 1px solid var(--button-default-border);
 	border-radius: 4px;
 	transition: 250ms all ease-out;
 	cursor: pointer;
@@ -98,6 +98,7 @@ button.secondary[disabled]:hover,
 button.secondary[disabled]:focus {
 	color: var(--button-disabled-color);
 	background: var(--button-disabled-background);
+	border: 1px solid var(--button-default-border);
 	cursor: not-allowed;
 }
 
