@@ -12,8 +12,7 @@ main[data-view="settings"] article footer {
 	background: unset;
 }
 
-main[data-view="settings"] button[data-action="create-identity"]:before { content: '\e805'; vertical-align: bottom; }
-main[data-view="settings"] button[data-action="create-remote"]:before   { content: '\e805'; vertical-align: bottom; }
+main[data-view="settings"] button[data-action="create"]:before { content: '\e805'; vertical-align: bottom; }
 
 /* settings */
 main[data-view="settings"] label[data-type="folder"]:before        { content: '\e80b'; }
@@ -91,25 +90,12 @@ main[data-view="settings"] input[type="radio"][data-remote="gitea"] {
 	speak: never;
 }
 
-main[data-view="settings"] legend[contenteditable] {
+main[data-view="settings"] article legend {
 	display: inline-block;
 	margin: 0px;
-	padding: 4px 8px;
-	font-family: 'vera-mono';
-	font-size: 16px;
-	font-style: normal;
-	font-weight: normal;
-	color: var(--input-default-color);
-	background: var(--input-default-background);
-	border: 1px solid var(--input-default-border);
-	border-radius: 4px;
-	box-sizing: border-box;
-	appearance: none;
-	-moz-appearance: none;
-	-webkit-appearance: none;
-	user-select: text;
-	outline: unset;
-	cursor: text;
+	padding: 0px;
+	border: 0px solid transparent;
+	border-radius: unset;
 }
 
 main[data-view="settings"] h3 {
@@ -123,7 +109,8 @@ main[data-view="settings"] h3 {
 	border-bottom: 1px solid #2b2e39;
 }
 
-main[data-view="settings"] h3[data-type]:before {
+main[data-view="settings"] h3[data-type]:before,
+main[data-view="settings"] article legend[data-type]:before {
 	display: inline-block;
 	width: 1em;
 	line-height: inherit;
@@ -141,7 +128,9 @@ main[data-view="settings"] h3[data-type]:before {
 }
 
 main[data-view="settings"] h3[data-type="identities"]:before { content: '\e802'; }
-main[data-view="settings"] h3[data-type="identity"]:before   { content: '\e801'; }
 main[data-view="settings"] h3[data-type="remotes"]:before    { content: '\f1e0'; }
 main[data-view="settings"] h3[data-type="settings"]:before   { content: '\e80d'; }
+
+main[data-view="settings"] article legend[data-type="identity"]:before { content: '\e801'; }
+main[data-view="settings"] article legend[data-type="remote"]:before   { content: '\f1e0'; }
 

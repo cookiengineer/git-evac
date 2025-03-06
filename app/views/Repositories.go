@@ -666,7 +666,6 @@ func (view Repositories) renderDialog() {
 func (view Repositories) renderDialogTableRow(identifier string, action string) string {
 
 	html := ""
-
 	html += "<tr data-id=\"" + identifier + "\">"
 	html += "<td><label data-state=\"waiting\" title=\"waiting...\"></label></td>"
 	html += "<td><label>" + identifier + "</label></td>"

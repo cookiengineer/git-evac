@@ -36,7 +36,7 @@
 			</ul>
 		</header>
 		<main id="main" data-view="settings">
-			<article>
+			<article id="settings-basic">
 				<h3 data-type="settings">Settings</h3>
 				<fieldset>
 					<div>
@@ -53,52 +53,15 @@
 					</div>
 				</fieldset>
 			</article>
-			<article>
+			<article id="settings-identities">
 				<h3 data-type="identities">Identities</h3>
-				<fieldset>
-					<legend data-type="identity" contenteditable>cookiengineer</legend>
-					<div>
-						<label for="identity-sshkey" data-type="key">SSH Key</label>
-						<input id="identity-sshkey" type="file" placeholder="~/.ssh/id_rsa"/>
-					</div>
-					<div>
-						<label for="identity-git-user-name" data-type="name">Git User Name</label>
-						<input id="identity-git-user-name" type="text" placeholder="John Doe"/>
-					</div>
-					<div>
-						<label for="identity-git-user-email" data-type="email">Git User Email</label>
-						<input id="identity-git-user-email" type="text" placeholder="johndoe@example.com"/>
-					</div>
-				</fieldset>
 				<footer>
 					<div></div>
 					<div><button class="primary" data-action="create-identity">Create Identity</button></div>
 				</footer>
 			</article>
-			<article>
+			<article id="settings-remotes">
 				<h3 data-type="remotes">Remotes</h3>
-				<fieldset>
-					<legend data-type="github" contenteditable>github</legend>
-					<div>
-						<label for="remote-url" data-type="url">URL</label>
-						<input name="remote-url" type="url" placeholder="git@github.com:/{orga}/{repo}.git"/>
-					</div>
-					<div>
-						<label for="remote-type" data-type="remote-type">Type</label>
-						<div>
-							<input name="remote-type" type="radio" data-remote="github" title="github" value="github"/>
-							<input name="remote-type" type="radio" data-remote="gitlab" title="gitlab" value="gitlab"/>
-							<input name="remote-type" type="radio" data-remote="gitea" title="gitea" value="gitea"/>
-							<input name="remote-type" type="radio" data-remote="gogs" title="gogs" value="gogs"/>
-							<input name="remote-type" type="radio" data-remote="git" title="git" value="git"/>
-						</div>
-					</div>
-					<div>
-						<label for="remote-owners" data-type="organization">Owners <abbr title="Users or Organizations mirrored on this remote">?</abbr></label>
-						<textarea name="remote-owner">cookiengineer
-tholian-network</textarea>
-					</div>
-				</fieldset>
 				<footer>
 					<div></div>
 					<div><button class="primary" data-action="create-remote">Create Remote</button></div>
