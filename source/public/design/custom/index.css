@@ -5,6 +5,8 @@
 @import url("./header.css");
 @import url("./dialog.css");
 
+@import url("./label.css");
+
 body {
 	margin: 0px;
 	padding: 0px;

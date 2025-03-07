@@ -1,18 +1,61 @@
 
 main[data-view="settings"] article {
+	width: 66%;
 	max-width: 500px;
 }
+
+main[data-view="settings"] section {
+	display: block;
+	position: relative;
+	width: calc(66% + 32px);
+	margin: 32px auto;
+	padding: 0px;
+	max-width: 525px;
+	border-top: 1px solid var(--header-background);
+	border-right: 1px solid var(--header-background);
+	border-bottom: 1px solid var(--header-background);
+	border-left: 8px solid var(--header-background);
+	border-radius: 8px;
+}
+
+main[data-view="settings"] section footer {
+	background: var(--header-background);
+}
+
+main[data-view="settings"] section article {
+	width: auto;
+	margin: 0px;
+	border: 0px solid transparent;
+	box-sizing: border-box;
+}
+
+main[data-view="settings"] section h2 {
+	display: block;
+	margin: 0px;
+	padding: 8px 16px;
+	font-family: "cantarell";
+	font-weight: bold;
+	font-size: 20px;
+	font-style: normal;
+	color: var(--header-color);
+	background: var(--header-background);
+	border-bottom: 4px solid #2b2e39;
+}
+
+main[data-view="settings"] section button[data-action="remove-organization"] {
+	display: block;
+	position: absolute;
+	top: 6px;
+	right: 6px;
+}
+
 
 main[data-view="settings"] article fieldset div label[data-type]:before {
 	margin: 0px 0.5em 0px 0px;
 }
 
-main[data-view="settings"] article footer {
-	margin: 0px -16px 0px -16px;
-	background: unset;
-}
-
-main[data-view="settings"] button[data-action="create"]:before { content: '\e805'; vertical-align: bottom; }
+main[data-view="settings"] section button[data-action="add-identity"]:before     { content: '\e805'; vertical-align: middle; }
+main[data-view="settings"] section button[data-action="add-remote"]:before       { content: '\e805'; vertical-align: middle; }
 
 /* settings */
 main[data-view="settings"] label[data-type="folder"]:before        { content: '\e80b'; }
@@ -98,7 +141,7 @@ main[data-view="settings"] article legend {
 	border-radius: unset;
 }
 
-main[data-view="settings"] h3 {
+main[data-view="settings"] article h3 {
 	display: block;
 	margin: 0px;
 	padding: 8px 0px;
@@ -109,7 +152,8 @@ main[data-view="settings"] h3 {
 	border-bottom: 1px solid #2b2e39;
 }
 
-main[data-view="settings"] h3[data-type]:before,
+main[data-view="settings"] h2[data-type]:before,
+main[data-view="settings"] article h3[data-type]:before,
 main[data-view="settings"] article legend[data-type]:before {
 	display: inline-block;
 	width: 1em;
@@ -127,10 +171,18 @@ main[data-view="settings"] article legend[data-type]:before {
 	speak: never;
 }
 
-main[data-view="settings"] h3[data-type="identities"]:before { content: '\e802'; }
-main[data-view="settings"] h3[data-type="remotes"]:before    { content: '\f1e0'; }
-main[data-view="settings"] h3[data-type="settings"]:before   { content: '\e80d'; }
+main[data-view="settings"] h2[data-type]:before {
+	margin: 0px 1em 0px 0px;
+}
+
+main[data-view="settings"] h2[data-type="organization"]:before { content: '\f275'; }
+
+main[data-view="settings"] article h3[data-type="identities"]:before { content: '\e802'; }
+main[data-view="settings"] article h3[data-type="remotes"]:before    { content: '\f1e0'; }
+main[data-view="settings"] article h3[data-type="settings"]:before   { content: '\e80d'; }
 
 main[data-view="settings"] article legend[data-type="identity"]:before { content: '\e801'; }
 main[data-view="settings"] article legend[data-type="remote"]:before   { content: '\f1e0'; }
+
+footer button[data-action="add-organization"]:before { content: '\e805'; vertical-align: middle; }
 

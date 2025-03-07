@@ -4,11 +4,10 @@ import utils_paths "git-evac/utils/paths"
 import utils_strings "git-evac/utils/strings"
 
 type Settings struct {
-	Backup     string                      `json:"backup"`
-	Folder     string                      `json:"folder"`
-	Port       uint16                      `json:"port"`
-	Identities map[string]IdentitySettings `json:"identities"`
-	Remotes    map[string]RemoteSettings   `json:"remotes"`
+	Backup        string                          `json:"backup"`
+	Folder        string                          `json:"folder"`
+	Port          uint16                          `json:"port"`
+	Organizations map[string]OrganizationSettings `json:"organizations"`
 }
 
 func (settings *Settings) IsValid() bool {
@@ -18,8 +17,7 @@ func (settings *Settings) IsValid() bool {
 		valid_backup := false
 		valid_folder := false
 		valid_port := false
-		valid_identities := true
-		valid_remotes := true
+		valid_organizations := true
 
 		if utils_paths.IsFolder(settings.Backup) {
 			valid_backup = true
@@ -33,25 +31,16 @@ func (settings *Settings) IsValid() bool {
 			valid_port = true
 		}
 
-		for name, identity := range settings.Identities {
+		for name, orga := range settings.Organizations {
 
-			if utils_strings.IsName(name) && identity.IsValid() == false {
-				valid_identities = false
+			if utils_strings.IsName(name) && orga.IsValid() == false {
+				valid_organizations = false
 				break
 			}
 
 		}
 
-		for name, remote := range settings.Remotes {
-
-			if utils_strings.IsName(name) && remote.IsValid() == false {
-				valid_remotes = false
-				break
-			}
-
-		}
-
-		return valid_backup && valid_folder && valid_port && valid_identities && valid_remotes
+		return valid_backup && valid_folder && valid_port && valid_organizations
 
 	}
 

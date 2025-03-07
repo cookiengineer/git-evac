@@ -5,6 +5,7 @@ import "fmt"
 import "gooey"
 import "gooey/app"
 import "gooey/dom"
+import "gooey/location"
 import "git-evac-app/actions"
 // import app_schemas "git-evac-app/schemas"
 import "git-evac/server/schemas"
@@ -37,6 +38,7 @@ func NewSettings(main *app.Main) Settings {
 	view.SetElement("articles-identities", gooey.Document.QuerySelector("main article#settings-identities"))
 	view.SetElement("articles-remotes",    gooey.Document.QuerySelector("main article#settings-remotes"))
 
+	view.SetElement("dialog", gooey.Document.QuerySelector("body > dialog"))
 	view.SetElement("footer", gooey.Document.QuerySelector("body > footer"))
 
 	view.Init()
@@ -47,25 +49,56 @@ func NewSettings(main *app.Main) Settings {
 
 func (view Settings) Init() {
 
+	dialog     := view.GetElement("dialog")
 	footer     := view.GetElement("footer")
 	identities := view.GetElement("articles-identities")
 	remotes    := view.GetElement("articles-remotes")
+
+	if dialog != nil {
+
+		dialog.AddEventListener("click", dom.ToEventListener(func(event dom.Event) {
+
+			target := event.Target
+
+			if target.TagName == "BUTTON" {
+
+				action := target.GetAttribute("data-action")
+
+				if action == "confirm" {
+
+					// TODO: Create new Organization Section element
+					fmt.Println("TODO: Create new Organization section element")
+
+				} else if action == "close" {
+					dialog.RemoveAttribute("open")
+				} else if action == "cancel" {
+					dialog.RemoveAttribute("open")
+				}
+
+			}
+
+		}))
+
+	}
 
 	if footer != nil {
 
 		footer.AddEventListener("click", dom.ToEventListener(func(event dom.Event) {
 
 			target := event.Target
-			tagname := target.TagName
 
-			if tagname == "BUTTON" {
+			if target.TagName == "BUTTON" {
 
 				action := target.GetAttribute("data-action")
 
-				if action == "cancel" {
+				if action == "add-organization" {
 
-					// TODO: Read Settings from backend, render again?
-					// TODO: Revert changes
+					view.renderDialog()
+					dialog.SetAttribute("open", "")
+
+				} else if action == "cancel" {
+
+					location.Location.Reload()
 
 				} else if action == "save" {
 
@@ -156,7 +189,14 @@ func (view Settings) Render() {
 	identity.Git.Core.SSHCommand = "ssh -i \"/home/cookiengineer/.ssh/id_rsa\""
 	identity.Git.User.Name = "Cookie Engineer"
 	identity.Git.User.Email = "cookiengineer@protonmail.ch"
-	schema.Settings.Identities["cookiengineer"] = identity
+	organization := structs.OrganizationSettings{
+		Name: "tholian-network",
+		Identities: map[string]structs.IdentitySettings{
+			"cookiengineer": identity,
+		},
+	}
+
+	schema.Settings.Organizations["tholian-network"] = organization
 
 	// TODO: End of removal
 
@@ -178,6 +218,7 @@ func (view Settings) Render() {
 		port.SetAttribute("value", strconv.FormatUint(uint64(schema.Settings.Port), 10))
 	}
 
+	/*
 	identities := view.GetElement("articles-identities")
 
 	if identities != nil {
@@ -215,6 +256,7 @@ func (view Settings) Render() {
 		remotes.SetInnerHTML(html_remotes)
 
 	}
+	*/
 
 }
 
@@ -309,6 +351,31 @@ func (view Settings) renderRemoteFieldset(name string, remote structs.RemoteSett
 	html += "</fieldset>"
 
 	return html
+
+}
+
+func (view Settings) renderDialog() {
+
+	dialog := view.GetElement("dialog")
+
+	if dialog != nil {
+
+		inputs := dialog.QuerySelectorAll("input")
+
+		for i := 0; i < len(inputs); i++ {
+
+			input := inputs[i]
+			typ   := input.GetAttribute("type")
+
+			if typ == "checkbox" {
+				input.Value.Set("checked", false)
+			} else {
+				input.Value.Set("value", "")
+			}
+
+		}
+
+	}
 
 }
 

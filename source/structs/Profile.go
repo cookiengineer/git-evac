@@ -17,11 +17,10 @@ func NewProfile(backup string, folder string, port uint16) *Profile {
 	profile.Owners = make(map[string]*RepositoryOwner)
 	profile.Filesystem = nil
 
-	profile.Settings.Backup     = backup
-	profile.Settings.Folder     = folder
-	profile.Settings.Port       = port
-	profile.Settings.Identities = make(map[string]IdentitySettings)
-	profile.Settings.Remotes    = make(map[string]RemoteSettings)
+	profile.Settings.Backup        = backup
+	profile.Settings.Folder        = folder
+	profile.Settings.Port          = port
+	profile.Settings.Organizations = make(map[string]OrganizationSettings)
 
 	return &profile
 

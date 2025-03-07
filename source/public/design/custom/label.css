@@ -1,0 +1,11 @@
+
+/* custom types */
+label[data-type="user"]:before          { content: '\e801'; }
+label[data-type="organization"]:before  { content: '\f275'; }
+label[data-type="key"]:before           { content: '\f132'; }
+label[data-type="name"]:before          { content: '\e801'; }
+label[data-type="email"]:before         { content: '\f0e0'; }
+label[data-type="remote"]:before        { content: '\e81a'; }
+label[data-type="remote-name"]:before   { content: '\e81a'; }
+label[data-type="remote-type"]:before   { content: '\e816'; }
+label[data-type="remote-origin"]:before { content: '\e808'; }

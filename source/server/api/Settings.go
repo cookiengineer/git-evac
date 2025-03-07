@@ -46,11 +46,10 @@ func Settings(profile *structs.Profile, request *http.Request, response http.Res
 
 			if err1 == nil && schema.IsValid() {
 
-				profile.Settings.Backup     = schema.Settings.Backup
-				profile.Settings.Folder     = schema.Settings.Folder
-				profile.Settings.Port       = schema.Settings.Port
-				profile.Settings.Identities = schema.Settings.Identities
-				profile.Settings.Remotes    = schema.Settings.Remotes
+				profile.Settings.Backup        = schema.Settings.Backup
+				profile.Settings.Folder        = schema.Settings.Folder
+				profile.Settings.Port          = schema.Settings.Port
+				profile.Settings.Organizations = schema.Settings.Organizations
 
 				stat, err2 := os.Stat(profile.Settings.Folder)
 

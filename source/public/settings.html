@@ -53,36 +53,96 @@
 					</div>
 				</fieldset>
 			</article>
-			<article id="settings-identities">
-				<h3 data-type="identities">Identities</h3>
+			<section id="settings-organizations-tholian-network">
+				<h2 data-type="organization">tholian-network</h2>
+				<button data-action="remove-organization">X</button>
+				<article>
+					<h3 data-type="identities">Identities</h3>
+					<fieldset>
+						<legend>cookiengineer</legend>
+						<div>
+							...
+						</div>
+					</fieldset>
+				</article>
+				<article>
+					<h3 data-type="remotes">Remotes</h3>
+					<fieldset>
+						<legend>github</legend>
+						<div>
+							...
+						</div>
+					</fieldset>
+				</article>
 				<footer>
 					<div></div>
-					<div><button class="primary" data-action="create-identity">Create Identity</button></div>
+					<div><button class="primary" data-action="add-identity">Identity</button><button class="primary" data-action="add-remote">Remote</button></div>
 				</footer>
-			</article>
-			<article id="settings-remotes">
-				<h3 data-type="remotes">Remotes</h3>
+			</section>
+
+			<section id="settings-organizations-veloren">
+				<h2 data-type="organization">veloren</h3>
+				<button data-action="remove-organization">X</button>
+				<article>
+					<h3 data-type="identities">Identities</h3>
+					<fieldset>
+						<legend>cookiengineer</legend>
+						<div>
+							...
+						</div>
+					</fieldset>
+				</article>
+				<article>
+					<h3 data-type="remotes">Remotes</h3>
+					<fieldset>
+						<legend>github</legend>
+						<div>
+							...
+						</div>
+					</fieldset>
+				</article>
 				<footer>
 					<div></div>
-					<div><button class="primary" data-action="create-remote">Create Remote</button></div>
+					<div><button class="primary" data-action="add-identity">Identity</button><button class="primary" data-action="add-remote">Remote</button></div>
 				</footer>
-			</article>
+			</section>
+
 		</main>
 		<footer id="footer">
 			<div><button class="secondary" data-action="cancel">Cancel</button></div>
-			<div><button class="primary" data-action="save">Save</button></div>
+			<div><button data-action="add-organization">Organization</button><button class="primary" data-action="save">Save</button></div>
 		</footer>
-		<dialog id="dialog">
+		<dialog id="dialog" data-type="organization" open>
 			<article>
-				<button data-action="close"></button>
-				<h3>Fix 0 Repositories</h3>
-				<table id="dialog-table">
-					<tbody></tbody>
-				</table>
-				<footer>
-					<div><button class="secondary" data-action="cancel">Cancel</button></div>
-					<div></div>
-				</footer>
+				<article>
+					<button data-action="close"></button>
+					<h3>Create Organization Settings</h3>
+					<fieldset>
+						<div>
+							<label for="organization-name" data-type="name">Name</label>
+							<input id="organization-name" type="text" placeholder="stark-industries"/>
+						</div>
+						<div>
+							<label data-type="remote-type">Remotes</label>
+							<div>
+								<input type="checkbox" data-remote="bitbucket" title="bitbucket" value="bitbucket"/>
+								<input type="checkbox" data-remote="github" title="github" value="github"/>
+								<input type="checkbox" data-remote="gitlab" title="gitlab" value="gitlab"/>
+								<input type="checkbox" data-remote="gitea" title="gitea" value="gitea"/>
+								<input type="checkbox" data-remote="gogs" title="gogs" value="gogs"/>
+								<input type="checkbox" data-remote="git" title="git" value="git"/>
+							</div>
+						</div>
+						<div>
+							<label for="organization-origin" data-type="remote-origin">Origin</label>
+							<input id="organization-origin" type="text" placeholder="git@github:com/{orga}/{repo}.git"/>
+						</div>
+					</fieldset>
+					<footer>
+						<div><button class="secondary" data-action="cancel">Cancel</button></div>
+						<div><button class="primary" data-action="confirm">Confirm</button></div>
+					</footer>
+				</article>
 			</article>
 		</dialog>
 		<script src="wasm_exec.js"></script>
