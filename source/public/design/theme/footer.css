@@ -18,7 +18,7 @@ footer {
 	color: var(--footer-color);
 	background: var(--footer-background);
 	box-sizing: border-box;
-	justify-content: in-between;
+	justify-content: space-between;
 }
 
 footer div:first-of-type {

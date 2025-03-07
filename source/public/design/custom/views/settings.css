@@ -11,15 +11,31 @@ main[data-view="settings"] section {
 	margin: 32px auto;
 	padding: 0px;
 	max-width: 525px;
-	border-top: 1px solid var(--header-background);
-	border-right: 1px solid var(--header-background);
-	border-bottom: 1px solid var(--header-background);
-	border-left: 8px solid var(--header-background);
+	border-top: 1px solid var(--section-background);
+	border-right: 1px solid var(--section-background);
+	border-bottom: 1px solid var(--section-background);
+	border-left: 8px solid var(--section-background);
 	border-radius: 8px;
 }
 
+main[data-view="settings"] section:nth-of-type(1)  { --section-background: var(--header-background); }
+main[data-view="settings"] section:nth-of-type(2)  { --section-background: #a732d9; }
+main[data-view="settings"] section:nth-of-type(3)  { --section-background: #d9a432; }
+main[data-view="settings"] section:nth-of-type(4)  { --section-background: #3248d9; }
+main[data-view="settings"] section:nth-of-type(5)  { --section-background: #d9326c; }
+main[data-view="settings"] section:nth-of-type(6)  { --section-background: #32d973; }
+main[data-view="settings"] section:nth-of-type(7)  { --section-background: #e2a052; }
+main[data-view="settings"] section:nth-of-type(8)  { --section-background: #5294e2; }
+main[data-view="settings"] section:nth-of-type(9)  { --section-background: #e252dc; }
+main[data-view="settings"] section:nth-of-type(10) { --section-background: #52e258; }
+main[data-view="settings"] section:nth-of-type(11) { --section-background: #e36f52; }
+main[data-view="settings"] section:nth-of-type(12) { --section-background: #8852e3; }
+main[data-view="settings"] section:nth-of-type(13) { --section-background: #6d52e3; }
+main[data-view="settings"] section:nth-of-type(14) { --section-background: #e35c52; }
+main[data-view="settings"] section:nth-of-type(15) { --section-background: #52e3bc; }
+
 main[data-view="settings"] section footer {
-	background: var(--header-background);
+	background: var(--section-background);
 }
 
 main[data-view="settings"] section article {
@@ -38,7 +54,7 @@ main[data-view="settings"] section h2 {
 	font-size: 20px;
 	font-style: normal;
 	color: var(--header-color);
-	background: var(--header-background);
+	background: var(--section-background);
 	border-bottom: 4px solid #2b2e39;
 }
 
@@ -50,20 +66,26 @@ main[data-view="settings"] section button[data-action="remove-organization"] {
 }
 
 
-main[data-view="settings"] article fieldset div label {
-	width: calc(34% - 4px);
+main[data-view="settings"] section article fieldset {
+	position: relative;
 }
 
-main[data-view="settings"] article fieldset div label + input {
-	width: 66%;
+main[data-view="settings"] section article fieldset:hover {
+	background: rgba(255,255,255,0.1);
+	transition: 250ms background-color ease-out;
 }
 
-main[data-view="settings"] section article fieldset div label {
-	width: 50%;
+main[data-view="settings"] section article fieldset button[data-action^="remove"] {
+	position: absolute;
+	top: -32px;
+	right: 0px;
+	opacity: 0;
+	transition: 250ms opacity ease-out;
 }
 
-main[data-view="settings"] section article fieldset div label + input {
-	width: calc(50% - 4px);
+main[data-view="settings"] section article fieldset:hover button[data-action^="remove"] {
+	opacity: 1;
+	transition: 250ms opacity ease-out;
 }
 
 main[data-view="settings"] section article h3 {
@@ -176,9 +198,9 @@ main[data-view="settings"] article h3 {
 	border-bottom: 1px solid #2b2e39;
 }
 
-main[data-view="settings"] h2[data-type]:before,
-main[data-view="settings"] article h3[data-type]:before,
-main[data-view="settings"] article legend[data-type]:before {
+main[data-view="settings"] section[data-type] h2:before,
+main[data-view="settings"] article[data-type] h3:before,
+main[data-view="settings"] article fieldset[data-type] legend:before {
 	display: inline-block;
 	width: 1em;
 	line-height: inherit;
@@ -199,14 +221,14 @@ main[data-view="settings"] h2[data-type]:before {
 	margin: 0px 1em 0px 0px;
 }
 
-main[data-view="settings"] h2[data-type="organization"]:before { content: '\f275'; }
+main[data-view="settings"] section[data-type="organization"] h2:before { content: '\f275'; }
 
-main[data-view="settings"] article h3[data-type="identities"]:before { content: '\e802'; }
-main[data-view="settings"] article h3[data-type="remotes"]:before    { content: '\f1e0'; }
-main[data-view="settings"] article h3[data-type="settings"]:before   { content: '\e80d'; }
+main[data-view="settings"] article[data-type="identities"] h3:before { content: '\e802'; }
+main[data-view="settings"] article[data-type="remotes"] h3:before    { content: '\f1e0'; }
+main[data-view="settings"] article[data-type="settings"] h3:before   { content: '\e80d'; }
 
-main[data-view="settings"] article legend[data-type="identity"]:before { content: '\e801'; }
-main[data-view="settings"] article legend[data-type="remote"]:before   { content: '\f1e0'; }
+main[data-view="settings"] article fieldset[data-type="identity"] legend:before { content: '\e801'; }
+main[data-view="settings"] article fieldset[data-type="remote"] legend:before   { content: '\f1e0'; }
 
 footer button[data-action="add-organization"]:before { content: '\e805'; vertical-align: middle; }
 

@@ -14,6 +14,18 @@ type RemoteSettings struct {
 	Type string `json:"type"`
 }
 
+func NewRemoteSettings(name string) RemoteSettings {
+
+	var settings RemoteSettings
+
+	settings.Name = name
+	settings.URL = ""
+	settings.Type = "git"
+
+	return settings
+
+}
+
 func (settings *RemoteSettings) IsValid() bool {
 
 	if utils_strings.IsName(settings.Name) {

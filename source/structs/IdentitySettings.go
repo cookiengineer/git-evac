@@ -25,6 +25,20 @@ type IdentitySettings struct {
 
 }
 
+func NewIdentitySettings(name string) IdentitySettings {
+
+	var settings IdentitySettings
+
+	settings.Name = name
+	settings.SSHKey = ""
+	settings.Git.Core.SSHCommand = ""
+	settings.Git.User.Name = ""
+	settings.Git.User.Email = ""
+
+	return settings
+
+}
+
 func (settings *IdentitySettings) IsValid() bool {
 
 	var result bool = false

@@ -25,10 +25,7 @@
 - [ ] Implement `actions/Diff.go` when Schema is ready
 - [ ] Implement `actions/FixRemotes.go` when Workflow and Schema are ready
 
-
-# Views
-
-## Manage View
+## Repositories View
 
 - [ ] Fix Action
 - [ ] Dialog: Fix Remotes workflow
@@ -46,26 +43,19 @@
 - [ ] Dialog: Pull Progress
 
 
-## Backup View
+## Backups View
 
 - [ ] Select Repositories
 - [ ] Backup Action
-- [ ] Dialog: Select Drives/Folders
 - [ ] Dialog: Backup Progress
-
-
-## Restore View
 
 - [ ] Select Repositories
 - [ ] Restore Action
-- [ ] Dialog: Select Drives/Folders _or_ Remote
 - [ ] Dialog: Restore Progress
-
 
 ## Settings View
 
-- [ ] UI for `Folder` Setting
-- [ ] UI for `Port` Setting
-- [ ] UI for `Identities` Settings
-- [ ] UI fro `Remotes` Settings
+- [ ] Change Remote Properties (URL, Type)
+- [ ] Change Identity Properties (SSH Key, User Name, User Email)
+- [ ] Save Settings
 

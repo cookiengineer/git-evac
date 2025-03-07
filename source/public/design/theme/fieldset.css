@@ -29,9 +29,10 @@ dialog article fieldset legend {
 
 main article fieldset div,
 dialog article fieldset div {
-	display: block;
+	display: flex;
 	margin: 0px 0px 16px 0px;
 	padding: 0px;
+	justify-content: space-between;
 	vertical-align: middle;
 }
 
@@ -43,7 +44,7 @@ dialog article fieldset div:last-of-type {
 main article fieldset div label,
 dialog article fieldset div label {
 	display: inline-block;
-	width: 200px;
+	width: auto;
 	font-family: 'vera-mono';
 	font-weight: normal;
 	font-style: normal;
@@ -52,20 +53,20 @@ dialog article fieldset div label {
 }
 
 main article fieldset div label + input {
-	width: 260px;
+	width: 66%;
 }
 
 dialog article fieldset div label + input {
-	width: 290px;
+	width: 66%;
 }
 
 main article fieldset div label + textarea {
-	width: 260px;
+	width: 66%;
 	min-height: 4em;
 }
 
 dialog article fieldset div label + textarea {
-	width: 290px;
+	width: 66%;
 	min-height: 4em;
 }
 

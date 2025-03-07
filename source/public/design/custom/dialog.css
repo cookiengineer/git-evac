@@ -9,7 +9,7 @@ dialog label[data-type]:before {
 	display: inline-block;
 	width: 1em;
 	line-height: inherit;
-	margin: 0px;
+	margin: 0px 0.5em 0px 0px;
 	padding: 0px 0.25em;
 	font-family: "icon";
 	font-size: 16px;
@@ -20,6 +20,11 @@ dialog label[data-type]:before {
 	text-transform: none;
 	font-smooth: antialiased;
 	speak: never;
+}
+
+dialog label[data-state]:empty:before,
+dialog label[data-type]:empty:before {
+	margin: 0px;
 }
 
 /* states */
