@@ -53,35 +53,8 @@
 					</div>
 				</fieldset>
 			</article>
-			<section id="settings-organizations-tholian-network">
+			<section data-name="tholian-network">
 				<h2 data-type="organization">tholian-network</h2>
-				<button data-action="remove-organization">X</button>
-				<article>
-					<h3 data-type="identities">Identities</h3>
-					<fieldset>
-						<legend>cookiengineer</legend>
-						<div>
-							...
-						</div>
-					</fieldset>
-				</article>
-				<article>
-					<h3 data-type="remotes">Remotes</h3>
-					<fieldset>
-						<legend>github</legend>
-						<div>
-							...
-						</div>
-					</fieldset>
-				</article>
-				<footer>
-					<div></div>
-					<div><button class="primary" data-action="add-identity">Identity</button><button class="primary" data-action="add-remote">Remote</button></div>
-				</footer>
-			</section>
-
-			<section id="settings-organizations-veloren">
-				<h2 data-type="organization">veloren</h3>
 				<button data-action="remove-organization">X</button>
 				<article>
 					<h3 data-type="identities">Identities</h3>
@@ -109,10 +82,10 @@
 
 		</main>
 		<footer id="footer">
-			<div><button class="secondary" data-action="cancel">Cancel</button></div>
-			<div><button data-action="add-organization">Organization</button><button class="primary" data-action="save">Save</button></div>
+			<div><button class="secondary" data-action="cancel" disabled>Cancel</button></div>
+			<div><button data-action="add-organization">Organization</button><button class="primary" data-action="save" disabled>Save</button></div>
 		</footer>
-		<dialog id="dialog" data-type="organization" open>
+		<dialog id="dialog">
 			<article>
 				<article>
 					<button data-action="close"></button>

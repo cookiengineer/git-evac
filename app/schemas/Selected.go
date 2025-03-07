@@ -2,6 +2,18 @@ package schemas
 
 type Selected map[string]string // map[identifier] = action
 
+func (selected Selected) Copy() Selected {
+
+	result := make(Selected)
+
+	for key, val := range selected {
+		result.Set(key, val)
+	}
+
+	return result
+
+}
+
 func (selected Selected) Count(search string) int {
 
 	var result int = 0
@@ -18,14 +30,28 @@ func (selected Selected) Count(search string) int {
 
 }
 
-func (selected Selected) Filter(search string) {
+func (selected Selected) FilterByKey(search string) {
 
-	for id, value := range selected {
+	for key, _ := range selected {
+
+		if search == key {
+			// Do Nothing
+		} else {
+			delete(selected, key)
+		}
+
+	}
+
+}
+
+func (selected Selected) FilterByValue(search string) {
+
+	for key, value := range selected {
 
 		if search == value {
 			// Do Nothing
 		} else {
-			delete(selected, id)
+			delete(selected, key)
 		}
 
 	}
@@ -36,10 +62,20 @@ func (selected Selected) Keys(search string) []string {
 
 	var result []string
 
-	for id, value := range selected {
+	if search != "" {
 
-		if search == value {
-			result = append(result, id)
+		for key, value := range selected {
+
+			if search == value {
+				result = append(result, key)
+			}
+
+		}
+
+	} else {
+
+		for key, _ := range selected {
+			result = append(result, key)
 		}
 
 	}
@@ -69,7 +105,19 @@ func (selected Selected) Reset() {
 }
 
 func (selected Selected) Set(key string, value string) {
-
 	selected[key] = value
+}
+
+func (selected Selected) Get(key string) string {
+
+	var result string
+
+	tmp, ok := selected[key]
+
+	if ok == true {
+		result = tmp
+	}
+
+	return result
 
 }

@@ -18,7 +18,8 @@ import "strings"
 var fieldset_identifier int = 0
 
 type Settings struct {
-	Main *app.Main `json:"main"`
+	Main   *app.Main         `json:"main"`
+	Schema *schemas.Settings `json:"schema"`
 	app.BaseView
 }
 
@@ -27,6 +28,7 @@ func NewSettings(main *app.Main) Settings {
 	var view Settings
 
 	view.Main     = main
+	view.Schema   = &schemas.Settings{}
 	view.Elements = make(map[string]*dom.Element)
 
 	view.SetElement("table", gooey.Document.QuerySelector("main table"))
@@ -35,9 +37,7 @@ func NewSettings(main *app.Main) Settings {
 	view.SetElement("settings-folder", gooey.Document.QuerySelector("main input#settings-folder"))
 	view.SetElement("settings-port",   gooey.Document.QuerySelector("main input#settings-port"))
 
-	view.SetElement("articles-identities", gooey.Document.QuerySelector("main article#settings-identities"))
-	view.SetElement("articles-remotes",    gooey.Document.QuerySelector("main article#settings-remotes"))
-
+	view.SetElement("main",   gooey.Document.QuerySelector("main"))
 	view.SetElement("dialog", gooey.Document.QuerySelector("body > dialog"))
 	view.SetElement("footer", gooey.Document.QuerySelector("body > footer"))
 
@@ -49,10 +49,9 @@ func NewSettings(main *app.Main) Settings {
 
 func (view Settings) Init() {
 
-	dialog     := view.GetElement("dialog")
-	footer     := view.GetElement("footer")
-	identities := view.GetElement("articles-identities")
-	remotes    := view.GetElement("articles-remotes")
+	main   := view.GetElement("main")
+	dialog := view.GetElement("dialog")
+	footer := view.GetElement("footer")
 
 	if dialog != nil {
 
@@ -102,52 +101,83 @@ func (view Settings) Init() {
 
 				} else if action == "save" {
 
-					// TODO: Save the settings from to backend
+					// TODO: Save the local app settings into a JSON and send it to the backend
+					fmt.Println("TODO: Save Settings")
 
 				}
 
-				fmt.Println("TODO: " + action)
-
 			}
 
 		}))
 
 	}
 
-	if identities != nil {
+	if main != nil {
 
-		identities.AddEventListener("change", dom.ToEventListener(func(event dom.Event) {
+		main.AddEventListener("click", dom.ToEventListener(func(event dom.Event) {
 
 			target := event.Target
-			tagname := target.TagName
 
-			if tagname == "LEGEND" {
+			if target.TagName == "BUTTON" {
 
-				// TODO: If an identity's name has changed
-				// - delete old one from settings
-				// - create new one from fieldset inputs
+				action := target.GetAttribute("data-action")
 
-				fmt.Println("change event!")
-				fmt.Println(event)
+				if action == "add-identity" {
 
-			} else if tagname == "INPUT" || tagname == "TEXTAREA" {
+					section      := target.ParentNode().ParentNode().ParentNode()
+					organization := section.GetAttribute("data-name")
 
-				// TODO: Find the legend, get the name, and change the property
+					fmt.Println("add identity fieldset to " + organization)
 
-				fmt.Println("change event!")
-				fmt.Println(event)
+				} else if action == "add-remote" {
+
+					section      := target.ParentNode().ParentNode().ParentNode()
+					organization := section.GetAttribute("data-name")
+
+					fmt.Println("add remote fieldset to " + organization)
+
+				}
 
 			}
 
 		}))
 
-	}
+		main.AddEventListener("change", dom.ToEventListener(func(event dom.Event) {
 
-	if remotes != nil {
+			target := event.Target
 
-		remotes.AddEventListener("change", dom.ToEventListener(func(event dom.Event) {
+			if target.TagName == "INPUT" {
 
-			// TODO: Same as above
+				if target.Id == "settings-backup" {
+
+					value := target.Value.Get("value").String()
+					view.Schema.Settings.Backup = value
+					view.updateFooter(true)
+
+				} else if target.Id == "settings-folder" {
+
+					value := target.Value.Get("value").String()
+					view.Schema.Settings.Folder = value
+					view.updateFooter(true)
+
+				} else if target.Id == "settings-port" {
+
+					value    := target.Value.Get("value").String()
+					num, err := strconv.ParseUint(value, 10, 16)
+
+					if err == nil && num > 1024 && num < 65535 {
+						view.Schema.Settings.Port = uint16(num)
+						view.updateFooter(true)
+					}
+
+				} else {
+
+					fmt.Println("TODO", target.Id, target.Value.Get("value").String())
+					fmt.Println(view.Schema)
+
+				}
+
+			}
 
 		}))
 
@@ -160,6 +190,7 @@ func (view Settings) Enter() bool {
 	schema, err := actions.ReadSettings()
 
 	if err == nil {
+		view.Schema.Settings = schema.Settings
 		view.Main.Storage.Write("settings", schema)
 	}
 
@@ -175,11 +206,7 @@ func (view Settings) Leave() bool {
 
 func (view Settings) Render() {
 
-	schema := schemas.Settings{}
-
-	view.Main.Storage.Read("settings", &schema)
-
-
+	schema := view.Schema
 
 	// TODO: Remove This
 	identity := structs.IdentitySettings{
@@ -379,8 +406,23 @@ func (view Settings) renderDialog() {
 
 }
 
-func (view Settings) renderFooter() {
+func (view Settings) updateFooter(changed bool) {
 
-	// TODO: Render Cancel and Save button when settings have changed
+	footer := view.GetElement("footer")
+
+	if footer != nil {
+
+		cancel := footer.QuerySelector("button[data-action=\"cancel\"]")
+		save   := footer.QuerySelector("button[data-action=\"save\"]")
+
+		if changed == true {
+			cancel.RemoveAttribute("disabled")
+			save.RemoveAttribute("disabled")
+		} else {
+			cancel.SetAttribute("disabled", "")
+			save.SetAttribute("disabled", "")
+		}
+
+	}
 
 }

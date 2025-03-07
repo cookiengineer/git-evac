@@ -7,13 +7,14 @@ import "git-evac-app/actions"
 import app_schemas "git-evac-app/schemas"
 import "git-evac/server/schemas"
 import "git-evac/structs"
-import "slices"
 import "sort"
 import "strconv"
 import "strings"
 
 type Repositories struct {
-	Main *app.Main `json:"main"`
+	Main     *app.Main             `json:"main"`
+	Schema   *schemas.Repositories `json:"schema"`
+	Selected *app_schemas.Selected `json:"selected"`
 	app.BaseView
 }
 
@@ -22,6 +23,8 @@ func NewRepositories(main *app.Main) Repositories {
 	var view Repositories
 
 	view.Main     = main
+	view.Schema   = &schemas.Repositories{}
+	view.Selected = &app_schemas.Selected{}
 	view.Elements = make(map[string]*dom.Element)
 
 	view.SetElement("table", gooey.Document.QuerySelector("main table"))
@@ -96,11 +99,9 @@ func (view Repositories) Init() {
 				id := row.GetAttribute("data-id")
 				action := target.GetAttribute("data-action")
 
-				selected := app_schemas.Selected{}
-				selected[id] = action
-
-				view.Main.Storage.Write("selected-batch", selected)
-				view.renderDialog()
+				view.Selected.Reset()
+				view.Selected.Set(id, action)
+				view.renderDialog(action)
 
 				dialog.SetAttribute("open", "")
 
@@ -149,9 +150,6 @@ func (view Repositories) Init() {
 
 			if target.TagName == "BUTTON" {
 
-				selected := app_schemas.Selected{}
-				view.Main.Storage.Read("selected-batch", &selected)
-
 				if action == "confirm" {
 
 					buttons := dialog.QuerySelectorAll("footer button[data-action]")
@@ -160,9 +158,13 @@ func (view Repositories) Init() {
 						buttons[b].SetAttribute("disabled", "")
 					}
 
-					for id, action := range selected {
+					rows := dialog.QuerySelectorAll("table tbody tr[data-id]")
 
-						label      := dialog.QuerySelector("table tbody tr[data-id=\"" + id + "\"] label[data-state]")
+					for r := 0; r < len(rows); r++ {
+
+						label      := rows[r].QuerySelector("label[data-state]")
+						id         := rows[r].GetAttribute("data-id")
+						action     := rows[r].GetAttribute("data-action")
 						owner      := id[0:strings.Index(id, "/")]
 						repository := id[strings.Index(id, "/")+1:]
 
@@ -341,37 +343,10 @@ func (view Repositories) Init() {
 			if target.TagName == "BUTTON" {
 
 				action := target.GetAttribute("data-action")
-				selected := app_schemas.Selected{}
-
-				view.Main.Storage.Read("selected", &selected)
 
 				if action != "" {
-
-					if action == "pull" {
-
-						selected.Filter("pull-or-push")
-
-						for name := range selected {
-							selected.Set(name, "pull")
-						}
-
-					} else if action == "push" {
-
-						selected.Filter("pull-or-push")
-
-						for name := range selected {
-							selected.Set(name, "push")
-						}
-
-					} else {
-						selected.Filter(action)
-					}
-
-					view.Main.Storage.Write("selected-batch", selected)
-					view.renderDialog()
-
+					view.renderDialog(action)
 					dialog.SetAttribute("open", "")
-
 				}
 
 			}
@@ -387,6 +362,7 @@ func (view Repositories) Enter() bool {
 	schema, err := actions.Index()
 
 	if err == nil {
+		view.Schema.Owners = schema.Owners
 		view.Main.Storage.Write("repositories", schema)
 	}
 
@@ -402,14 +378,11 @@ func (view Repositories) Leave() bool {
 
 func (view Repositories) Update() {
 
-	selected := app_schemas.Selected{}
-	table    := view.GetElement("table")
-
-	view.Main.Storage.Read("selected", &selected)
+	table := view.GetElement("table")
 
 	if table != nil {
 
-		selected.Reset()
+		view.Selected.Reset()
 
 		elements := table.QuerySelectorAll("tr[data-select=\"true\"]")
 
@@ -423,20 +396,19 @@ func (view Repositories) Update() {
 				action := button.GetAttribute("data-action")
 
 				if action == "clone" {
-					selected.Set(id, action)
+					view.Selected.Set(id, action)
 				} else if action == "fix" {
-					selected.Set(id, action)
+					view.Selected.Set(id, action)
 				} else if action == "commit" {
-					selected.Set(id, action)
+					view.Selected.Set(id, action)
 				} else if action == "pull" || action == "push" {
-					selected.Set(id, "pull-or-push")
+					view.Selected.Set(id, "pull-or-push")
 				}
 
 			}
 
 		}
 
-		view.Main.Storage.Write("selected", selected)
 		view.renderFooter()
 
 	}
@@ -445,19 +417,18 @@ func (view Repositories) Update() {
 
 func (view Repositories) UpdateRepository(updated schemas.Repository) {
 
-	repositories := schemas.Repositories{}
+	schema := schemas.Repositories{}
+	view.Main.Storage.Read("repositories", &schema)
 
-	view.Main.Storage.Read("repositories", &repositories)
+	has_changed := false
 
-	found := false
-
-	for owner_name, owner := range repositories.Owners {
+	for owner_name, owner := range schema.Owners {
 
 		for repo_name, repo := range owner.Repositories {
 
 			if repo.Folder == updated.Repository.Folder {
-				repositories.Owners[owner_name].Repositories[repo_name] = &updated.Repository
-				found = true
+				schema.Owners[owner_name].Repositories[repo_name] = &updated.Repository
+				has_changed = true
 				break
 			}
 
@@ -465,20 +436,17 @@ func (view Repositories) UpdateRepository(updated schemas.Repository) {
 
 	}
 
-	if found == true {
-		view.Main.Storage.Write("repositories", repositories)
+	if has_changed == true {
+		view.Schema.Owners = schema.Owners
+		view.Main.Storage.Write("repositories", schema)
+		view.Render()
 	}
-
-	view.Render()
 
 }
 
 func (view Repositories) Render() {
 
-	schema := schemas.Repositories{}
-	table  := view.GetElement("table")
-
-	view.Main.Storage.Read("repositories", &schema)
+	table := view.GetElement("table")
 
 	if table != nil {
 
@@ -486,7 +454,7 @@ func (view Repositories) Render() {
 
 		owners := make([]string, 0)
 
-		for name := range schema.Owners {
+		for name := range view.Schema.Owners {
 			owners = append(owners, name)
 		}
 
@@ -496,14 +464,14 @@ func (view Repositories) Render() {
 
 			repositories := make([]string, 0)
 
-			for name := range schema.Owners[owner].Repositories {
+			for name := range view.Schema.Owners[owner].Repositories {
 				repositories = append(repositories, name)
 			}
 
 			sort.Strings(repositories)
 
 			for _, repo := range repositories {
-				html += view.renderTableRow(owner, schema.Owners[owner].Repositories[repo])
+				html += view.renderTableRow(owner, view.Schema.Owners[owner].Repositories[repo])
 			}
 
 		}
@@ -605,42 +573,43 @@ func (view Repositories) renderTableRow(owner string, repository *structs.Reposi
 
 }
 
-func (view Repositories) renderDialog() {
+func (view Repositories) renderDialog(action string) {
 
-	dialog   := view.GetElement("dialog")
-	selected := app_schemas.Selected{}
-
-	view.Main.Storage.Read("selected-batch", &selected)
+	dialog := view.GetElement("dialog")
 
 	if dialog != nil {
 
-		ids := make([]string, 0)
-		actions := make([]string, 0)
+		selected := view.Selected.Copy()
 
-		for id, action := range selected {
+		if action == "fix" {
+			selected.FilterByValue("fix")
+		} else if action == "clone" {
+			selected.FilterByValue("clone")
+		} else if action == "commit" {
+			selected.FilterByValue("commit")
+		} else if action == "pull" {
 
-			ids = append(ids, id)
+			selected.FilterByValue("pull-or-push")
 
-			if !slices.Contains(actions, action) {
-				actions = append(actions, action)
+			for name := range selected {
+				selected.Set(name, "pull")
+			}
+
+		} else if action == "push" {
+
+			selected.FilterByValue("pull-or-push")
+
+			for name := range selected {
+				selected.Set(name, "push")
 			}
 
 		}
-
-		sort.Strings(ids)
 
 		h3 := dialog.QuerySelector("h3")
 
 		if h3 != nil {
 
-			title := ""
-
-			if len(actions) == 1 {
-				title = strings.ToUpper(actions[0][0:1]) + strings.ToLower(actions[0][1:]) + " " + strconv.Itoa(len(selected)) + " Repositories"
-			} else {
-				title = "Manage " + strconv.Itoa(len(selected)) + " Repositories"
-			}
-
+			title := strings.ToUpper(action[0:1]) + strings.ToLower(action[1:]) + " " + strconv.Itoa(len(selected)) + " Repositories"
 			h3.SetInnerHTML(title)
 
 		}
@@ -649,10 +618,13 @@ func (view Repositories) renderDialog() {
 
 		if tbody != nil {
 
+			ids := selected.Keys("")
+			sort.Strings(ids)
+
 			html := ""
 
 			for i := 0; i < len(ids); i++ {
-				html += view.renderDialogTableRow(ids[i], selected[ids[i]])
+				html += view.renderDialogTableRow(ids[i], selected.Get(ids[i]))
 			}
 
 			tbody.SetInnerHTML(html)
@@ -666,7 +638,7 @@ func (view Repositories) renderDialog() {
 func (view Repositories) renderDialogTableRow(identifier string, action string) string {
 
 	html := ""
-	html += "<tr data-id=\"" + identifier + "\">"
+	html += "<tr data-id=\"" + identifier + "\" data-action=\"" + action + "\">"
 	html += "<td><label data-state=\"waiting\" title=\"waiting...\"></label></td>"
 	html += "<td><label>" + identifier + "</label></td>"
 	html += "</tr>"
@@ -677,27 +649,22 @@ func (view Repositories) renderDialogTableRow(identifier string, action string) 
 
 func (view Repositories) renderFooter() {
 
-	repositories := schemas.Repositories{}
-	selected     := app_schemas.Selected{}
-	footer       := view.GetElement("footer")
-
-	view.Main.Storage.Read("repositories", &repositories)
-	view.Main.Storage.Read("selected", &selected)
+	footer := view.GetElement("footer")
 
 	if footer != nil {
 
-		clones := selected.Count("clone")
-		fixes := selected.Count("fix")
-		commits := selected.Count("commit")
-		pulls_or_pushes := selected.Count("pull-or-push")
+		clones := view.Selected.Count("clone")
+		fixes := view.Selected.Count("fix")
+		commits := view.Selected.Count("commit")
+		pulls_or_pushes := view.Selected.Count("pull-or-push")
 
 		total := 0
 
-		for _, owner := range repositories.Owners {
+		for _, owner := range view.Schema.Owners {
 			total += len(owner.Repositories)
 		}
 
-		message := "Selected " + strconv.Itoa(selected.Length()) + " of " + strconv.Itoa(total) + " Repositories"
+		message := "Selected " + strconv.Itoa(view.Selected.Length()) + " of " + strconv.Itoa(total) + " Repositories"
 
 		div1 := footer.QuerySelector("div:first-of-type")
 
