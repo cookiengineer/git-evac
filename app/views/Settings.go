@@ -495,7 +495,7 @@ func (view Settings) renderRemoteFieldset(name string, remote structs.RemoteSett
 
 	for _, typ := range remote_types {
 
-		html += "<input id=\"remotes-" + name + "-type\" name=\"remotes-" + name + "-type\" type=\"radio\" data-remote=\"" + typ + "\" title=\"" + typ + "\" value=\"" + typ + "\""
+		html += "<input name=\"remotes-" + name + "-type\" type=\"radio\" data-remote=\"" + typ + "\" title=\"" + typ + "\" value=\"" + typ + "\""
 
 		if typ == remote.Type {
 			html += " checked"
