@@ -50,6 +50,30 @@ main[data-view="settings"] section button[data-action="remove-organization"] {
 }
 
 
+main[data-view="settings"] article fieldset div label {
+	width: calc(34% - 4px);
+}
+
+main[data-view="settings"] article fieldset div label + input {
+	width: 66%;
+}
+
+main[data-view="settings"] section article fieldset div label {
+	width: 50%;
+}
+
+main[data-view="settings"] section article fieldset div label + input {
+	width: calc(50% - 4px);
+}
+
+main[data-view="settings"] section article h3 {
+	display: none;
+}
+
+main[data-view="settings"] section article:has(fieldset) h3 {
+	display: block;
+}
+
 main[data-view="settings"] article fieldset div label[data-type]:before {
 	margin: 0px 0.5em 0px 0px;
 }

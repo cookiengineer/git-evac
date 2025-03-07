@@ -9,29 +9,18 @@ type RemoteSettings struct {
 	//   URL:  "git@github.com:{owner}/{repo}.git"
 	//   URL:  "https://github.com/{owner}/{repo}.git"
 	// }
-	Name   string   `json:"name"`
-	URL    string   `json:"url"`
-	Type   string   `json:"type"`
-	Owners []string `json:"owners"`
+	Name string `json:"name"`
+	URL  string `json:"url"`
+	Type string `json:"type"`
 }
 
 func (settings *RemoteSettings) IsValid() bool {
 
 	if utils_strings.IsName(settings.Name) {
 
-		valid_remotes := true
-		valid_owners := true
+		// TODO: Validate URL Schemes
 
-		for o := 0; o < len(settings.Owners); o++ {
-
-			if !utils_strings.IsName(settings.Owners[o]) {
-				valid_owners = false
-				break
-			}
-
-		}
-
-		return valid_remotes && valid_owners
+		return true
 
 	}
 	

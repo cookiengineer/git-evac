@@ -7,13 +7,9 @@ import "gooey/app"
 import "gooey/dom"
 import "gooey/location"
 import "git-evac-app/actions"
-// import app_schemas "git-evac-app/schemas"
 import "git-evac/server/schemas"
 import "git-evac/structs"
-// import "slices"
-// import "sort"
 import "strconv"
-import "strings"
 
 var fieldset_identifier int = 0
 
@@ -65,8 +61,122 @@ func (view Settings) Init() {
 
 				if action == "confirm" {
 
-					// TODO: Create new Organization Section element
-					fmt.Println("TODO: Create new Organization section element")
+					input_name    := dialog.QuerySelector("#organization-name")
+					input_remotes := dialog.QuerySelectorAll("input[type=\"checkbox\"]")
+					input_origin  := dialog.QuerySelector("#organization-origin")
+
+					name       := ""
+					origin     := ""
+					identities := make(map[string]structs.IdentitySettings)
+					remotes    := make(map[string]structs.RemoteSettings)
+
+					if input_name != nil {
+						name = input_name.Value.Get("value").String()
+					}
+
+					for _, input := range input_remotes {
+
+						value      := input.Value.Get("value").String()
+						is_checked := input.Value.Get("checked").Bool()
+
+						if is_checked == true {
+
+							if value == "bitbucket" {
+
+								remotes["bitbucket"] = structs.RemoteSettings{
+									Name: "origin",
+									URL:  "git@bitbucket.org:{owner}/{repo}.git",
+									Type: "bitbucket",
+								}
+
+							} else if value == "github" {
+
+								remotes["github"] = structs.RemoteSettings{
+									Name: "github",
+									URL:  "git@github.com:{owner}/{repo}.git",
+									Type: "github",
+								}
+
+							} else if value == "gitlab" {
+
+								remotes["gitlab"] = structs.RemoteSettings{
+									Name: "gitlab",
+									URL:  "git@gitlab.com:{owner}/{repo}.git",
+									Type: "gitlab",
+								}
+
+							} else if value == "gitea" {
+
+								remotes["gitea"] = structs.RemoteSettings{
+									Name: "gitea",
+									URL:  "git@gitea.com:{owner}/{repo}.git",
+									Type: "gitea",
+								}
+
+							}
+
+						}
+
+					}
+
+					if input_origin != nil {
+						origin = input_origin.Value.Get("value").String()
+					}
+
+					if name != "" && origin != "" {
+
+						if origin == "bitbucket" {
+
+							remotes["origin"] = structs.RemoteSettings{
+								Name: "origin",
+								URL:  "git@bitbucket.org:{owner}/{repo}.git",
+								Type: "bitbucket",
+							}
+
+						} else if origin == "github" {
+
+							remotes["origin"] = structs.RemoteSettings{
+								Name: "origin",
+								URL:  "git@github.com:{owner}/{repo}.git",
+								Type: "github",
+							}
+
+						} else if origin == "gitlab" {
+
+							remotes["origin"] = structs.RemoteSettings{
+								Name: "origin",
+								URL:  "git@gitlab.com:{owner}/{repo}.git",
+								Type: "gitlab",
+							}
+
+						} else if origin == "gitea" {
+
+							remotes["origin"] = structs.RemoteSettings{
+								Name: "origin",
+								URL:  "git@gitea.com:{owner}/{repo}.git",
+								Type: "gitea",
+							}
+
+						} else {
+
+							remotes["origin"] = structs.RemoteSettings{
+								Name: "origin",
+								URL:  origin,
+								Type: "git",
+							}
+
+						}
+
+						view.Schema.Settings.Organizations[name] = structs.OrganizationSettings{
+							Name:       name,
+							Identities: identities,
+							Remotes:    remotes,
+						}
+
+						view.Render()
+						dialog.RemoveAttribute("open")
+
+					}
 
 				} else if action == "close" {
 					dialog.RemoveAttribute("open")
@@ -122,19 +232,32 @@ func (view Settings) Init() {
 
 				action := target.GetAttribute("data-action")
 
-				if action == "add-identity" {
+				if action == "remove-organization" {
+
+					section := target.ParentNode()
+					name    := section.GetAttribute("data-name")
+
+					_, ok := view.Schema.Settings.Organizations[name]
+
+					if ok == true {
+						delete(view.Schema.Settings.Organizations, name)
+					}
+
+					section.Remove()
+
+				} else if action == "add-identity" {
 
 					section      := target.ParentNode().ParentNode().ParentNode()
 					organization := section.GetAttribute("data-name")
 
-					fmt.Println("add identity fieldset to " + organization)
+					fmt.Println("TODO: Add identity fieldset to " + organization)
 
 				} else if action == "add-remote" {
 
 					section      := target.ParentNode().ParentNode().ParentNode()
 					organization := section.GetAttribute("data-name")
 
-					fmt.Println("add remote fieldset to " + organization)
+					fmt.Println("TODO: Add remote fieldset to " + organization)
 
 				}
 
@@ -229,6 +352,14 @@ func (view Settings) Render() {
 
 
 
+
+
+
+
+
+
+
+	main   := view.GetElement("main")
 	backup := view.GetElement("settings-backup")
 	folder := view.GetElement("settings-folder")
 	port   := view.GetElement("settings-port")
@@ -245,45 +376,63 @@ func (view Settings) Render() {
 		port.SetAttribute("value", strconv.FormatUint(uint64(schema.Settings.Port), 10))
 	}
 
-	/*
-	identities := view.GetElement("articles-identities")
+	if main != nil {
 
-	if identities != nil {
+		sections := main.QuerySelectorAll("section[data-name]")
 
-		html_identities := "<h3 data-type=\"identities\">Identities</h3>"
-
-		for name, identity := range schema.Settings.Identities {
-			html_identities += view.renderIdentityFieldset(name, identity)
+		for s := 0; s < len(sections); s++ {
+			sections[s].Remove()
 		}
 
-		html_identities += "<footer>"
-		html_identities += "<div></div>"
-		html_identities += "<div><button class=\"primary\" data-action=\"create\">Create</button></div>"
-		html_identities += "</footer>"
+		html_organizations := ""
 
-		identities.SetInnerHTML(html_identities)
+		for name, organization := range schema.Settings.Organizations {
+			html_organizations += view.renderOrganizationSection(name, organization)
+		}
+
+		main.InsertAdjacentHTML("beforeend", html_organizations)
 
 	}
 
-	remotes := view.GetElement("articles-remotes")
+}
 
-	if remotes != nil {
+func (view Settings) renderOrganizationSection(name string, organization structs.OrganizationSettings) string {
 
-		html_remotes := "<h3 data-type=\"remotes\">Remotes</h3>"
+	html := ""
 
-		for name, remote := range schema.Settings.Remotes {
-			html_remotes += view.renderRemoteFieldset(name, remote)
+	if name != "" {
+
+		html += "<section data-name=\"" + name + "\">"
+		html += "<h2 data-type=\"organization\">" + organization.Name + "</h2>"
+		html += "<button data-action=\"remove-organization\"></button>"
+		html += "<article>"
+		html += "<h3 data-type=\"identities\">Identities</h3>"
+
+		for name, identity := range organization.Identities {
+			html += view.renderIdentityFieldset(name, identity)
 		}
 
-		html_remotes += "<footer>"
-		html_remotes += "<div></div>"
-		html_remotes += "<div><button class=\"primary\" data-action=\"create\">Create</button></div>"
-		html_remotes += "</footer>"
+		html += "</article>"
+		html += "<article>"
+		html += "<h3 data-type=\"remotes\">Remotes</h3>"
 
-		remotes.SetInnerHTML(html_remotes)
+		for name, remote := range organization.Remotes {
+			html += view.renderRemoteFieldset(name, remote)
+		}
+
+		html += "</article>"
+		html += "<footer>"
+		html += "<div></div>"
+		html += "<div>"
+		html += "<button class=\"primary\" data-action=\"add-identity\">Identity</button>"
+		html += "<button class=\"primary\" data-action=\"add-remote\">Remote</button>"
+		html += "</div>"
+		html += "</footer>"
+		html += "</section>"
 
 	}
-	*/
+
+	return html
 
 }
 
@@ -295,7 +444,7 @@ func (view Settings) renderIdentityFieldset(name string, identity structs.Identi
 	}
 
 	html := ""
-	html += "<fieldset>"
+	html += "<fieldset data-name=\"" + name + "\">"
 	html += "<legend data-type=\"identity\"><input type=\"text\" placeholder=\"john_doe\" value=\"" + identity.Name + "\" size=\"" + strconv.Itoa(len(identity.Name)) + "\"/></legend>"
 	html += "<div>"
 	html += "<label for=\"identities-" + name + "-sshkey\" data-type=\"key\">SSH Key</label>"
@@ -363,18 +512,6 @@ func (view Settings) renderRemoteFieldset(name string, remote structs.RemoteSett
 
 	html += "</div>"
 	html += "</div>"
-
-	html += "<div>"
-	html += "<label for=\"remotes-" + name + "-owners\" data-type=\"organization\">Owners <abbr title=\"Users or Organizations mirrored on this remote\">?</abbr></label>"
-	html += "<textarea id=\"remotes-" + name + "-owners\">"
-
-	if len(remote.Owners) > 0 {
-		html += strings.Join(remote.Owners, "\n")
-	}
-
-	html += "</textarea>"
-	html += "</div>"
-
 	html += "</fieldset>"
 
 	return html
