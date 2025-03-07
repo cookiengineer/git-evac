@@ -473,7 +473,7 @@ func (view Settings) renderRemoteFieldset(name string, remote structs.RemoteSett
 
 	html := ""
 	html += "<fieldset>"
-	html += "<legend data-type=\"remote\" contenteditable>" + remote.Name + "</legend>"
+	html += "<legend data-type=\"remote\"><input type=\"text\" value=\"" + remote.Name + "\" size=\"" + strconv.Itoa(len(remote.Name)) + "\"/></legend>"
 
 	html += "<div>"
 	html += "<label for=\"remotes-" + name + "-url\" data-type=\"url\">URL</label>"
@@ -485,6 +485,7 @@ func (view Settings) renderRemoteFieldset(name string, remote structs.RemoteSett
 	html += "<div>"
 
 	remote_types := []string{
+		"bitbucket",
 		"github",
 		"gitlab",
 		"gitea",
@@ -503,12 +504,6 @@ func (view Settings) renderRemoteFieldset(name string, remote structs.RemoteSett
 		html += "/>"
 
 	}
-
-	// html += "<input id=\"remotes-" + name + "-type\" name=\"remotes-" + name + "-type\" type=\"radio\" data-remote=\"github\" title=\"github\" value=\"github\"/>"
-	// html += "<input id=\"remotes-" + name + "-type\" name=\"remotes-" + name + "-type\" type=\"radio\" data-remote=\"gitlab\" title=\"gitlab\" value=\"gitlab\"/>"
-	// html += "<input id=\"remotes-" + name + "-type\" name=\"remotes-" + name + "-type\" type=\"radio\" data-remote=\"gitea\" title=\"gitea\" value=\"gitea\"/>"
-	// html += "<input id=\"remotes-" + name + "-type\" name=\"remotes-" + name + "-type\" type=\"radio\" data-remote=\"gogs\" title=\"gogs\" value=\"gogs\"/>"
-	// html += "<input id=\"remotes-" + name + "-type\" name=\"remotes-" + name + "-type\" type=\"radio\" data-remote=\"git\" title=\"git\" value=\"git\"/>"
 
 	html += "</div>"
 	html += "</div>"
