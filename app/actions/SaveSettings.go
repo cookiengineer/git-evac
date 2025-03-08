@@ -1,12 +1,11 @@
 package actions
 
 import "gooey/fetch"
-import "git-evac/structs"
 import "git-evac/server/schemas"
 import "bytes"
 import "encoding/json"
 
-func SaveSettings(settings *structs.Settings) (*schemas.Settings, error) {
+func SaveSettings(settings schemas.Settings) (*schemas.Settings, error) {
 
 	var result_schema *schemas.Settings = nil
 	var result_error error = nil

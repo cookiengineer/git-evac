@@ -1,7 +1,5 @@
 package views
 
-import "fmt"
-
 import "gooey"
 import "gooey/app"
 import "gooey/dom"
@@ -11,6 +9,7 @@ import "git-evac/server/schemas"
 import "git-evac/structs"
 import "sort"
 import "strconv"
+import "strings"
 
 var fieldset_identifier int = 0
 
@@ -213,8 +212,19 @@ func (view Settings) Init() {
 
 				} else if action == "save" {
 
-					// TODO: Save the local app settings into a JSON and send it to the backend
-					fmt.Println("TODO: Save Settings")
+					view.updateFooter(false)
+
+					go func() {
+
+						schema, err := actions.SaveSettings(*view.Schema)
+
+						if err == nil {
+							view.Schema.Settings = schema.Settings
+							view.Main.Storage.Write("settings", schema)
+							view.Render()
+						}
+
+					}()
 
 				}
 
@@ -236,7 +246,7 @@ func (view Settings) Init() {
 
 				if action == "remove-organization" {
 
-					section      := target.ParentNode()
+					section      := target.QueryParent("section")
 					organization := section.GetAttribute("data-name")
 
 					_, ok := view.Schema.Settings.Organizations[organization]
@@ -250,8 +260,8 @@ func (view Settings) Init() {
 
 				} else if action == "remove-identity" {
 
-					fieldset     := target.ParentNode()
-					section      := fieldset.ParentNode().ParentNode()
+					fieldset     := target.QueryParent("fieldset")
+					section      := target.QueryParent("section")
 					input        := fieldset.QuerySelector("legend input")
 					organization := section.GetAttribute("data-name")
 					identity     := input.Value.Get("value").String()
@@ -273,11 +283,11 @@ func (view Settings) Init() {
 
 				} else if action == "remove-remote" {
 
-					fieldset     := target.ParentNode()
-					section      := fieldset.ParentNode().ParentNode()
+					fieldset     := target.QueryParent("fieldset")
 					input        := fieldset.QuerySelector("legend input")
-					organization := section.GetAttribute("data-name")
 					remote       := input.Value.Get("value").String()
+					section      := target.QueryParent("section")
+					organization := section.GetAttribute("data-name")
 
 					_, ok1 := view.Schema.Settings.Organizations[organization]
 
@@ -296,7 +306,7 @@ func (view Settings) Init() {
 
 				} else if action == "add-identity" {
 
-					section := target.ParentNode().ParentNode().ParentNode()
+					section := target.QueryParent("section")
 					name    := section.GetAttribute("data-name")
 					article := section.QuerySelector("article:nth-of-type(1)")
 
@@ -318,9 +328,9 @@ func (view Settings) Init() {
 
 				} else if action == "add-remote" {
 
-					section  := target.ParentNode().ParentNode().ParentNode()
-					name     := section.GetAttribute("data-name")
-					article  := section.QuerySelector("article:nth-of-type(2)")
+					section := target.QueryParent("section")
+					name    := section.GetAttribute("data-name")
+					article := section.QuerySelector("article:nth-of-type(2)")
 
 					if article != nil {
 
@@ -377,9 +387,9 @@ func (view Settings) Init() {
 					// Rename through changed inputs inside legend elements
 					if target.ParentNode().TagName == "LEGEND" {
 
-						fieldset := target.ParentNode().ParentNode()
+						fieldset := target.QueryParent("fieldset")
 						typ      := fieldset.GetAttribute("data-type")
-						section  := fieldset.ParentNode().ParentNode()
+						section  := target.QueryParent("section")
 
 						if typ == "identity" {
 
@@ -425,20 +435,87 @@ func (view Settings) Init() {
 
 					} else {
 
-						fieldset := target.ParentNode().ParentNode()
+						fieldset := target.QueryParent("fieldset")
 						typ      := fieldset.GetAttribute("data-type")
+						section  := target.QueryParent("section")
 
 						if typ == "identity" {
 
-							// TODO: Update Settings Property
-							fmt.Println("TODO: Change Settings property")
-							fmt.Println(target, target.Value.Get("value").String())
+							orga_name := section.GetAttribute("data-name")
+							user_name := fieldset.QuerySelector("legend input").Value.Get("value").String()
+
+							organization, ok := view.Schema.Settings.Organizations[orga_name]
+
+							if ok == true {
+
+								property := target.GetAttribute("data-prop")
+								value    := target.Value.Get("value").String()
+
+								if property == "SSHKey" && !strings.Contains(value, ";") {
+
+									identity := organization.Identities[user_name]
+									identity.SSHKey = value
+									identity.Git.Core.SSHCommand = "ssh -i \"" + value + "\" -F /dev/null"
+
+									view.Schema.Settings.Organizations[orga_name].Identities[identity.Name] = identity
+									view.Render()
+									view.updateFooter(true)
+
+								} else if property == "Git.User.Name" {
+
+									identity := organization.Identities[user_name]
+									identity.Git.User.Name = value
+
+									view.Schema.Settings.Organizations[orga_name].Identities[identity.Name] = identity
+									view.Render()
+									view.updateFooter(true)
+
+								} else if property == "Git.User.Email" {
+
+									identity := organization.Identities[user_name]
+									identity.Git.User.Email = value
+
+									view.Schema.Settings.Organizations[orga_name].Identities[identity.Name] = identity
+									view.Render()
+									view.updateFooter(true)
+
+								}
+
+							}
 
 						} else if typ == "remote" {
 
-							// TODO: Update Settings Property
-							fmt.Println("TODO: Change Settings property")
-							fmt.Println(target, target.Value.Get("value").String())
+							orga_name   := section.GetAttribute("data-name")
+							remote_name := fieldset.QuerySelector("legend input").Value.Get("value").String()
+
+							organization, ok := view.Schema.Settings.Organizations[orga_name]
+
+							if ok == true {
+
+								property := target.GetAttribute("data-prop")
+								value    := target.Value.Get("value").String()
+
+								if property == "URL" && strings.Contains(value, "{owner}") && strings.Contains(value, "{repo}") {
+
+									remote := organization.Remotes[remote_name]
+									remote.URL = value
+
+									view.Schema.Settings.Organizations[orga_name].Remotes[remote.Name] = remote
+									view.Render()
+									view.updateFooter(true)
+
+								} else if property == "Type" {
+
+									remote := organization.Remotes[remote_name]
+									remote.Type = value
+
+									view.Schema.Settings.Organizations[orga_name].Remotes[remote.Name] = remote
+									view.Render()
+									view.updateFooter(true)
+
+								}
+
+							}
 
 						}
 
@@ -580,24 +657,24 @@ func (view Settings) renderIdentityFieldset(name string, identity structs.Identi
 	html += "<legend>"
 
 	if len(identity.Name) > 0 {
-		html += "<input type=\"text\" placeholder=\"john_doe\" value=\"" + identity.Name + "\" size=\"" + strconv.Itoa(len(identity.Name)) + "\"/>"
+		html += "<input type=\"text\" placeholder=\"john_doe\" value=\"" + identity.Name + "\" size=\"" + strconv.Itoa(len(identity.Name)) + "\" data-prop=\"Name\"/>"
 	} else {
-		html += "<input type=\"text\" placeholder=\"john_doe\" value=\"" + identity.Name + "\"/>"
+		html += "<input type=\"text\" placeholder=\"john_doe\" value=\"" + identity.Name + "\" data-prop=\"name\"/>"
 	}
 
 	html += "</legend>"
 	html += "<button data-action=\"remove-identity\"></button>"
 	html += "<div>"
 	html += "<label for=\"identities-" + name + "-sshkey\" data-type=\"key\">SSH Key</label>"
-	html += "<input id=\"identities-" + name + "-sshkey\" type=\"text\" placeholder=\"~/.ssh/id_rsa\" value=\"" + identity.SSHKey + "\"/>"
+	html += "<input id=\"identities-" + name + "-sshkey\" type=\"text\" placeholder=\"~/.ssh/id_rsa\" value=\"" + identity.SSHKey + "\" data-prop=\"SSHKey\"/>"
 	html += "</div>"
 	html += "<div>"
 	html += "<label for=\"identities-" + name + "-git-user-name\" data-type=\"name\">User Name</label>"
-	html += "<input id=\"identities-" + name + "-git-user-name\" type=\"text\" placeholder=\"John Doe\" value=\"" + identity.Git.User.Name + "\"/>"
+	html += "<input id=\"identities-" + name + "-git-user-name\" type=\"text\" placeholder=\"John Doe\" value=\"" + identity.Git.User.Name + "\" data-prop=\"Git.User.Name\"/>"
 	html += "</div>"
 	html += "<div>"
 	html += "<label for=\"identities-" + name + "-git-user-email\" data-type=\"email\">User Email</label>"
-	html += "<input id=\"identities-" + name + "-git-user-email\" type=\"text\" placeholder=\"john.doe@example.com\" value=\"" + identity.Git.User.Email + "\"/>"
+	html += "<input id=\"identities-" + name + "-git-user-email\" type=\"text\" placeholder=\"john.doe@example.com\" value=\"" + identity.Git.User.Email + "\" data-prop=\"Git.User.Email\"/>"
 	html += "</div>"
 	html += "</fieldset>"
 
@@ -615,13 +692,13 @@ func (view Settings) renderRemoteFieldset(name string, remote structs.RemoteSett
 	html := ""
 	html += "<fieldset data-type=\"remote\">"
 	html += "<legend>"
-	html += "<input type=\"text\" value=\"" + remote.Name + "\" size=\"" + strconv.Itoa(len(remote.Name)) + "\"/>"
+	html += "<input type=\"text\" value=\"" + remote.Name + "\" size=\"" + strconv.Itoa(len(remote.Name)) + "\" data-prop=\"Name\"/>"
 	html += "</legend>"
 	html += "<button data-action=\"remove-remote\"></button>"
 
 	html += "<div>"
 	html += "<label for=\"remotes-" + name + "-url\" data-type=\"url\">URL</label>"
-	html += "<input id=\"remotes-" + name + "-url\" type=\"text\" placeholder=\"git@github.com:/{orga}/{repo}.git\" value=\"" + remote.URL + "\"/>"
+	html += "<input id=\"remotes-" + name + "-url\" type=\"text\" placeholder=\"git@github.com:/{orga}/{repo}.git\" value=\"" + remote.URL + "\" data-prop=\"URL\"/>"
 	html += "</div>"
 
 	html += "<div>"
@@ -639,7 +716,7 @@ func (view Settings) renderRemoteFieldset(name string, remote structs.RemoteSett
 
 	for _, typ := range remote_types {
 
-		html += "<input name=\"remotes-" + name + "-type\" type=\"radio\" data-remote=\"" + typ + "\" title=\"" + typ + "\" value=\"" + typ + "\""
+		html += "<input name=\"remotes-" + name + "-type\" type=\"radio\" data-remote=\"" + typ + "\" title=\"" + typ + "\" value=\"" + typ + "\" data-prop=\"Type\""
 
 		if typ == remote.Type {
 			html += " checked"
