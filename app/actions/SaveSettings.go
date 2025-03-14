@@ -15,7 +15,7 @@ func SaveSettings(settings schemas.Settings) (*schemas.Settings, error) {
 	if err0 == nil {
 
 		response, err1 := fetch.Fetch("/api/settings", &fetch.Request{
-			Method:   fetch.MethodPOST,
+			Method:   fetch.MethodPost,
 			Mode:     fetch.ModeSameOrigin,
 			Cache:    fetch.CacheDefault,
 			Redirect: fetch.RedirectError,
