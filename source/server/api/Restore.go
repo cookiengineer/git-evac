@@ -1,12 +1,12 @@
 package api
 
 import "git-evac/console"
-// import "git-evac/server/schemas"
+import "git-evac/server/schemas"
 import "git-evac/structs"
-// import "encoding/json"
+import "encoding/json"
 import "net/http"
 import "os"
-// import "os/exec"
+import "os/exec"
 
 func Restore(profile *structs.Profile, request *http.Request, response http.ResponseWriter) {
 
@@ -21,23 +21,131 @@ func Restore(profile *structs.Profile, request *http.Request, response http.Resp
 
 			if owner.HasRepository(param2) {
 
-				// TODO: Move repository to .bak?
-				console.Error("> api.Restore(\"" + param1 + "\",\"" + param2 + "\")")
+				backup := profile.Settings.Backup
+				folder := profile.Settings.Folder
 
-				response.Header().Set("Content-Type", "application/json")
-				response.WriteHeader(http.StatusConflict)
-				response.Write([]byte("{}"))
+				stat0, err0 := os.Stat(backup + "/" + param1 + "/" + param2 + ".tar.gz")
+				_, err1     := os.Stat(folder + "/" + param1 + "/" + param2 + ".bak")
+
+				if err0 == nil && !stat0.IsDir() && os.IsNotExist(err1) {
+
+					err2 := os.Rename(
+						folder + "/" + param1 + "/" + param2,
+						folder + "/" + param1 + "/" + param2 + ".bak",
+					)
+
+					if err2 == nil {
+
+						cmd := exec.Command(
+							"tar",
+							"-xzvf",
+							backup + "/" + owner.Name + "/" + param2 + ".tar.gz",
+							param2,
+						)
+						cmd.Dir = owner.Folder
+
+						_, err3 := cmd.Output()
+
+						if err3 == nil {
+
+							console.Log("> api.Restore(\"" + param1 + "\",\"" + param2 + "\")")
+
+							repo := owner.GetRepository(param2)
+							repo.Status()
+
+							response.Header().Set("Content-Type", "application/json")
+							response.WriteHeader(http.StatusOK)
+
+							payload, _ := json.MarshalIndent(schemas.Repository{
+								Repository: *repo,
+							}, "", "\t")
+							response.Write(payload)
+
+						} else {
+
+							console.Error("> api.Restore(\"" + param1 + "\",\"" + param2 + "\")")
+
+							response.Header().Set("Content-Type", "application/json")
+							response.WriteHeader(http.StatusInternalServerError)
+							response.Write([]byte("{}"))
+
+						}
+
+					} else {
+
+						console.Error("> api.Restore(\"" + param1 + "\",\"" + param2 + "\")")
+
+						response.Header().Set("Content-Type", "application/json")
+						response.WriteHeader(http.StatusConflict)
+						response.Write([]byte("{}"))
+
+					}
+
+				} else {
+
+					console.Error("> api.Restore(\"" + param1 + "\",\"" + param2 + "\")")
+
+					response.Header().Set("Content-Type", "application/json")
+					response.WriteHeader(http.StatusConflict)
+					response.Write([]byte("{}"))
+
+				}
 
 			} else {
 
 				backup := profile.Settings.Backup
-				file   := backup + "/" + owner.Name + "/" + param2 + ".tar.gz"
 
-				stat, err0 := os.Stat(file)
+				stat, err0 := os.Stat(backup + "/" + owner.Name + "/" + param2 + ".tar.gz")
 
 				if err0 == nil && !stat.IsDir() {
 
-					// TODO: Extract backup inside owner folder
+					cmd := exec.Command(
+						"tar",
+						"-xzvf",
+						backup + "/" + owner.Name + "/" + param2 + ".tar.gz",
+						param2,
+					)
+					cmd.Dir = owner.Folder
+
+					_, err1 := cmd.Output()
+
+					if err1 == nil {
+
+						repo := owner.GetRepository(param2)
+
+						if repo != nil {
+
+							repo.Status()
+
+							console.Log("> api.Restore(\"" + param1 + "\",\"" + param2 + "\")")
+
+							response.Header().Set("Content-Type", "application/json")
+							response.WriteHeader(http.StatusOK)
+
+							payload, _ := json.MarshalIndent(schemas.Repository{
+								Repository: *repo,
+							}, "", "\t")
+							response.Write(payload)
+
+						} else {
+
+							console.Error("> api.Restore(\"" + param1 + "\",\"" + param2 + "\")")
+
+							response.Header().Set("Content-Type", "application/json")
+							response.WriteHeader(http.StatusInternalServerError)
+							response.Write([]byte("{}"))
+
+						}
+
+					} else {
+
+						console.Error("> api.Restore(\"" + param1 + "\",\"" + param2 + "\")")
+
+						response.Header().Set("Content-Type", "application/json")
+						response.WriteHeader(http.StatusInternalServerError)
+						response.Write([]byte("{}"))
+
+					}
 
 				} else {
 
@@ -51,19 +159,78 @@ func Restore(profile *structs.Profile, request *http.Request, response http.Resp
 
 		} else {
 
-			folder := profile.Settings.Folder
 			backup := profile.Settings.Backup
-			file   := backup + "/" + param1 + "/" + param2 + ".tar.gz"
+			folder := profile.Settings.Folder
 
 			if _, err := os.Stat(folder + "/" + param1); os.IsNotExist(err) {
-				os.MkdirAll(backup + "/" + param1, 0755)
+				os.MkdirAll(folder + "/" + param1, 0755)
 			}
 
-			stat, err0 := os.Stat(file)
+			stat, err0 := os.Stat(backup + "/" + param1 + "/" + param2 + ".tar.gz")
 
 			if err0 == nil && !stat.IsDir() {
 
-				// TODO: Extract backup inside owner folder
+				cmd := exec.Command(
+					"tar",
+					"-xzvf",
+					backup + "/" + param1 + "/" + param2 + ".tar.gz",
+					param2,
+				)
+				cmd.Dir = folder + "/" + param1
+
+				_, err1 := cmd.Output()
+
+				if err1 == nil {
+
+					owner := profile.GetOwner(param1, folder + "/" + param1)
+
+					if owner != nil {
+
+						repo := owner.GetRepository(param2)
+
+						if repo != nil {
+
+							repo.Status()
+
+							console.Log("> api.Restore(\"" + param1 + "\",\"" + param2 + "\")")
+
+							response.Header().Set("Content-Type", "application/json")
+							response.WriteHeader(http.StatusOK)
+
+							payload, _ := json.MarshalIndent(schemas.Repository{
+								Repository: *repo,
+							}, "", "\t")
+							response.Write(payload)
+
+						} else {
+
+							console.Error("> api.Restore(\"" + param1 + "\",\"" + param2 + "\")")
+
+							response.Header().Set("Content-Type", "application/json")
+							response.WriteHeader(http.StatusInternalServerError)
+							response.Write([]byte("{}"))
+
+						}
+
+					} else {
+
+						console.Error("> api.Restore(\"" + param1 + "\",\"" + param2 + "\")")
+
+						response.Header().Set("Content-Type", "application/json")
+						response.WriteHeader(http.StatusInternalServerError)
+						response.Write([]byte("{}"))
+
+					}
+
+				} else {
+
+					console.Error("> api.Restore(\"" + param1 + "\",\"" + param2 + "\")")
+
+					response.Header().Set("Content-Type", "application/json")
+					response.WriteHeader(http.StatusInternalServerError)
+					response.Write([]byte("{}"))
+
+				}
 
 			} else {
 
@@ -82,14 +249,5 @@ func Restore(profile *structs.Profile, request *http.Request, response http.Resp
 		response.Write([]byte("{}"))
 
 	}
-
-	// TODO:
-	// Extract archive with
-	// tar -xzvf whatever.tar.gz
-
-	// Alternatively:
-	// mkdir /tmp/sandbox
-	// tar -xzvf whatever.tar.gz /tmp/sandbox
-	// mv /tmp/sandbox/whatever /path/to/owner/whatever
 
 }

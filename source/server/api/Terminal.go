@@ -29,9 +29,9 @@ func Terminal(profile *structs.Profile, request *http.Request, response http.Res
 
 				if err == nil {
 
-					if repo.Status() {
-						console.Log("> api.Terminal(\"" + param1 + "\",\"" + param2 + "\")")
-					}
+					repo.Status()
+
+					console.Log("> api.Terminal(\"" + param1 + "\",\"" + param2 + "\")")
 
 					response.Header().Set("Content-Type", "application/json")
 					response.WriteHeader(http.StatusOK)

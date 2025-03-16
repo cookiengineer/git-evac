@@ -20,10 +20,9 @@ func Status(profile *structs.Profile, request *http.Request, response http.Respo
 			if owner.HasRepository(param2) {
 
 				repo := owner.Repositories[param2]
+				repo.Status()
 
-				if repo.Status() {
-					console.Log("> api.Status(\"" + param1 + "\",\"" + param2 + "\")")
-				}
+				console.Log("> api.Status(\"" + param1 + "\",\"" + param2 + "\")")
 
 				response.Header().Set("Content-Type", "application/json")
 				response.WriteHeader(http.StatusOK)
