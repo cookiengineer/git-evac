@@ -1,13 +1,13 @@
 package main
 
-import "gooey"
-import "gooey/app"
+import "github.com/cookiengineer/gooey/bindings/dom"
+import "github.com/cookiengineer/gooey/components/app"
 import "git-evac-app/views"
 import "time"
 
 func main() {
 
-	element := gooey.Document.QuerySelector("main")
+	element := dom.Document.QuerySelector("main")
 
 	if element != nil {
 

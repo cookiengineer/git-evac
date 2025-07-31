@@ -1,6 +1,6 @@
 package actions
 
-import "gooey/fetch"
+import "github.com/cookiengineer/gooey/bindings/fetch"
 import "git-evac/server/schemas"
 import "encoding/json"
 

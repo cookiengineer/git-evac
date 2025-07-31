@@ -1,8 +1,7 @@
 package views
 
-import "gooey"
-import "gooey/app"
-import "gooey/dom"
+import "github.com/cookiengineer/gooey/bindings/dom"
+import "github.com/cookiengineer/gooey/components/app"
 import "git-evac-app/actions"
 // import app_schemas "git-evac-app/schemas"
 // import "git-evac/server/schemas"
@@ -24,9 +23,9 @@ func NewBackups(main *app.Main) Backups {
 	view.Main     = main
 	view.Elements = make(map[string]*dom.Element)
 
-	view.SetElement("table", gooey.Document.QuerySelector("main table"))
-	view.SetElement("dialog", gooey.Document.QuerySelector("dialog"))
-	view.SetElement("footer", gooey.Document.QuerySelector("footer"))
+	view.SetElement("table", dom.Document.QuerySelector("main table"))
+	view.SetElement("dialog", dom.Document.QuerySelector("dialog"))
+	view.SetElement("footer", dom.Document.QuerySelector("footer"))
 
 	view.Init()
 

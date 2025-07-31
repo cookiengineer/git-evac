@@ -1,9 +1,8 @@
 package views
 
-import "gooey"
-import "gooey/app"
-import "gooey/dom"
-import "gooey/location"
+import "github.com/cookiengineer/gooey/components/app"
+import "github.com/cookiengineer/gooey/bindings/dom"
+import "github.com/cookiengineer/gooey/bindings/location"
 import "git-evac-app/actions"
 import "git-evac/server/schemas"
 import "git-evac/structs"
@@ -27,15 +26,15 @@ func NewSettings(main *app.Main) Settings {
 	view.Schema   = &schemas.Settings{}
 	view.Elements = make(map[string]*dom.Element)
 
-	view.SetElement("table", gooey.Document.QuerySelector("main table"))
+	view.SetElement("table", dom.Document.QuerySelector("main table"))
 
-	view.SetElement("settings-backup", gooey.Document.QuerySelector("main input#settings-backup"))
-	view.SetElement("settings-folder", gooey.Document.QuerySelector("main input#settings-folder"))
-	view.SetElement("settings-port",   gooey.Document.QuerySelector("main input#settings-port"))
+	view.SetElement("settings-backup", dom.Document.QuerySelector("main input#settings-backup"))
+	view.SetElement("settings-folder", dom.Document.QuerySelector("main input#settings-folder"))
+	view.SetElement("settings-port",   dom.Document.QuerySelector("main input#settings-port"))
 
-	view.SetElement("main",   gooey.Document.QuerySelector("main"))
-	view.SetElement("dialog", gooey.Document.QuerySelector("body > dialog"))
-	view.SetElement("footer", gooey.Document.QuerySelector("body > footer"))
+	view.SetElement("main",   dom.Document.QuerySelector("main"))
+	view.SetElement("dialog", dom.Document.QuerySelector("body > dialog"))
+	view.SetElement("footer", dom.Document.QuerySelector("body > footer"))
 
 	view.Init()
 
