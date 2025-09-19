@@ -11,8 +11,8 @@ import "os/signal"
 import os_user "os/user"
 import "strconv"
 import "strings"
-import "time"
 import "syscall"
+import "time"
 
 func main() {
 
