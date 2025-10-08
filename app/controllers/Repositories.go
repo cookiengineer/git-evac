@@ -4,26 +4,22 @@ package controllers
 import "github.com/cookiengineer/gooey/components"
 import "github.com/cookiengineer/gooey/components/app"
 import "github.com/cookiengineer/gooey/components/content"
+import "git-evac/server/schemas"
 import "git-evac-app/actions"
 import "fmt"
 
-type Backups struct {
-	Main   *app.Main `json:"main"`
-	Schema any       `json:"schema"`
-	View   *app.View `json:"view"`
+type Repositories struct {
+	Main   *app.Main             `json:"main"`
+	Schema *schemas.Repositories `json:"schema"`
+	View   *app.View             `json:"view"`
 }
 
-func NewBackups(main *app.Main, view *app.View) *Backups {
+func NewRepositories(main *app.Main, view *app.View) *Repositories {
 
-	var controller Backups
+	var controller Repositories
 
 	controller.Main = main
 	controller.View = view
-	// controller.View = app.NewView("backups", "Backups", "/backups.html")
-
-	// controller.View.SetElement("table", dom.Document.QuerySelector("main table"))
-	// controller.View.SetElement("dialog", dom.Document.QuerySelector("dialog"))
-	// controller.View.SetElement("footer", dom.Document.QuerySelector("footer"))
 
 	table, ok1 := components.Unwrap[*content.Table](controller.View.Query(""))
 
@@ -39,11 +35,11 @@ func NewBackups(main *app.Main, view *app.View) *Backups {
 
 }
 
-func (controller *Backups) Name() string {
-	return "backups"
+func (controller *Repositories) Name() string {
+	return "repositories"
 }
 
-func (controller *Backups) Update() {
+func (controller *Repositories) Update() {
 
 	if controller.Main != nil {
 
@@ -60,6 +56,6 @@ func (controller *Backups) Update() {
 
 }
 
-func (controller *Backups) Render() {
+func (controller *Repositories) Render() {
 	controller.View.Render()
 }

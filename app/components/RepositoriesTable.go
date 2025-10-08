@@ -12,7 +12,7 @@ import "github.com/cookiengineer/gooey/interfaces"
 import "strconv"
 import "strings"
 
-type ActionTable struct {
+type RepositoriesTable struct {
 	Name       string        `json:"name"`
 	Labels     []string      `json:"labels"`
 	Properties []string      `json:"properties"`
@@ -32,9 +32,9 @@ type ActionTable struct {
 	sortby     string
 }
 
-func ToActionTable(element *dom.Element) *ActionTable {
+func ToRepositoriesTable(element *dom.Element) *RepositoriesTable {
 
-	var table ActionTable
+	var table RepositoriesTable
 
 	component := components.NewComponent(element)
 	dataset   := data.NewDataset(0)
@@ -60,7 +60,7 @@ func ToActionTable(element *dom.Element) *ActionTable {
 
 }
 
-func (table *ActionTable) Disable() bool {
+func (table *RepositoriesTable) Disable() bool {
 
 	var result bool
 
@@ -98,7 +98,7 @@ func (table *ActionTable) Disable() bool {
 
 }
 
-func (table *ActionTable) Enable() bool {
+func (table *RepositoriesTable) Enable() bool {
 
 	var result bool
 
@@ -136,7 +136,7 @@ func (table *ActionTable) Enable() bool {
 
 }
 
-func (table *ActionTable) Mount() bool {
+func (table *RepositoriesTable) Mount() bool {
 
 	if table.Component != nil {
 		table.Component.InitEvent("action")
@@ -468,7 +468,7 @@ func (table *ActionTable) Mount() bool {
 
 }
 
-func (table *ActionTable) Render() *dom.Element {
+func (table *RepositoriesTable) Render() *dom.Element {
 
 	if table.Component.Element != nil {
 
@@ -585,7 +585,7 @@ func (table *ActionTable) Render() *dom.Element {
 
 }
 
-func (table *ActionTable) Add(data data.Data) bool {
+func (table *RepositoriesTable) Add(data data.Data) bool {
 
 	var result bool = false
 
@@ -601,7 +601,7 @@ func (table *ActionTable) Add(data data.Data) bool {
 
 }
 
-func (table *ActionTable) Deselect(indexes []int) {
+func (table *RepositoriesTable) Deselect(indexes []int) {
 
 	for _, index := range indexes {
 		table.selected[index] = false
@@ -609,7 +609,7 @@ func (table *ActionTable) Deselect(indexes []int) {
 
 }
 
-func (table *ActionTable) Query(query string) interfaces.Component {
+func (table *RepositoriesTable) Query(query string) interfaces.Component {
 
 	selectors := utils.SplitQuery(query)
 
@@ -629,7 +629,7 @@ func (table *ActionTable) Query(query string) interfaces.Component {
 
 }
 
-func (table *ActionTable) Remove(indexes []int) {
+func (table *RepositoriesTable) Remove(indexes []int) {
 
 	entries  := make([]data.Data, 0)
 	selected := make([]bool, 0)
@@ -669,7 +669,7 @@ func (table *ActionTable) Remove(indexes []int) {
 
 }
 
-func (table *ActionTable) Select(indexes []int) {
+func (table *RepositoriesTable) Select(indexes []int) {
 
 	for _, index := range indexes {
 		table.selected[index] = true
@@ -677,7 +677,7 @@ func (table *ActionTable) Select(indexes []int) {
 
 }
 
-func (table *ActionTable) Selected() ([]int, []data.Data) {
+func (table *RepositoriesTable) Selected() ([]int, []data.Data) {
 
 	result_indexes := make([]int, 0)
 	result_dataset := make([]data.Data, 0)
@@ -701,7 +701,7 @@ func (table *ActionTable) Selected() ([]int, []data.Data) {
 
 }
 
-func (table *ActionTable) SetDataset(dataset data.Dataset) {
+func (table *RepositoriesTable) SetDataset(dataset data.Dataset) {
 
 	table.Dataset = &dataset
 	table.selected = make([]bool, dataset.Length())
@@ -716,7 +716,7 @@ func (table *ActionTable) SetDataset(dataset data.Dataset) {
 
 }
 
-func (table *ActionTable) SetData(entries []data.Data) {
+func (table *RepositoriesTable) SetData(entries []data.Data) {
 
 	dataset := data.ToDataset(entries)
 	table.Dataset = &dataset
@@ -731,19 +731,19 @@ func (table *ActionTable) SetData(entries []data.Data) {
 
 }
 
-func (table *ActionTable) SetCenter(components []interfaces.Component) {
+func (table *RepositoriesTable) SetCenter(components []interfaces.Component) {
 	table.Footer.Content.Center = components
 }
 
-func (table *ActionTable) SetLeft(components []interfaces.Component) {
+func (table *RepositoriesTable) SetLeft(components []interfaces.Component) {
 	table.Footer.Content.Left = components
 }
 
-func (table *ActionTable) SetRight(components []interfaces.Component) {
+func (table *RepositoriesTable) SetRight(components []interfaces.Component) {
 	table.Footer.Content.Right = components
 }
 
-func (table *ActionTable) SetLabelsAndPropertiesAndTypes(labels []string, properties []string, types []string) bool {
+func (table *RepositoriesTable) SetLabelsAndPropertiesAndTypes(labels []string, properties []string, types []string) bool {
 
 	var result bool
 
@@ -761,7 +761,7 @@ func (table *ActionTable) SetLabelsAndPropertiesAndTypes(labels []string, proper
 
 }
 
-func (table *ActionTable) SortBy(prop string) bool {
+func (table *RepositoriesTable) SortBy(prop string) bool {
 
 	var result bool
 
@@ -800,7 +800,7 @@ func (table *ActionTable) SortBy(prop string) bool {
 
 }
 
-func (table *ActionTable) String() string {
+func (table *RepositoriesTable) String() string {
 
 	html := "<table"
 
@@ -939,7 +939,7 @@ func (table *ActionTable) String() string {
 
 }
 
-func (table *ActionTable) Unmount() bool {
+func (table *RepositoriesTable) Unmount() bool {
 
 	if table.Component.Element != nil {
 		table.Component.Element.RemoveEventListener("click", nil)
