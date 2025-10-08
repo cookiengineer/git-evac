@@ -1,39 +1,38 @@
 package main
 
-import "github.com/cookiengineer/gooey/bindings/dom"
 import "github.com/cookiengineer/gooey/components/app"
-import "git-evac-app/views"
+import "github.com/cookiengineer/gooey/components/content"
+import "github.com/cookiengineer/gooey/components/layout"
+import "github.com/cookiengineer/gooey/components/ui"
+import app_components "git-evac-app/components"
+import app_controllers "git-evac-app/controllers"
+import app_views "git-evac-app/views"
 import "time"
 
 func main() {
 
-	element := dom.Document.QuerySelector("main")
+	main := app.NewMain()
 
-	if element != nil {
+	// Register Gooey Components
+	content.RegisterTo(main.Document)
+	layout.RegisterTo(main.Document)
+	ui.RegisterTo(main.Document)
 
-		main := app.Main{}
-		main.Init(element)
+	// Register App Components
+	app_components.RegisterTo(main.Document)
 
-		view := element.GetAttribute("data-view")
+	// Register App Controllers
+	app_controllers.RegisterTo(main)
 
-		if view == "repositories" {
-			main.SetView("repositories", views.NewRepositories(&main))
-			main.ChangeView("repositories")
-		} else if view == "backups" {
-			main.SetView("backups", views.NewBackups(&main))
-			main.ChangeView("backups")
-		} else if view == "settings" {
-			main.SetView("settings", views.NewSettings(&main))
-			main.ChangeView("settings")
-		}
+	// Register App Views
+	app_views.RegisterTo(main)
 
-	}
+	// Start the App
+	main.Mount()
+	main.Render()
 
 	for true {
-
-		// Do Nothing
 		time.Sleep(1 * time.Second)
-
 	}
 
 }
