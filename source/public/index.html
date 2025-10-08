@@ -29,31 +29,36 @@
 	</head>
 	<body>
 		<header id="header">
+			<div></div>
 			<ul>
 				<li class="active"><a data-view="repositories" href="/index.html">Repositories</a></li>
 				<li><a data-view="backups" href="/backups.html">Backups</a></li>
 				<li><a data-view="settings" href="/settings.html">Settings</a></li>
 			</ul>
+			<div></div>
 		</header>
 		<main id="main" data-view="repositories">
-			<table id="main-table">
-				<thead>
-					<tr>
-						<th><input type="checkbox" title="Toggle all repositories"/></th>
-						<th>Repository</th>
-						<th>Remotes</th>
-						<th>Branches</th>
-						<th>Action</th>
-					</tr>
-				</thead>
-				<tbody></tbody>
-			</table>
+			<section data-name="repositories" data-label="Repositories" data-path="/index.html" data-state="active">
+				<table data-name="repositories" data-selectable="true">
+					<thead>
+						<tr>
+							<th><input type="checkbox" title="Toggle all repositories"/></th>
+							<th>Repository</th>
+							<th>Remotes</th>
+							<th>Branches</th>
+							<th>Action</th>
+						</tr>
+					</thead>
+					<tbody></tbody>
+				</table>
+			</section>
 		</main>
-		<footer id="footer">
+		<footer>
+			<div></div>
 			<div>Selected 0 of 0 Repositories</div>
 			<div></div>
 		</footer>
-		<dialog id="dialog">
+		<dialog>
 			<article>
 				<button data-action="close"></button>
 				<h3>Fix 0 Repositories</h3>
@@ -62,6 +67,7 @@
 				</table>
 				<footer>
 					<div><button class="secondary" data-action="cancel">Cancel</button></div>
+					<div></div>
 					<div><button class="primary" data-action="confirm">Confirm</button></div>
 				</footer>
 			</article>
