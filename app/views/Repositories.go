@@ -11,7 +11,7 @@ import app_components "git-evac-app/components"
 import "sort"
 import "strings"
 
-type RepositoriesView struct {
+type Repositories struct {
 	Element *dom.Element           `json:"element"`
 	Layout  types.Layout           `json:"layout"`
 	Content []interfaces.Component `json:"content"`
@@ -20,9 +20,9 @@ type RepositoriesView struct {
 	path    string                 `json:"path"`
 }
 
-func NewBackup(name string, label string, path string) *RepositoriesView {
+func NewBackup(name string, label string, path string) *Repositories {
 
-	var view RepositoriesView
+	var view Repositories
 
 	element := dom.Document.CreateElement("section")
 
@@ -38,9 +38,9 @@ func NewBackup(name string, label string, path string) *RepositoriesView {
 
 }
 
-func ToRepositoriesView(element *dom.Element) *RepositoriesView {
+func ToRepositories(element *dom.Element) *Repositories {
 
-	var view RepositoriesView
+	var view Repositories
 
 	view.Element = element
 	view.Layout  = types.LayoutFlow
@@ -54,15 +54,15 @@ func ToRepositoriesView(element *dom.Element) *RepositoriesView {
 
 }
 
-func (view *RepositoriesView) Disable() bool {
+func (view *Repositories) Disable() bool {
 	return false
 }
 
-func (view *RepositoriesView) Enable() bool {
+func (view *Repositories) Enable() bool {
 	return false
 }
 
-func (view *RepositoriesView) Enter() bool {
+func (view *Repositories) Enter() bool {
 
 	if view.Element != nil {
 		view.Element.SetAttribute("data-state", "active")
@@ -72,7 +72,7 @@ func (view *RepositoriesView) Enter() bool {
 
 }
 
-func (view *RepositoriesView) Leave() bool {
+func (view *Repositories) Leave() bool {
 
 	if view.Element != nil {
 		view.Element.RemoveAttribute("data-state")
@@ -82,11 +82,11 @@ func (view *RepositoriesView) Leave() bool {
 
 }
 
-func (view *RepositoriesView) Label() string {
+func (view *Repositories) Label() string {
 	return view.label
 }
 
-func (view *RepositoriesView) Mount() bool {
+func (view *Repositories) Mount() bool {
 
 	if view.Element != nil {
 
@@ -141,15 +141,15 @@ func (view *RepositoriesView) Mount() bool {
 
 }
 
-func (view *RepositoriesView) Name() string {
+func (view *Repositories) Name() string {
 	return view.name
 }
 
-func (view *RepositoriesView) Path() string {
+func (view *Repositories) Path() string {
 	return view.path
 }
 
-func (view *RepositoriesView) Query(query string) interfaces.Component {
+func (view *Repositories) Query(query string) interfaces.Component {
 
 	selectors := utils.SplitQuery(query)
 
@@ -191,7 +191,7 @@ func (view *RepositoriesView) Query(query string) interfaces.Component {
 
 }
 
-func (view *RepositoriesView) QuerySelector(query string) *dom.Element {
+func (view *Repositories) QuerySelector(query string) *dom.Element {
 
 	if view.Element != nil {
 		return view.Element.QuerySelector(query)
@@ -201,7 +201,7 @@ func (view *RepositoriesView) QuerySelector(query string) *dom.Element {
 
 }
 
-func (view *RepositoriesView) QuerySelectorAll(query string) []*dom.Element {
+func (view *Repositories) QuerySelectorAll(query string) []*dom.Element {
 
 	result := make([]*dom.Element, 0)
 
@@ -214,7 +214,7 @@ func (view *RepositoriesView) QuerySelectorAll(query string) []*dom.Element {
 }
 
 
-func (view *RepositoriesView) Render() *dom.Element {
+func (view *Repositories) Render() *dom.Element {
 
 	if view.Element != nil {
 
@@ -250,7 +250,7 @@ func (view *RepositoriesView) Render() *dom.Element {
 
 }
 
-func (view *RepositoriesView) String() string {
+func (view *Repositories) String() string {
 
 	html := ""
 
@@ -282,7 +282,7 @@ func (view *RepositoriesView) String() string {
 
 }
 
-func (view *RepositoriesView) Unmount() bool {
+func (view *Repositories) Unmount() bool {
 
 	for _, component := range view.Content {
 		component.Unmount()

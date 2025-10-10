@@ -7,11 +7,12 @@ import "github.com/cookiengineer/gooey/interfaces"
 func RegisterTo(main *app.Main) {
 
 	main.RegisterView("repositories", func(element *dom.Element) interfaces.View {
-		return ToRepositoriesView(element)
+		return ToRepositories(element)
 	})
 
 	main.RegisterView("backups", func(element *dom.Element) interfaces.View {
-		return ToRepositoriesView(element)
+		// TODO: Change this to ToBackups(element)
+		return ToRepositories(element)
 	})
 
 }

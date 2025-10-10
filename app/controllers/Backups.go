@@ -4,6 +4,7 @@ package controllers
 import "github.com/cookiengineer/gooey/components"
 import "github.com/cookiengineer/gooey/components/app"
 import "github.com/cookiengineer/gooey/components/content"
+import "github.com/cookiengineer/gooey/interfaces"
 import "git-evac-app/actions"
 import "fmt"
 
@@ -13,12 +14,12 @@ type Backups struct {
 	View   *app.View `json:"view"`
 }
 
-func NewBackups(main *app.Main, view *app.View) *Backups {
+func NewBackups(main *app.Main, view interfaces.View) *Backups {
 
 	var controller Backups
 
 	controller.Main = main
-	controller.View = view
+	controller.View = view.(*app.View)
 	// controller.View = app.NewView("backups", "Backups", "/backups.html")
 
 	// controller.View.SetElement("table", dom.Document.QuerySelector("main table"))

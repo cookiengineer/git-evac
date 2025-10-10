@@ -11,6 +11,7 @@ import "github.com/cookiengineer/gooey/components/data"
 import "github.com/cookiengineer/gooey/interfaces"
 import "strconv"
 import "strings"
+import "fmt"
 
 type RepositoriesTable struct {
 	Name       string        `json:"name"`
@@ -508,6 +509,10 @@ func (table *RepositoriesTable) Render() *dom.Element {
 
 				}
 
+				whatever := table.Dataset.Get(position)
+
+				fmt.Println(position, whatever)
+
 				values, _ := table.Dataset.Get(position).String()
 
 				for _, property := range table.Properties {
@@ -617,7 +622,7 @@ func (table *RepositoriesTable) Query(query string) interfaces.Component {
 
 		if table.Component.Element != nil {
 
-			if utils.MatchesQuery(table.Component.Element, query) == true {
+			if utils.MatchesQuery(table.Component.Element, selectors[0]) == true {
 				return table
 			}
 

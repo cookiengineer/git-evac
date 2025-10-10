@@ -5,15 +5,15 @@ import "github.com/cookiengineer/gooey/interfaces"
 
 func RegisterTo(main *app.Main) {
 
-	main.RegisterController("repositories", func(main *app.Main, view *app.View) interfaces.Controller {
+	main.RegisterController("repositories", func(main *app.Main, view interfaces.View) interfaces.Controller {
 		return NewRepositories(main, view)
 	})
 
-	main.RegisterController("backups", func(main *app.Main, view *app.View) interfaces.Controller {
+	main.RegisterController("backups", func(main *app.Main, view interfaces.View) interfaces.Controller {
 		return NewBackups(main, view)
 	})
 
-	main.RegisterController("settings", func(main *app.Main, view *app.View) interfaces.Controller {
+	main.RegisterController("settings", func(main *app.Main, view interfaces.View) interfaces.Controller {
 		return NewSettings(main, view)
 	})
 

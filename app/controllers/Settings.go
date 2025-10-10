@@ -4,6 +4,7 @@ package controllers
 // import "github.com/cookiengineer/gooey/components"
 import "github.com/cookiengineer/gooey/components/app"
 // import "github.com/cookiengineer/gooey/components/content"
+import "github.com/cookiengineer/gooey/interfaces"
 // import "git-evac-app/actions"
 
 type Settings struct {
@@ -12,12 +13,12 @@ type Settings struct {
 	View   *app.View `json:"view"`
 }
 
-func NewSettings(main *app.Main, view *app.View) *Settings {
+func NewSettings(main *app.Main, view interfaces.View) *Settings {
 
 	var controller Settings
 
 	controller.Main = main
-	controller.View = view
+	controller.View = view.(*app.View)
 
 	// TODO
 
