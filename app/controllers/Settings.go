@@ -4,7 +4,7 @@ package controllers
 // import "github.com/cookiengineer/gooey/components"
 import "github.com/cookiengineer/gooey/components/app"
 // import "github.com/cookiengineer/gooey/components/content"
-import "github.com/cookiengineer/gooey/interfaces"
+import "github.com/cookiengineer/gooey/components/interfaces"
 // import "git-evac-app/actions"
 
 type Settings struct {

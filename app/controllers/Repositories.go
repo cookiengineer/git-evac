@@ -4,7 +4,7 @@ package controllers
 import "github.com/cookiengineer/gooey/components"
 import "github.com/cookiengineer/gooey/components/app"
 import "github.com/cookiengineer/gooey/components/data"
-import "github.com/cookiengineer/gooey/interfaces"
+import "github.com/cookiengineer/gooey/components/interfaces"
 import "git-evac/server/schemas"
 import app_actions "git-evac-app/actions"
 import app_components "git-evac-app/components"
@@ -25,7 +25,7 @@ func NewRepositories(main *app.Main, view interfaces.View) *Repositories {
 	controller.Main = main
 	controller.View = view.(*app_views.Repositories)
 
-	table, ok1 := components.Unwrap[*app_components.RepositoriesTable](controller.View.Query("section > table[data-name=\"repositories\"]"))
+	table, ok1 := components.UnwrapComponent[*app_components.RepositoriesTable](controller.View.Query("section > table[data-name=\"repositories\"]"))
 
 	if table != nil && ok1 == true {
 
@@ -90,7 +90,7 @@ func (controller *Repositories) Update() {
 			controller.Schema = schema
 			controller.Main.Storage.Write("repositories", schema)
 
-			table, ok1 := components.Unwrap[*app_components.RepositoriesTable](controller.View.Query("section > table"))
+			table, ok1 := components.UnwrapComponent[*app_components.RepositoriesTable](controller.View.Query("section > table"))
 
 			if len(controller.Schema.Owners) > 0 && ok1 == true {
 

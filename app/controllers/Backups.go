@@ -4,7 +4,7 @@ package controllers
 import "github.com/cookiengineer/gooey/components"
 import "github.com/cookiengineer/gooey/components/app"
 import "github.com/cookiengineer/gooey/components/content"
-import "github.com/cookiengineer/gooey/interfaces"
+import "github.com/cookiengineer/gooey/components/interfaces"
 import "git-evac-app/actions"
 import "fmt"
 
@@ -26,7 +26,7 @@ func NewBackups(main *app.Main, view interfaces.View) *Backups {
 	// controller.View.SetElement("dialog", dom.Document.QuerySelector("dialog"))
 	// controller.View.SetElement("footer", dom.Document.QuerySelector("footer"))
 
-	table, ok1 := components.Unwrap[*content.Table](controller.View.Query(""))
+	table, ok1 := components.UnwrapComponent[*content.Table](controller.View.Query(""))
 
 	if table != nil && ok1 == true {
 
