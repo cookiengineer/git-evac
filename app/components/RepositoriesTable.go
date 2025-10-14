@@ -2,29 +2,21 @@
 
 package components
 
-import "github.com/cookiengineer/gooey/bindings/console"
 import "github.com/cookiengineer/gooey/bindings/dom"
 import "github.com/cookiengineer/gooey/components"
-import "github.com/cookiengineer/gooey/components/ui"
 import "github.com/cookiengineer/gooey/components/utils"
-import "github.com/cookiengineer/gooey/components/data"
 import "github.com/cookiengineer/gooey/components/interfaces"
-import "git-evac/server/schemas"
+import "git-evac/schemas"
+import app_schemas "git-evac-app/schemas"
+import "sort"
 import "strconv"
 import "strings"
-import "fmt"
 
 type RepositoriesTable struct {
 	Name       string                `json:"name"`
-	Labels     []string              `json:"labels"`
-	Properties []string              `json:"properties"`
-	Types      []string              `json:"types"`
 	Schema     *schemas.Repositories `json:"schema"`
 	Component  *components.Component `json:"component"`
-	Selectable bool                  `json:"selectable"`
-	selected   []bool
-	sorted     []int
-	sortby     string
+	selected   map[string]bool
 }
 
 func ToRepositoriesTable(element *dom.Element) *RepositoriesTable {
@@ -33,16 +25,10 @@ func ToRepositoriesTable(element *dom.Element) *RepositoriesTable {
 
 	component := components.NewComponent(element)
 
-	table.Schema     = nil
-	table.Component  = &component
-	table.Name       = ""
-	table.Labels     = make([]string, 0)
-	table.Properties = make([]string, 0)
-	table.Types      = make([]string, 0)
-	table.Selectable = element.HasAttribute("data-selectable")
-	table.selected   = make([]bool, 0)
-	table.sorted     = make([]int, 0)
-	table.sortby     = ""
+	table.Schema    = nil
+	table.Component = &component
+	table.Name      = ""
+	table.selected  = make(map[string]bool)
 
 	table.Mount()
 
@@ -104,146 +90,6 @@ func (table *RepositoriesTable) Mount() bool {
 			table.Name = strings.TrimSpace(strings.ToLower(name))
 		}
 
-		selectable := table.Component.Element.GetAttribute("data-selectable")
-
-		if selectable == "true" {
-			table.Selectable = true
-		} else {
-			table.Selectable = false
-		}
-
-		thead := table.Component.Element.QuerySelector("thead")
-
-		if thead != nil && len(table.Labels) == 0 && len(table.Properties) == 0 && len(table.Types) == 0 {
-
-			elements   := thead.QuerySelectorAll("th")
-			labels     := make([]string, 0)
-			properties := make([]string, 0)
-			types      := make([]string, 0)
-			selectable := table.Selectable
-
-			if len(elements) > 0 {
-
-				checkbox := elements[0].QuerySelector("input[type=\"checkbox\"]")
-
-				if checkbox != nil {
-					elements   = elements[1:]
-					selectable = true
-				}
-
-				for e := 0; e < len(elements); e++ {
-
-					element := elements[e]
-
-					label    := strings.TrimSpace(element.TextContent)
-					property := element.GetAttribute("data-property")
-					typ      := element.GetAttribute("data-type")
-
-					if typ == "" {
-						typ = "string"
-					}
-
-					if label != "" && property != "" {
-
-						labels     = append(labels, label)
-						properties = append(properties, property)
-						types      = append(types, typ)
-
-					}
-
-				}
-
-			}
-
-			table.Labels     = labels
-			table.Properties = properties
-			table.Types      = types
-			table.Selectable = selectable
-
-		}
-
-		tbody := table.Component.Element.QuerySelector("tbody")
-
-		if tbody != nil {
-
-			rows     := tbody.QuerySelectorAll("tr")
-			dataset  := data.NewDataset(len(rows))
-			sorted   := make([]int, len(rows))
-			selected := make([]bool, len(rows))
-
-			for r, row := range rows {
-
-				var id int = -1
-
-				id_str := row.GetAttribute("data-id")
-
-				if id_str != "" {
-
-					tmp, err := strconv.ParseInt(id_str, 10, 0)
-
-					if err == nil {
-						id = int(tmp)
-					}
-
-				} else {
-					id = int(r)
-				}
-
-				elements := row.QuerySelectorAll("td")
-
-				if len(elements) > 0 {
-
-					checkbox := elements[0].QuerySelector("input[type=\"checkbox\"]")
-					values   := make(map[string]string)
-					types    := make(map[string]string)
-
-					if checkbox != nil {
-						elements = elements[1:]
-					}
-
-					for e := 0; e < len(elements); e++ {
-
-						key := table.Properties[e]
-						typ := table.Types[e]
-						val := strings.TrimSpace(elements[e].TextContent)
-
-						if key != "" && typ != "" && val != "" {
-							values[key] = val
-							types[key]  = typ
-						}
-
-					}
-
-					if len(values) == len(types) {
-
-						if id != -1 && id >= 0 && id < dataset.Length() {
-							dataset.Set(id, data.ParseData(values, types))
-							selected[id] = row.HasAttribute("data-select")
-							sorted[r] = id
-						} else {
-							dataset.Set(id, data.ParseData(values, types))
-							selected[r] = row.HasAttribute("data-select")
-							sorted[r] = id
-						}
-
-					}
-
-				}
-
-			}
-
-			table.Dataset = &dataset
-			table.sorted = sorted
-			table.selected = selected
-
-		} else {
-
-			console.Group("Table Body: Invalid Markup")
-			console.Error("Expected <tr>...</tr>")
-			console.GroupEnd("Table Body: Invalid Markup")
-
-		}
-
 		table.Component.Element.AddEventListener("click", dom.ToEventListener(func(event *dom.Event) {
 
 			if event.Target != nil {
@@ -260,16 +106,16 @@ func (table *RepositoriesTable) Mount() bool {
 
 						if is_active == true {
 
-							for s := 0; s < len(table.selected); s++ {
-								table.selected[s] = true
+							for identifier, _ := range table.selected {
+								table.selected[identifier] = true
 							}
 
 							table.Render()
 
 						} else {
 
-							for s := 0; s < len(table.selected); s++ {
-								table.selected[s] = false
+							for identifier, _ := range table.selected {
+								table.selected[identifier] = false
 							}
 
 							table.Render()
@@ -278,77 +124,23 @@ func (table *RepositoriesTable) Mount() bool {
 
 					} else {
 
-						is_active := event.Target.Value.Get("checked").Bool()
-						tmp       := event.Target.QueryParent("tr").GetAttribute("data-id")
+						is_active  := event.Target.Value.Get("checked").Bool()
+						identifier := event.Target.QueryParent("tr").GetAttribute("data-id")
 
 						if is_active == true {
 
-							num, err := strconv.ParseInt(tmp, 10, 64)
-
-							if err == nil {
-
-								index := int(num)
-
-								if index >= 0 && index < table.Dataset.Length() {
-
-									table.selected[index] = true
-									table.Render()
-
-								}
-
-							}
+							table.selected[identifier] = true
+							table.Render()
 
 						} else {
 
-							num, err := strconv.ParseInt(tmp, 10, 64)
+							input := table.Component.Element.QuerySelector("thead input[data-action=\"select\"]")
 
-							if err == nil {
-
-								index := int(num)
-
-								if index >= 0 && index < table.Dataset.Length() {
-
-									input := table.Component.Element.QuerySelector("thead input[data-action=\"select\"]")
-
-									if input != nil {
-										input.Value.Set("checked", false)
-									}
-
-									table.selected[index] = false
-									table.Render()
-
-								}
-
+							if input != nil {
+								input.Value.Set("checked", false)
 							}
 
-						}
-
-						event.PreventDefault()
-						event.StopPropagation()
-
-					}
-
-				} else if action == "sort" {
-
-					thead := table.Component.Element.QuerySelector("thead")
-					th    := event.Target.QueryParent("th")
-
-					if thead != nil && th != nil {
-
-						property := th.GetAttribute("data-property")
-						ths      := thead.QuerySelectorAll("th")
-
-						for _, th := range ths {
-							th.RemoveAttribute("data-sort")
-						}
-
-						if table.sortby != property {
-
-							th.SetAttribute("data-sort", "ascending")
-
-							table.sorted = table.Dataset.SortByProperty(property)
-							table.sortby = property
-
+							table.selected[identifier] = false
 							table.Render()
 
 						}
@@ -380,80 +172,70 @@ func (table *RepositoriesTable) Render() *dom.Element {
 			table.Component.Element.SetAttribute("data-name", table.Name)
 		}
 
-		if table.Selectable == true {
-			table.Component.Element.SetAttribute("data-selectable", "true")
-		}
-
 		tbody := table.Component.Element.QuerySelector("tbody")
 
 		if tbody != nil {
 
 			elements := make([]*dom.Element, 0)
 
-			for _, position := range table.sorted {
+			if table.Schema != nil {
 
-				tr := dom.Document.CreateElement("tr")
+				for _, owner := range table.Schema.Owners {
 
-				tr.SetAttribute("data-id", strconv.FormatInt(int64(position), 10))
+					for _, repository := range owner.Repositories {
 
-				if table.selected[position] == true {
-					tr.SetAttribute("data-select", "true")
-				}
+						id := owner.Name + "/" + repository.Name
+						actions := make([]string, 0)
+						branches := make([]string, 0)
+						remotes := make([]string, 0)
 
-				html := ""
-
-				if table.Selectable == true {
-
-					if table.selected[position] == true {
-						html += "<td><input type=\"checkbox\" data-action=\"select\" checked/></td>"
-					} else {
-						html += "<td><input type=\"checkbox\" data-action=\"select\"/></td>"
-					}
-
-				}
-
-				whatever := table.Dataset.Get(position)
-
-				fmt.Println(position, whatever)
-
-				values, _ := table.Dataset.Get(position)
-
-				for _, property := range table.Properties {
-
-					value, ok := values[property]
-
-					if property == "repository" {
-
-						html += "<td>" + value + "</td>"
-
-					} else if property == "remotes" {
-
-						labels := make([]string, 0)
-
-						fmt.Println("remote", value)
-
-						for _, remote := range value {
-							labels = append(labels, remote)
+						for _, branch_name := range repository.Branches {
+							branches = append(branches, "<label>" + branch_name + "</label>")
 						}
 
-						html += "<td>" + labels + "</td>"
+						for remote_name, _ := range repository.Remotes {
+							remotes = append(remotes, "<label>" + remote_name + "</label>")
+						}
 
-					} else if property == "branches" {
+						if repository.HasRemoteChanges == true {
+							actions = append(actions, "<button data-action=\"fix\">Fix</button>")
+						} else if repository.HasLocalChanges == true {
+							actions = append(actions, "<button data-action=\"commit\">Commit</button>")
+						} else {
+							actions = append(actions, "<button data-action=\"pull\">Pull</button>")
+							actions = append(actions, "<button data-action=\"push\">Push</button>")
+						}
 
-					} else if property == "actions" {
+						sort.Strings(actions)
+						sort.Strings(branches)
+						sort.Strings(remotes)
 
-					}
+						tr := dom.Document.CreateElement("tr")
+						tr.SetAttribute("data-id", id)
 
-					if ok == true {
-					} else {
-						html += "<td></td>"
+						if table.selected[id] == true {
+							tr.SetAttribute("data-select", "true")
+						}
+
+						html := ""
+
+						if table.selected[id] == true {
+							html += "<td><input type=\"checkbox\" data-action=\"select\" checked/></td>"
+						} else {
+							html += "<td><input type=\"checkbox\" data-action=\"select\"/></td>"
+						}
+
+						html += "<td>" + owner.Name + "/" + repository.Name + "</td>"
+						html += "<td>" + strings.Join(remotes, " ") + "</td>"
+						html += "<td>" + strings.Join(branches, " ") + "</td>"
+						html += "<td>" + strings.Join(actions, " ") + "</td>"
+
+						tr.SetInnerHTML(html)
+						elements = append(elements, tr)
+
 					}
 
 				}
-
-				tr.SetInnerHTML(html)
-
-				elements = append(elements, tr)
 
 			}
 
@@ -467,10 +249,16 @@ func (table *RepositoriesTable) Render() *dom.Element {
 
 }
 
-func (table *RepositoriesTable) Deselect(indexes []int) {
+func (table *RepositoriesTable) Deselect(names []string) {
 
-	for _, index := range indexes {
-		table.selected[index] = false
+	for _, name := range names {
+
+		_, ok := table.selected[name]
+
+		if ok == true {
+			table.selected[name] = false
+		}
+
 	}
 
 }
@@ -495,65 +283,62 @@ func (table *RepositoriesTable) Query(query string) interfaces.Component {
 
 }
 
-func (table *RepositoriesTable) Select(indexes []int) {
+func (table *RepositoriesTable) Select(identifiers []string) {
 
-	for _, index := range indexes {
-		table.selected[index] = true
-	}
+	for _, id := range identifiers {
 
-}
+		_, ok := table.selected[id]
 
-func (table *RepositoriesTable) Selected() ([]int, []data.Data) {
-
-	result_indexes := make([]int, 0)
-	result_dataset := make([]data.Data, 0)
-
-	for s, value := range table.selected {
-
-		if value == true {
-
-			data := table.Dataset.Get(s)
-
-			if data != nil {
-				result_indexes = append(result_indexes, s)
-				result_dataset = append(result_dataset, *data)
-			}
-
+		if ok == true {
+			table.selected[id] = true
 		}
 
 	}
 
-	return result_indexes, result_dataset
-
 }
 
-func (table *RepositoriesTable) SetSchema(repositories schemas.Repositories) {
+func (table *RepositoriesTable) Selected() app_schemas.Selected {
 
-	table.Repositories = &repositories
+	result := app_schemas.Selected(map[string]string{})
 
-	// TODO: Get repositories.Length() manually
+	if table.Schema != nil {
 
-	table.selected = make([]bool, dataset.Length())
-	table.sortby = ""
-	table.sorted = make([]int, dataset.Length())
+		for id, is_selected := range table.selected {
 
-	for d := 0; d < dataset.Length(); d++ {
-		table.sorted[d] = d
-	}
+			if is_selected == true {
 
-}
+				id_owner      := id[0:strings.Index(id, "/")]
+				id_repository := id[strings.Index(id, "/")+1:]
 
-func (table *RepositoriesTable) SetLabelsAndPropertiesAndTypes(labels []string, properties []string, types []string) bool {
+				_, ok1 := table.Schema.Owners[id_owner]
 
-	var result bool
+				if ok1 == true {
 
-	if len(labels) == len(properties) && len(labels) == len(types) {
+					repository, ok2 := table.Schema.Owners[id_owner].Repositories[id_repository]
 
-		table.Labels     = labels
-		table.Properties = properties
-		table.Types      = types
+					if ok2 == true {
 
-		result = true
+						action := ""
+
+						if repository.HasRemoteChanges == true {
+							action = "fix"
+						} else if repository.HasLocalChanges == true {
+							action = "commit"
+						} else {
+							action = "pull-or-push"
+						}
+
+						if action != "" {
+							result.Set(id, action)
+						}
+
+					}
+
+				}
+
+			}
+
+		}
 
 	}
 
@@ -561,42 +346,22 @@ func (table *RepositoriesTable) SetLabelsAndPropertiesAndTypes(labels []string, 
 
 }
 
-func (table *RepositoriesTable) SortBy(prop string) bool {
+func (table *RepositoriesTable) SetSchema(schema *schemas.Repositories) {
 
-	var result bool
+	if schema != nil && len(schema.Owners) > 0 {
 
-	thead := table.Component.Element.QuerySelector("thead")
+		table.Schema = schema
+		table.selected = make(map[string]bool)
 
-	if thead != nil {
+		for _, owner := range table.Schema.Owners {
 
-		ths   := thead.QuerySelectorAll("th")
-		found := false
-
-		for _, th := range ths {
-			th.RemoveAttribute("data-sort")
-		}
-
-		for _, th := range ths {
-
-			property := th.GetAttribute("data-property")
-
-			if property == prop {
-				th.SetAttribute("data-sort", "ascending")
-				found = true
-				break
+			for _, repository := range owner.Repositories {
+				table.selected[owner.Name + "/" + repository.Name] = false
 			}
 
 		}
 
-		if found == true {
-			table.sorted = table.Dataset.SortByProperty(prop)
-			table.sortby = prop
-			result = true
-		}
-
 	}
-
-	return result
 
 }
 
@@ -608,37 +373,15 @@ func (table *RepositoriesTable) String() string {
 		html += " data-name=\"" + table.Name + "\""
 	}
 
-	if table.Selectable == true {
-		html += " data-selectable=\"" + strconv.FormatBool(table.Selectable) + "\""
-	}
-
 	html += ">"
 
 	html += "<thead>"
 	html += "<tr>"
-
-	if table.Selectable == true {
-		html += "<th><input type=\"checkbox\" data-action=\"select\"/></th>"
-	}
-
-	for l, label := range table.Labels {
-
-		property := table.Properties[l]
-		typ      := table.Types[l]
-
-		html += "<th data-property=\"" + property + "\" data-type=\"" + typ + "\""
-
-		if table.sortby == property {
-			html += " data-sort=\"ascending\""
-		}
-
-		html += ">"
-		html += "<label data-action=\"sort\">"
-		html += label
-		html += "</label>"
-		html += "</th>"
-
-	}
+	html += "<th><input type=\"checkbox\" title=\"Toggle all repositories\" data-action=\"select\"/></th>"
+	html += "<th>Repository</th>"
+	html += "<th>Remotes</th>"
+	html += "<th>Branches</th>"
+	html += "<th>Actions</th>"
 
 	html += "</tr>"
 	html += "</thead>"
@@ -655,14 +398,10 @@ func (table *RepositoriesTable) String() string {
 
 		html += ">"
 
-		if table.Selectable == true {
-
-			if table.selected[position] == true {
-				html += "<td><input type=\"checkbox\" data-action=\"select\" checked/></td>"
-			} else {
-				html += "<td><input type=\"checkbox\" data-action=\"select\"/></td>"
-			}
-
+		if table.selected[position] == true {
+			html += "<td><input type=\"checkbox\" data-action=\"select\" checked/></td>"
+		} else {
+			html += "<td><input type=\"checkbox\" data-action=\"select\"/></td>"
 		}
 
 		values, _ := table.Dataset.Get(position).String()

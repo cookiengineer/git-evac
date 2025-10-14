@@ -3,9 +3,8 @@ package controllers
 // import "github.com/cookiengineer/gooey/bindings/dom"
 import "github.com/cookiengineer/gooey/components"
 import "github.com/cookiengineer/gooey/components/app"
-import "github.com/cookiengineer/gooey/components/data"
 import "github.com/cookiengineer/gooey/components/interfaces"
-import "git-evac/server/schemas"
+import "git-evac/schemas"
 import app_actions "git-evac-app/actions"
 import app_components "git-evac-app/components"
 import app_views "git-evac-app/views"
@@ -93,52 +92,7 @@ func (controller *Repositories) Update() {
 			table, ok1 := components.UnwrapComponent[*app_components.RepositoriesTable](controller.View.Query("section > table"))
 
 			if len(controller.Schema.Owners) > 0 && ok1 == true {
-
-				dataset := data.NewDataset(0)
-
-				for _, owner := range controller.Schema.Owners {
-
-					for _, repository := range owner.Repositories {
-
-						actions := make([]string, 0)
-						branches := make([]string, 0)
-						remotes := make([]string, 0)
-
-						for _, branch_name := range repository.Branches {
-							branches = append(branches, branch_name)
-						}
-
-						for remote_name, _ := range repository.Remotes {
-							remotes = append(remotes, remote_name)
-						}
-
-						if repository.HasRemoteChanges == true {
-							actions = append(actions, "fix")
-						} else if repository.HasLocalChanges == true {
-							actions = append(actions, "commit")
-						} else {
-							actions = append(actions, "pull")
-							actions = append(actions, "push")
-						}
-
-						sort.Strings(actions)
-						sort.Strings(branches)
-						sort.Strings(remotes)
-
-						dataset.Add(data.Data(map[string]any{
-							"repository": owner.Name + "/" + repository.Name,
-							"remotes":    remotes,
-							"branches":   branches,
-							"actions":    actions,
-						}))
-
-						table.SetDataset(dataset)
-						table.SortBy("repository")
-
-					}
-
-				}
-
+				table.SetSchema(controller.Schema)
 			}
 
 		}

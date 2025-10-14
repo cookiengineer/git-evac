@@ -1,7 +1,7 @@
 package api
 
 import "git-evac/console"
-import "git-evac/server/schemas"
+import "git-evac/schemas"
 import "git-evac/structs"
 import utils_remotes "git-evac/utils/remotes"
 import "bytes"

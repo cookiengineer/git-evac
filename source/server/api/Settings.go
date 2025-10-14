@@ -1,7 +1,7 @@
 package api
 
 import "git-evac/console"
-import "git-evac/server/schemas"
+import "git-evac/schemas"
 import "git-evac/structs"
 import "encoding/json"
 import "io"
