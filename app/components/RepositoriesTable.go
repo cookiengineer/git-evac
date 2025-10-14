@@ -9,23 +9,17 @@ import "github.com/cookiengineer/gooey/components/ui"
 import "github.com/cookiengineer/gooey/components/utils"
 import "github.com/cookiengineer/gooey/components/data"
 import "github.com/cookiengineer/gooey/components/interfaces"
+import "git-evac/server/schemas"
 import "strconv"
 import "strings"
 import "fmt"
 
 type RepositoriesTable struct {
-	Name       string        `json:"name"`
-	Labels     []string      `json:"labels"`
-	Properties []string      `json:"properties"`
-	Types      []string      `json:"types"`
-	Dataset    *data.Dataset `json:"dataset"`
-	Footer     struct {
-		Content struct {
-			Left   []interfaces.Component `json:"left"`
-			Center []interfaces.Component `json:"center"`
-			Right  []interfaces.Component `json:"right"`
-		} `json:"content"`
-	} `json:"footer"`
+	Name       string                `json:"name"`
+	Labels     []string              `json:"labels"`
+	Properties []string              `json:"properties"`
+	Types      []string              `json:"types"`
+	Schema     *schemas.Repositories `json:"schema"`
 	Component  *components.Component `json:"component"`
 	Selectable bool                  `json:"selectable"`
 	selected   []bool
@@ -38,9 +32,8 @@ func ToRepositoriesTable(element *dom.Element) *RepositoriesTable {
 	var table RepositoriesTable
 
 	component := components.NewComponent(element)
-	dataset   := data.NewDataset(0)
 
-	table.Dataset    = &dataset
+	table.Schema     = nil
 	table.Component  = &component
 	table.Name       = ""
 	table.Labels     = make([]string, 0)
@@ -50,10 +43,6 @@ func ToRepositoriesTable(element *dom.Element) *RepositoriesTable {
 	table.selected   = make([]bool, 0)
 	table.sorted     = make([]int, 0)
 	table.sortby     = ""
-
-	table.Footer.Content.Left   = make([]interfaces.Component, 0)
-	table.Footer.Content.Center = make([]interfaces.Component, 0)
-	table.Footer.Content.Right  = make([]interfaces.Component, 0)
 
 	table.Mount()
 
@@ -77,24 +66,6 @@ func (table *RepositoriesTable) Disable() bool {
 
 	}
 
-	if len(table.Footer.Content.Left) > 0 || len(table.Footer.Content.Center) > 0 || len(table.Footer.Content.Right) > 0 {
-
-		for _, component := range table.Footer.Content.Left {
-			component.Disable()
-		}
-
-		for _, component := range table.Footer.Content.Center {
-			component.Disable()
-		}
-
-		for _, component := range table.Footer.Content.Right {
-			component.Disable()
-		}
-
-		result = true
-
-	}
-
 	return result
 
 }
@@ -109,24 +80,6 @@ func (table *RepositoriesTable) Enable() bool {
 
 		for _, element := range inputs {
 			element.RemoveAttribute("disabled")
-		}
-
-		result = true
-
-	}
-
-	if len(table.Footer.Content.Left) > 0 || len(table.Footer.Content.Center) > 0 || len(table.Footer.Content.Right) > 0 {
-
-		for _, component := range table.Footer.Content.Left {
-			component.Enable()
-		}
-
-		for _, component := range table.Footer.Content.Center {
-			component.Enable()
-		}
-
-		for _, component := range table.Footer.Content.Right {
-			component.Enable()
 		}
 
 		result = true
@@ -291,50 +244,6 @@ func (table *RepositoriesTable) Mount() bool {
 
 		}
 
-		tfoot := table.Component.Element.QuerySelector("tfoot")
-
-		if tfoot != nil {
-
-			tmp := tfoot.QuerySelectorAll("td")
-
-			if len(tmp) == 3 {
-
-				buttons_left := tmp[0].QuerySelectorAll("button")
-
-				for _, button := range buttons_left {
-					table.Footer.Content.Left = append(table.Footer.Content.Left, ui.ToButton(button))
-				}
-
-				elements_center := tmp[1].QuerySelectorAll("button, label, input")
-
-				for _, element := range elements_center {
-
-					if element.TagName == "BUTTON" {
-						table.Footer.Content.Center = append(table.Footer.Content.Center, ui.ToButton(element))
-					} else if element.TagName == "LABEL" {
-						table.Footer.Content.Center = append(table.Footer.Content.Center, ui.ToLabel(element))
-					} else if element.TagName == "INPUT" {
-						table.Footer.Content.Center = append(table.Footer.Content.Center, ui.ToInput(element))
-					}
-
-				}
-
-				buttons_right := tmp[2].QuerySelectorAll("button")
-
-				for _, button := range buttons_right {
-					table.Footer.Content.Right = append(table.Footer.Content.Right, ui.ToButton(button))
-				}
-
-			} else {
-
-				console.Group("Table Footer: Invalid Markup")
-				console.Error("Expected <tr><td></td><td colspan></td><td></td></tr>")
-				console.GroupEnd("Table Footer: Invalid Markup")
-
-			}
-
-		}
-
 		table.Component.Element.AddEventListener("click", dom.ToEventListener(func(event *dom.Event) {
 
 			if event.Target != nil {
@@ -449,12 +358,6 @@ func (table *RepositoriesTable) Mount() bool {
 
 					}
 
-				} else if action != "" {
-
-					table.Component.FireEventListeners("action", map[string]any{
-						"action": action,
-					})
-
 				}
 
 			}
@@ -513,14 +416,35 @@ func (table *RepositoriesTable) Render() *dom.Element {
 
 				fmt.Println(position, whatever)
 
-				values, _ := table.Dataset.Get(position).String()
+				values, _ := table.Dataset.Get(position)
 
 				for _, property := range table.Properties {
 
-					val, ok := values[property]
+					value, ok := values[property]
+
+					if property == "repository" {
+
+						html += "<td>" + value + "</td>"
+
+					} else if property == "remotes" {
+
+						labels := make([]string, 0)
+
+						fmt.Println("remote", value)
+
+						for _, remote := range value {
+							labels = append(labels, remote)
+						}
+
+						html += "<td>" + labels + "</td>"
+
+					} else if property == "branches" {
+
+					} else if property == "actions" {
+
+					}
 
 					if ok == true {
-						html += "<td>" + val + "</td>"
 					} else {
 						html += "<td></td>"
 					}
@@ -537,72 +461,9 @@ func (table *RepositoriesTable) Render() *dom.Element {
 
 		}
 
-		tfoot := table.Component.Element.QuerySelector("tfoot")
-
-		if tfoot != nil && len(table.Labels) >= 3 {
-
-			tmp := tfoot.QuerySelectorAll("td")
-
-			if len(tmp) == 0 {
-				tfoot.SetInnerHTML("<tr><td></td><td></td><td></td></tr>")
-				tmp = tfoot.QuerySelectorAll("td")
-			}
-
-			if len(tmp) == 3 {
-
-				elements_left   := make([]*dom.Element, 0)
-				elements_center := make([]*dom.Element, 0)
-				elements_right  := make([]*dom.Element, 0)
-
-				for _, component := range table.Footer.Content.Left {
-					elements_left = append(elements_left, component.Render())
-				}
-
-				for _, component := range table.Footer.Content.Center {
-					elements_center = append(elements_center, component.Render())
-				}
-
-				for _, component := range table.Footer.Content.Right {
-					elements_right = append(elements_right, component.Render())
-				}
-
-				colspan := len(table.Labels) - 2
-
-				if table.Selectable == true {
-					tmp[0].SetAttribute("colspan", "2")
-				} else {
-					tmp[0].RemoveAttribute("colspan")
-				}
-
-				tmp[1].SetAttribute("colspan", strconv.Itoa(colspan))
-
-				tmp[0].ReplaceChildren(elements_left)
-				tmp[1].ReplaceChildren(elements_center)
-				tmp[2].ReplaceChildren(elements_right)
-
-			}
-
-		}
-
 	}
 
 	return table.Component.Element
-
-}
-
-func (table *RepositoriesTable) Add(data data.Data) bool {
-
-	var result bool = false
-
-	if table.Dataset.Add(data) == true {
-
-		table.selected = append(table.selected, false)
-		table.sorted   = append(table.sorted, table.Dataset.Length() - 1)
-		result = true
-
-	}
-
-	return result
 
 }
 
@@ -631,46 +492,6 @@ func (table *RepositoriesTable) Query(query string) interfaces.Component {
 	}
 
 	return nil
-
-}
-
-func (table *RepositoriesTable) Remove(indexes []int) {
-
-	entries  := make([]data.Data, 0)
-	selected := make([]bool, 0)
-	sorted   := make([]int, 0)
-
-	for d, data := range *table.Dataset {
-
-		found := false
-		is_selected := table.selected[d]
-
-		for _, index := range indexes {
-
-			if d == index {
-				found = true
-				break
-			}
-
-		}
-
-		if found == false {
-			entries  = append(entries, *data)
-			selected = append(selected, is_selected)
-		}
-
-	}
-
-	for e := 0; e < len(entries); e++ {
-		sorted = append(sorted, e)
-	}
-
-	dataset := data.ToDataset(entries)
-
-	table.Dataset  = &dataset
-	table.selected = selected
-	table.sortby   = ""
-	table.sorted   = sorted
 
 }
 
@@ -706,25 +527,11 @@ func (table *RepositoriesTable) Selected() ([]int, []data.Data) {
 
 }
 
-func (table *RepositoriesTable) SetDataset(dataset data.Dataset) {
+func (table *RepositoriesTable) SetSchema(repositories schemas.Repositories) {
 
-	table.Dataset = &dataset
-	table.selected = make([]bool, dataset.Length())
+	table.Repositories = &repositories
 
-	table.selected = make([]bool, dataset.Length())
-	table.sortby = ""
-	table.sorted = make([]int, dataset.Length())
-
-	for d := 0; d < dataset.Length(); d++ {
-		table.sorted[d] = d
-	}
-
-}
-
-func (table *RepositoriesTable) SetData(entries []data.Data) {
-
-	dataset := data.ToDataset(entries)
-	table.Dataset = &dataset
+	// TODO: Get repositories.Length() manually
 
 	table.selected = make([]bool, dataset.Length())
 	table.sortby = ""
@@ -734,18 +541,6 @@ func (table *RepositoriesTable) SetData(entries []data.Data) {
 		table.sorted[d] = d
 	}
 
-}
-
-func (table *RepositoriesTable) SetCenter(components []interfaces.Component) {
-	table.Footer.Content.Center = components
-}
-
-func (table *RepositoriesTable) SetLeft(components []interfaces.Component) {
-	table.Footer.Content.Left = components
-}
-
-func (table *RepositoriesTable) SetRight(components []interfaces.Component) {
-	table.Footer.Content.Right = components
 }
 
 func (table *RepositoriesTable) SetLabelsAndPropertiesAndTypes(labels []string, properties []string, types []string) bool {
@@ -889,55 +684,6 @@ func (table *RepositoriesTable) String() string {
 	}
 
 	html += "</tbody>"
-
-	html += "<tfoot>"
-	html += "<tr>"
-	html += "<td"
-
-	if table.Selectable == true {
-		html += " colspan=\"2\""
-	}
-
-	html += ">"
-
-	if len(table.Footer.Content.Left) > 0 {
-
-		for _, component := range table.Footer.Content.Left {
-			html += component.String()
-		}
-
-	}
-
-	html += "</td>"
-	html += "<td"
-
-	if len(table.Labels) >= 3 {
-		html += " colspan=\"" + strconv.Itoa(len(table.Labels) - 2) + "\""
-	}
-
-	if len(table.Footer.Content.Center) > 0 {
-
-		for _, component := range table.Footer.Content.Center {
-			html += component.String()
-		}
-
-	}
-
-	html += "</td>"
-	html += "<td>"
-
-	if len(table.Footer.Content.Right) > 0 {
-
-		for _, component := range table.Footer.Content.Right {
-			html += component.String()
-		}
-
-	}
-
-	html += "</td>"
-	html += "</tr>"
-	html += "</tfoot>"
-
 	html += "</table>"
 
 	return html
@@ -948,30 +694,6 @@ func (table *RepositoriesTable) Unmount() bool {
 
 	if table.Component.Element != nil {
 		table.Component.Element.RemoveEventListener("click", nil)
-	}
-
-	if len(table.Footer.Content.Left) > 0 {
-
-		for _, component := range table.Footer.Content.Left {
-			component.Unmount()
-		}
-
-	}
-
-	if len(table.Footer.Content.Center) > 0 {
-
-		for _, component := range table.Footer.Content.Center {
-			component.Unmount()
-		}
-
-	}
-
-	if len(table.Footer.Content.Right) > 0 {
-
-		for _, component := range table.Footer.Content.Right {
-			component.Unmount()
-		}
-
 	}
 
 	return true
