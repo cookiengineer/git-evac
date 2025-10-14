@@ -9,7 +9,6 @@ import "github.com/cookiengineer/gooey/components/interfaces"
 import "git-evac/schemas"
 import app_schemas "git-evac-app/schemas"
 import "sort"
-import "strconv"
 import "strings"
 
 type RepositoriesTable struct {
@@ -180,11 +179,28 @@ func (table *RepositoriesTable) Render() *dom.Element {
 
 			if table.Schema != nil {
 
+				owner_names := make([]string, 0)
+
 				for _, owner := range table.Schema.Owners {
+					owner_names = append(owner_names, owner.Name)
+				}
 
-					for _, repository := range owner.Repositories {
+				sort.Strings(owner_names)
 
-						id := owner.Name + "/" + repository.Name
+				for _, owner_name := range owner_names {
+
+					repository_names := make([]string, 0)
+
+					for _, repository := range table.Schema.Owners[owner_name].Repositories {
+						repository_names = append(repository_names, repository.Name)
+					}
+
+					sort.Strings(repository_names)
+
+					for _, repository_name := range repository_names {
+
+						id := owner_name + "/" + repository_name
+						repository := table.Schema.Owners[owner_name].Repositories[repository_name]
 						actions := make([]string, 0)
 						branches := make([]string, 0)
 						remotes := make([]string, 0)
@@ -225,7 +241,7 @@ func (table *RepositoriesTable) Render() *dom.Element {
 							html += "<td><input type=\"checkbox\" data-action=\"select\"/></td>"
 						}
 
-						html += "<td>" + owner.Name + "/" + repository.Name + "</td>"
+						html += "<td>" + id + "</td>"
 						html += "<td>" + strings.Join(remotes, " ") + "</td>"
 						html += "<td>" + strings.Join(branches, " ") + "</td>"
 						html += "<td>" + strings.Join(actions, " ") + "</td>"
@@ -388,37 +404,79 @@ func (table *RepositoriesTable) String() string {
 
 	html += "<tbody>"
 
-	for _, position := range table.sorted {
+	if table.Schema != nil {
 
-		html += "<tr data-id=\"" + strconv.FormatInt(int64(position), 10) + "\""
+		owner_names := make([]string, 0)
 
-		if table.selected[position] == true {
-			html += " data-select=\"true\""
+		for _, owner := range table.Schema.Owners {
+			owner_names = append(owner_names, owner.Name)
 		}
 
-		html += ">"
+		sort.Strings(owner_names)
 
-		if table.selected[position] == true {
-			html += "<td><input type=\"checkbox\" data-action=\"select\" checked/></td>"
-		} else {
-			html += "<td><input type=\"checkbox\" data-action=\"select\"/></td>"
-		}
+		for _, owner_name := range owner_names {
 
-		values, _ := table.Dataset.Get(position).String()
+			repository_names := make([]string, 0)
 
-		for _, property := range table.Properties {
+			for _, repository := range table.Schema.Owners[owner_name].Repositories {
+				repository_names = append(repository_names, repository.Name)
+			}
 
-			val, ok := values[property]
+			sort.Strings(repository_names)
 
-			if ok == true {
-				html += "<td>" + val + "</td>"
-			} else {
-				html += "<td></td>"
+			for _, repository_name := range repository_names {
+
+				id := owner_name + "/" + repository_name
+				repository := table.Schema.Owners[owner_name].Repositories[repository_name]
+				actions := make([]string, 0)
+				branches := make([]string, 0)
+				remotes := make([]string, 0)
+
+				for _, branch_name := range repository.Branches {
+					branches = append(branches, "<label>" + branch_name + "</label>")
+				}
+
+				for remote_name, _ := range repository.Remotes {
+					remotes = append(remotes, "<label>" + remote_name + "</label>")
+				}
+
+				if repository.HasRemoteChanges == true {
+					actions = append(actions, "<button data-action=\"fix\">Fix</button>")
+				} else if repository.HasLocalChanges == true {
+					actions = append(actions, "<button data-action=\"commit\">Commit</button>")
+				} else {
+					actions = append(actions, "<button data-action=\"pull\">Pull</button>")
+					actions = append(actions, "<button data-action=\"push\">Push</button>")
+				}
+
+				sort.Strings(actions)
+				sort.Strings(branches)
+				sort.Strings(remotes)
+
+				html += "<tr data-id=\"" + id + "\""
+
+				if table.selected[id] == true {
+					html += " data-select=\"true\""
+				}
+
+				html += ">"
+
+				if table.selected[id] == true {
+					html += "<td><input type=\"checkbox\" data-action=\"select\" checked/></td>"
+				} else {
+					html += "<td><input type=\"checkbox\" data-action=\"select\"/></td>"
+				}
+
+				html += "<td>" + id + "</td>"
+				html += "<td>" + strings.Join(remotes, " ") + "</td>"
+				html += "<td>" + strings.Join(branches, " ") + "</td>"
+				html += "<td>" + strings.Join(actions, " ") + "</td>"
+
+				html += "</tr>"
+
 			}
 
 		}
-
-		html += "</tr>"
 
 	}
 

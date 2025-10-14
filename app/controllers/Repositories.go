@@ -8,7 +8,6 @@ import "git-evac/schemas"
 import app_actions "git-evac-app/actions"
 import app_components "git-evac-app/components"
 import app_views "git-evac-app/views"
-import "sort"
 import "fmt"
 
 type Repositories struct {
