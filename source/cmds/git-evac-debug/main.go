@@ -11,7 +11,7 @@ import "strings"
 func main() {
 
 	var folder string = ""
-	var port uint16 = 1234
+	var port uint16 = 3000
 
 	if len(os.Args) >= 2 {
 

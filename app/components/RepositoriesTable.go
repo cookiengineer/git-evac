@@ -10,6 +10,7 @@ import "git-evac/schemas"
 import app_schemas "git-evac-app/schemas"
 import "sort"
 import "strings"
+import "fmt"
 
 type RepositoriesTable struct {
 	Name       string                `json:"name"`
@@ -28,8 +29,6 @@ func ToRepositoriesTable(element *dom.Element) *RepositoriesTable {
 	table.Component = &component
 	table.Name      = ""
 	table.selected  = make(map[string]bool)
-
-	table.Mount()
 
 	return &table
 
@@ -76,6 +75,8 @@ func (table *RepositoriesTable) Enable() bool {
 }
 
 func (table *RepositoriesTable) Mount() bool {
+
+	fmt.Println("REPOSITORIES TABLE MOUNT")
 
 	if table.Component != nil {
 		table.Component.InitEvent("action")
