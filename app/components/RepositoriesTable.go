@@ -7,10 +7,8 @@ import "github.com/cookiengineer/gooey/components"
 import "github.com/cookiengineer/gooey/components/utils"
 import "github.com/cookiengineer/gooey/components/interfaces"
 import "git-evac/schemas"
-import app_schemas "git-evac-app/schemas"
 import "sort"
 import "strings"
-import "fmt"
 
 type RepositoriesTable struct {
 	Name       string                `json:"name"`
@@ -76,10 +74,11 @@ func (table *RepositoriesTable) Enable() bool {
 
 func (table *RepositoriesTable) Mount() bool {
 
-	fmt.Println("REPOSITORIES TABLE MOUNT")
-
 	if table.Component != nil {
+
 		table.Component.InitEvent("action")
+		table.Component.InitEvent("select")
+
 	}
 
 	if table.Component.Element != nil {
@@ -110,15 +109,11 @@ func (table *RepositoriesTable) Mount() bool {
 								table.selected[identifier] = true
 							}
 
-							table.Render()
-
 						} else {
 
 							for identifier, _ := range table.selected {
 								table.selected[identifier] = false
 							}
-
-							table.Render()
 
 						}
 
@@ -130,7 +125,6 @@ func (table *RepositoriesTable) Mount() bool {
 						if is_active == true {
 
 							table.selected[identifier] = true
-							table.Render()
 
 						} else {
 
@@ -141,12 +135,28 @@ func (table *RepositoriesTable) Mount() bool {
 							}
 
 							table.selected[identifier] = false
-							table.Render()
 
 						}
 
 						event.PreventDefault()
 						event.StopPropagation()
+
+					}
+
+					table.Render()
+					table.Component.FireEventListeners("select", table.Selected())
+
+				} else if action == "fix" || action == "commit" || action == "pull" || action == "push" {
+
+					tr := event.Target.QueryParent("tr")
+					id := tr.GetAttribute("data-id")
+
+					if id != "" {
+
+						actions := make(map[string]any)
+						actions[id] = action
+
+						table.Component.FireEventListeners("action", actions)
 
 					}
 
@@ -314,9 +324,9 @@ func (table *RepositoriesTable) Select(identifiers []string) {
 
 }
 
-func (table *RepositoriesTable) Selected() app_schemas.Selected {
+func (table *RepositoriesTable) Selected() map[string]any {
 
-	result := app_schemas.Selected(map[string]string{})
+	result := make(map[string]any)
 
 	if table.Schema != nil {
 
@@ -346,7 +356,7 @@ func (table *RepositoriesTable) Selected() app_schemas.Selected {
 						}
 
 						if action != "" {
-							result.Set(id, action)
+							result[id] = action
 						}
 
 					}
