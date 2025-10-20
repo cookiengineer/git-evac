@@ -1,0 +1,11 @@
+
+@import url("./components/BackupsTable.css");
+@import url("./components/RepositoriesTable.css");
+@import url("./components/ScheduleTable.css");
+
+@import url("./views/Settings.css");
+
+body > header ul li a[data-view="repositories"]:before { content: '\f1e0'; }
+body > header ul li a[data-view="backups"]:before      { content: '\e807'; }
+body > header ul li a[data-view="settings"]:before     { content: '\e80d'; }
+

@@ -1,5 +1,0 @@
-
-header ul li a[data-view="repositories"]:before { content: '\f1e0'; }
-header ul li a[data-view="backups"]:before      { content: '\e807'; }
-header ul li a[data-view="settings"]:before     { content: '\e80d'; }
-

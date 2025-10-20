@@ -178,11 +178,40 @@ func (table *RepositoriesTable) Render() *dom.Element {
 
 	if table.Component.Element != nil {
 
-		if table.Name != "" {
-			table.Component.Element.SetAttribute("data-name", table.Name)
+		table.Component.Element.SetAttribute("data-name", table.Name)
+		table.Component.Element.SetAttribute("data-type", "repositories")
+
+		thead := table.Component.Element.QuerySelector("thead")
+		tbody := table.Component.Element.QuerySelector("tbody")
+
+		if thead == nil && tbody == nil {
+
+			table.Component.Element.ReplaceChildren([]*dom.Element{
+				dom.Document.CreateElement("thead"),
+				dom.Document.CreateElement("tbody"),
+			})
+
+			thead = table.Component.Element.QuerySelector("thead")
+			tbody = table.Component.Element.QuerySelector("tbody")
+
 		}
 
-		tbody := table.Component.Element.QuerySelector("tbody")
+		if thead != nil {
+
+			tr := dom.Document.CreateElement("tr")
+
+			html := ""
+			html += "<th>Repository</th>"
+			html += "<th>Remotes</th>"
+			html += "<th>Branches</th>"
+			html += "<th>Actions</th>"
+
+			tr.SetInnerHTML(html)
+			thead.ReplaceChildren([]*dom.Element{
+				tr,
+			})
+
+		}
 
 		if tbody != nil {
 
@@ -395,11 +424,8 @@ func (table *RepositoriesTable) SetSchema(schema *schemas.Repositories) {
 func (table *RepositoriesTable) String() string {
 
 	html := "<table"
-
-	if table.Name != "" {
-		html += " data-name=\"" + table.Name + "\""
-	}
-
+	html += " data-name=\"" + table.Name + "\""
+	html += " data-type=\"repositories\""
 	html += ">"
 
 	html += "<thead>"

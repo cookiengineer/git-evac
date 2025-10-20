@@ -18,9 +18,8 @@ func RegisterTo(document *components.Document) {
 		} else if typ == "backups" {
 			// TODO: BackupsTable
 			return nil
-		} else if typ == "progress" {
-			// TODO: ProgressTable
-			return nil
+		} else if typ == "schedule" {
+			return ToScheduleTable(element)
 		} else {
 			return content_components.ToTable(element)
 		}

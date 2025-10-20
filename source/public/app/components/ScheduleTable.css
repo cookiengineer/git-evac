@@ -1,0 +1,94 @@
+
+table[data-type="schedule"] {
+	margin: 0px;
+	padding: 0px;
+	min-width: 640px;
+	box-sizing: border-box;
+	border-spacing: 0px;
+}
+
+table[data-type="schedule"] tr th {
+	padding: 8px 8px;
+}
+
+table[data-type="schedule"] tr td {
+	padding: 0px 8px;
+}
+
+table[data-type="schedule"] tr th:nth-of-type(1),
+table[data-type="schedule"] tr td:nth-of-type(1) {
+	width: auto;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	vertical-align: middle;
+}
+
+table[data-type="schedule"] tr th:nth-of-type(2),
+table[data-type="schedule"] tr td:nth-of-type(2) {
+	width: 96px;
+	text-align: center;
+	vertical-align: middle;
+}
+
+table[data-type="schedule"] tr th:nth-of-type(3),
+table[data-type="schedule"] tr td:nth-of-type(3) {
+	width: 128px;
+	text-align: center;
+	vertical-align: middle;
+}
+
+/* Well, fuck Firefox in particular */
+@supports(-webkit-appearance: none) {
+
+	table[data-type="schedule"] progress {
+		position: relative;
+		width: 128px;
+		height: 16px;
+		border: none;
+		background-color: var(--input-default-background);
+		border-radius: 4px;
+		overflow: hidden;
+		appearance: none;
+		-moz-appearance: none;
+		-webkit-appearance: none;
+	}
+
+	table[data-type="schedule"] progress::before {
+		content: "";
+		position: absolute;
+		top: 0px;
+		left: -160px;
+		width: 320px;
+		height: 100%;
+		background-color: transparent;
+		background-image: repeating-linear-gradient(
+			90deg,
+			var(--input-active-background),
+			var(--input-active-background) 32px,
+			var(--input-default-background) 32px,
+			var(--input-default-background) 160px
+		);
+		border-radius: 4px;
+		animation: move-stripes 3s linear infinite;
+	}
+
+	@keyframes move-stripes {
+		from { left: -160px; }
+		to   { left: 0px; }
+	}
+
+	table[data-type="schedule"] progress[value]::before {
+		display: none;
+	}
+
+	table[data-type="schedule"] progress[value]::-webkit-progress-bar {
+		background: var(--input-default-background);
+		border-radius: 4px;
+	}
+
+	table[data-type="schedule"] progress[value]::-webkit-progress-value {
+		background: var(--input-active-background);
+		border-radius: 4px;
+	}
+
+}

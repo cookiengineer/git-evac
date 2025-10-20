@@ -1,0 +1,55 @@
+
+main section {
+	display: block flow-root;
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	bottom: 0px;
+	left: 0px;
+	color: var(--main-color);
+	background: var(--main-background);
+	pointer-events: none;
+	transition: transform 250ms ease-out;
+	opacity: 0;
+	z-index: 0;
+}
+
+main section[data-state="active"] {
+	pointer-events: all;
+	transition: opacity 250ms ease-out;
+	opacity: 1;
+	z-index: 1;
+}
+
+main section[data-layout="flex"] {
+	display: block flex;
+}
+
+main section[data-layout="flow"] {
+	display: block flow-root;
+}
+
+main section[data-layout="grid"] {
+	display: block grid;
+}
+
+main article {
+	display: block;
+	position: static;
+	width: 66%;
+	margin: 32px auto;
+	padding: 0px 16px;
+	color: var(--article-color);
+	background: var(--article-background);
+	border: 1px solid var(--article-border);
+	border-radius: 8px;
+}
+
+main article *[data-message] {
+	font-family: 'vera-mono';
+	font-weight: normal;
+	font-style: normal;
+	font-size: 16px;
+	text-align: center;
+}
+

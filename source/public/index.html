@@ -15,20 +15,22 @@
 		<meta http-equiv="Content-Security-Policy" content="connect-src 'self'">
 
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<link rel="manifest" href="/site.webmanifest" />
+		<link rel="manifest" href="/app/site.webmanifest" />
 
 		<!-- Favicon -->
-		<link rel="icon" type="image/png" href="/design/common/favicon-96x96.png" sizes="96x96" />
-		<link rel="icon" type="image/svg+xml" href="/design/common/favicon.svg" />
-		<link rel="shortcut icon" href="/design/common/favicon.ico" />
-		<link rel="apple-touch-icon" href="/design/common/apple-touch-icon.png" sizes="180x180" />
+		<link rel="icon" type="image/png" href="/app/favicon/favicon-96x96.png" sizes="96x96" />
+		<link rel="icon" type="image/svg+xml" href="/app/favicon/favicon.svg" />
+		<link rel="shortcut icon" href="/app/favicon/favicon.ico" />
+		<link rel="apple-touch-icon" href="/app/favicon/apple-touch-icon.png" sizes="180x180" />
 
 		<!-- Design -->
 		<link rel="stylesheet" href="/design/index.css" />
-		<script src="/design/index.js"></script>
+
+		<!-- App Design -->
+		<link rel="stylesheet" href="/app/index.css" />
 	</head>
 	<body>
-		<header id="header">
+		<header>
 			<div></div>
 			<ul>
 				<li class="active"><a data-view="repositories" href="/index.html">Repositories</a></li>
@@ -37,9 +39,9 @@
 			</ul>
 			<div></div>
 		</header>
-		<main id="main" data-view="repositories">
+		<main data-view="repositories">
 			<section data-name="repositories" data-label="Repositories" data-path="/index.html" data-state="active">
-				<table data-name="repositories">
+				<table data-name="repositories" data-type="repositories">
 					<thead>
 						<tr>
 							<th><input type="checkbox" title="Toggle all repositories" data-action="select"/></th>
@@ -68,11 +70,7 @@
 			<article>
 				<button data-action="close"></button>
 				<h3>Fix 0 Repositories</h3>
-				<!--
-				<table data-name="backups" data-label="Backups">
-					<tbody></tbody>
-				</table>
-				-->
+				<!-- <table data-name="schedule" data-type="schedule"></table> -->
 				<footer>
 					<div><button class="secondary" data-action="cancel">Cancel</button></div>
 					<div></div>
