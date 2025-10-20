@@ -139,196 +139,59 @@ func (table *ScheduleTable) Render() *dom.Element {
 
 			if table.Schema != nil {
 
-				actions_clone  := make([]string, 0)
-				actions_fix    := make([]string, 0)
-				actions_commit := make([]string, 0)
-				actions_pull   := make([]string, 0)
-				actions_push   := make([]string, 0)
+				for _, action := range []string{
+					"backup",
+					"restore",
+					"clone",
+					"fix",
+					"commit",
+					"pull",
+					"push",
+				} {
 
-				for repository, action := range table.Schema {
+					filtered := make([]string, 0)
 
-					if action == "clone" {
-						actions_clone = append(actions_clone, repository)
-					} else if action == "fix" {
-						actions_fix = append(actions_fix, repository)
-					} else if action == "commit" {
-						actions_commit = append(actions_commit, repository)
-					} else if action == "pull" {
-						actions_pull = append(actions_pull, repository)
-					} else if action == "push" {
-						actions_push = append(actions_push, repository)
+					for repo_name, repo_action := range table.Schema {
+
+						if repo_action == action {
+							filtered = append(filtered, repo_name)
+						}
+
 					}
 
-				}
+					sort.Strings(filtered)
 
-				sort.Strings(actions_clone)
-				sort.Strings(actions_fix)
-				sort.Strings(actions_commit)
-				sort.Strings(actions_pull)
-				sort.Strings(actions_push)
+					for _, repository := range filtered {
 
-				for _, repository := range actions_clone {
+						tr := dom.Document.CreateElement("tr")
+						tr.SetAttribute("data-id", repository)
 
-					id       := repository
-					progress := table.progress[repository]
+						html := ""
+						html += "<td>" + repository + "</td>"
+						html += "<td>" + action + "</td>"
 
-					tr := dom.Document.CreateElement("tr")
-					tr.SetAttribute("data-id", id)
+						progress, ok := table.progress[repository]
 
-					html := ""
-					html += "<td>" + id + "</td>"
-					html += "<td>clone</td>"
+						if progress != nil && ok == true {
 
-					if progress != nil {
+							if !progress.Start.IsZero() && !progress.Stop.IsZero() && progress.Finished == true {
+								html += "<td><progress data-finished=\"true\" min=\"0\" max=\"100\" value=\"100\">" + formatDuration(progress.Start, progress.Stop) + "</progress></td>"
+							} else if !progress.Start.IsZero() && !progress.Stop.IsZero() && progress.Finished == false {
+								html += "<td><progress data-finished=\"false\" min=\"0\" max=\"100\" value=\"100\">" + formatDuration(progress.Start, progress.Stop) + "</progress></td>"
+							} else if !progress.Start.IsZero() && progress.Stop.IsZero() {
+								html += "<td><progress min=\"0\" max=\"100\">" + formatDuration(progress.Start, progress.Stop) + "</progress></td>"
+							} else {
+								html += "<td><progress min=\"0\" max=\"100\" value=\"0\"></td>"
+							}
 
-						if !progress.Start.IsZero() && !progress.Stop.IsZero() && progress.Finished == true {
-							html += "<td><progress data-finished=\"true\" min=\"0\" max=\"100\" value=\"100\">" + formatDuration(progress.Start, progress.Stop) + "</progress></td>"
-						} else if !progress.Start.IsZero() && !progress.Stop.IsZero() && progress.Finished == false {
-							html += "<td><progress data-finished=\"false\" min=\"0\" max=\"100\" value=\"100\">" + formatDuration(progress.Start, progress.Stop) + "</progress></td>"
-						} else if !progress.Start.IsZero() && progress.Stop.IsZero() {
-							html += "<td><progress min=\"0\" max=\"100\">" + formatDuration(progress.Start, progress.Stop) + "</progress></td>"
 						} else {
 							html += "<td><progress min=\"0\" max=\"100\" value=\"0\"></td>"
 						}
 
-					} else {
-						html += "<td><progress min=\"0\" max=\"100\" value=\"0\"></td>"
+						tr.SetInnerHTML(html)
+						elements = append(elements, tr)
+
 					}
-
-					tr.SetInnerHTML(html)
-					elements = append(elements, tr)
-
-				}
-
-				for _, repository := range actions_fix {
-
-					id       := repository
-					progress := table.progress[repository]
-
-					tr := dom.Document.CreateElement("tr")
-					tr.SetAttribute("data-id", id)
-
-					html := ""
-					html += "<td>" + id + "</td>"
-					html += "<td>fix</td>"
-
-					if progress != nil {
-
-						if !progress.Start.IsZero() && !progress.Stop.IsZero() && progress.Finished == true {
-							html += "<td><progress data-finished=\"true\" min=\"0\" max=\"100\" value=\"100\">" + formatDuration(progress.Start, progress.Stop) + "</progress></td>"
-						} else if !progress.Start.IsZero() && !progress.Stop.IsZero() && progress.Finished == false {
-							html += "<td><progress data-finished=\"false\" min=\"0\" max=\"100\" value=\"100\">" + formatDuration(progress.Start, progress.Stop) + "</progress></td>"
-						} else if !progress.Start.IsZero() && progress.Stop.IsZero() {
-							html += "<td><progress min=\"0\" max=\"100\">" + formatDuration(progress.Start, progress.Stop) + "</progress></td>"
-						} else {
-							html += "<td><progress min=\"0\" max=\"100\" value=\"0\"></td>"
-						}
-
-					} else {
-						html += "<td><progress min=\"0\" max=\"100\" value=\"0\"></td>"
-					}
-
-					tr.SetInnerHTML(html)
-					elements = append(elements, tr)
-
-				}
-
-				for _, repository := range actions_commit {
-
-					id       := repository
-					progress := table.progress[repository]
-
-					tr := dom.Document.CreateElement("tr")
-					tr.SetAttribute("data-id", id)
-
-					html := ""
-					html += "<td>" + id + "</td>"
-					html += "<td>commit</td>"
-
-					if progress != nil {
-
-						if !progress.Start.IsZero() && !progress.Stop.IsZero() && progress.Finished == true {
-							html += "<td><progress data-finished=\"true\" min=\"0\" max=\"100\" value=\"100\">" + formatDuration(progress.Start, progress.Stop) + "</progress></td>"
-						} else if !progress.Start.IsZero() && !progress.Stop.IsZero() && progress.Finished == false {
-							html += "<td><progress data-finished=\"false\" min=\"0\" max=\"100\" value=\"100\">" + formatDuration(progress.Start, progress.Stop) + "</progress></td>"
-						} else if !progress.Start.IsZero() && progress.Stop.IsZero() {
-							html += "<td><progress min=\"0\" max=\"100\">" + formatDuration(progress.Start, progress.Stop) + "</progress></td>"
-						} else {
-							html += "<td><progress min=\"0\" max=\"100\" value=\"0\"></td>"
-						}
-
-					} else {
-						html += "<td><progress min=\"0\" max=\"100\" value=\"0\"></td>"
-					}
-
-					tr.SetInnerHTML(html)
-					elements = append(elements, tr)
-
-				}
-
-				for _, repository := range actions_pull {
-
-					id       := repository
-					progress := table.progress[repository]
-
-					tr := dom.Document.CreateElement("tr")
-					tr.SetAttribute("data-id", id)
-
-					html := ""
-					html += "<td>" + id + "</td>"
-					html += "<td>pull</td>"
-
-					if progress != nil {
-
-						if !progress.Start.IsZero() && !progress.Stop.IsZero() && progress.Finished == true {
-							html += "<td><progress data-finished=\"true\" min=\"0\" max=\"100\" value=\"100\">" + formatDuration(progress.Start, progress.Stop) + "</progress></td>"
-						} else if !progress.Start.IsZero() && !progress.Stop.IsZero() && progress.Finished == false {
-							html += "<td><progress data-finished=\"false\" min=\"0\" max=\"100\" value=\"100\">" + formatDuration(progress.Start, progress.Stop) + "</progress></td>"
-						} else if !progress.Start.IsZero() && progress.Stop.IsZero() {
-							html += "<td><progress min=\"0\" max=\"100\">" + formatDuration(progress.Start, progress.Stop) + "</progress></td>"
-						} else {
-							html += "<td><progress min=\"0\" max=\"100\" value=\"0\"></td>"
-						}
-
-					} else {
-						html += "<td><progress min=\"0\" max=\"100\" value=\"0\"></td>"
-					}
-
-					tr.SetInnerHTML(html)
-					elements = append(elements, tr)
-
-				}
-
-				for _, repository := range actions_push {
-
-					id       := repository
-					progress := table.progress[repository]
-
-					tr := dom.Document.CreateElement("tr")
-					tr.SetAttribute("data-id", id)
-
-					html := ""
-					html += "<td>" + id + "</td>"
-					html += "<td>push</td>"
-
-					if progress != nil {
-
-						if !progress.Start.IsZero() && !progress.Stop.IsZero() && progress.Finished == true {
-							html += "<td><progress data-finished=\"true\" min=\"0\" max=\"100\" value=\"100\">" + formatDuration(progress.Start, progress.Stop) + "</progress></td>"
-						} else if !progress.Start.IsZero() && !progress.Stop.IsZero() && progress.Finished == false {
-							html += "<td><progress data-finished=\"false\" min=\"0\" max=\"100\" value=\"100\">" + formatDuration(progress.Start, progress.Stop) + "</progress></td>"
-						} else if !progress.Start.IsZero() && progress.Stop.IsZero() {
-							html += "<td><progress min=\"0\" max=\"100\">" + formatDuration(progress.Start, progress.Stop) + "</progress></td>"
-						} else {
-							html += "<td><progress min=\"0\" max=\"100\" value=\"0\"></td>"
-						}
-
-					} else {
-						html += "<td><progress min=\"0\" max=\"100\" value=\"0\"></td>"
-					}
-
-					tr.SetInnerHTML(html)
-					elements = append(elements, tr)
 
 				}
 

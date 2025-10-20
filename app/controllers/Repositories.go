@@ -45,11 +45,14 @@ func NewRepositories(main *app.Main, view interfaces.View) *Repositories {
 
 						schedule_table, ok2 := components.UnwrapComponent[*app_components.ScheduleTable](dialog.Query("dialog > table[data-name=\"schedule\"]"))
 
-						fmt.Println(schedule_table, ok2)
-
 						if ok2 == true {
 
 							schedule_table.Start("any")
+
+							// TODO: Execute all tasks in the prioritized order
+							// Execute all clones
+							// Execute all fixes
+
 
 							fmt.Println("Start all goroutines now")
 							// TODO: Start all tasks asynchronously and call schedule_table.Finish(repository, &response)
@@ -316,21 +319,27 @@ func (controller *Repositories) showDialog(selected map[string]string) {
 
 		if len(actions_clone) > 0 {
 
-			// TODO: Other actions
+			table := app_components.NewScheduleTable("schedule", actions_clone)
 
 			dialog.SetTitle("Clone " + strconv.Itoa(len(actions_clone)) + " Repositories")
+			dialog.SetContent(interfaces.Component(&table))
+			dialog.Show()
 
 		} else if len(actions_fix) > 0 {
 
-			// TODO: Other actions
+			table := app_components.NewScheduleTable("schedule", actions_fix)
 
 			dialog.SetTitle("Fix " + strconv.Itoa(len(actions_fix)) + " Repositories")
+			dialog.SetContent(interfaces.Component(&table))
+			dialog.Show()
 
 		} else if len(actions_commit) > 0 {
 
-			// TODO: Other actions
+			table := app_components.NewScheduleTable("schedule", actions_commit)
 
 			dialog.SetTitle("Commit " + strconv.Itoa(len(actions_commit)) + " Repositories")
+			dialog.SetContent(interfaces.Component(&table))
+			dialog.Show()
 
 		} else if len(actions_pull) > 0 {
 
@@ -342,9 +351,11 @@ func (controller *Repositories) showDialog(selected map[string]string) {
 
 		} else if len(actions_push) > 0 {
 
-			// TODO: Other actions
+			table := app_components.NewScheduleTable("schedule", actions_push)
 
 			dialog.SetTitle("Push " + strconv.Itoa(len(actions_push)) + " Repositories")
+			dialog.SetContent(interfaces.Component(&table))
+			dialog.Show()
 
 		}
 
