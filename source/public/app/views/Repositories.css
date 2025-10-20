@@ -1,0 +1,13 @@
+
+footer button[data-action="clone"]:before  { content: '\e819'; }
+footer button[data-action="fix"]:before    { content: '\e80e'; }
+footer button[data-action="commit"]:before { content: '\e809'; }
+footer button[data-action="pull"]:before   { content: '\f0ed'; }
+footer button[data-action="push"]:before   { content: '\f0ee'; }
+
+footer div:last-of-type button[data-action="commit"],
+footer div:last-of-type button[data-action="fix"] {
+	color: var(--palette-secondary-color);
+	background: var(--palette-secondary-background);
+}
+

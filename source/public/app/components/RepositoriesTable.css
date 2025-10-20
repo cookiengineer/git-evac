@@ -1,0 +1,19 @@
+
+table[data-type="repositories"] button[data-action="clone"]:before  { content: '\e819'; }
+table[data-type="repositories"] button[data-action="fix"]:before    { content: '\e80e'; }
+table[data-type="repositories"] button[data-action="commit"]:before { content: '\e809'; }
+table[data-type="repositories"] button[data-action="pull"]:before   { content: '\f0ed'; }
+table[data-type="repositories"] button[data-action="push"]:before   { content: '\f0ee'; }
+
+table[data-type="repositories"] button[data-action="commit"],
+table[data-type="repositories"] button[data-action="fix"] {
+	color: var(--palette-secondary-color);
+	background: var(--palette-secondary-background);
+}
+
+table[data-type="repositories"] button[data-action="pull"],
+table[data-type="repositories"] button[data-action="push"] {
+	color: var(--palette-primary-color);
+	background: var(--palette-primary-background);
+}
+

@@ -1,0 +1,4 @@
+
+footer button[data-action="backup"]:before  { content: '\e807'; }
+footer button[data-action="restore"]:before { content: '\e808'; }
+

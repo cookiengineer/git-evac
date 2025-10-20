@@ -3,6 +3,8 @@
 @import url("./components/RepositoriesTable.css");
 @import url("./components/ScheduleTable.css");
 
+@import url("./views/Backups.css");
+@import url("./views/Repositories.css");
 @import url("./views/Settings.css");
 
 body > header ul li a[data-view="repositories"]:before { content: '\f1e0'; }
