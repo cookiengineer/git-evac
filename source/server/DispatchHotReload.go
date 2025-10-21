@@ -17,108 +17,232 @@ func DispatchHotReload(profile *structs.Profile) bool {
 
 	http.HandleFunc("/wasm_exec.js", func(response http.ResponseWriter, request *http.Request) {
 
-		cwd, err0 := os.Getwd()
+		if request.Method == http.MethodGet {
 
-		if err0 == nil && strings.HasSuffix(cwd, "/source") {
+			cwd, err0 := os.Getwd()
 
-			cmd1 := exec.Command("go", "env", "GOROOT")
-			tmp1, err1 := cmd1.Output()
+			if err0 == nil && strings.HasSuffix(cwd, "/source") {
 
-			if err1 == nil {
+				cmd1 := exec.Command("go", "env", "GOROOT")
+				tmp1, err1 := cmd1.Output()
 
-				goroot := strings.TrimSpace(string(tmp1))
-				root := cwd[0:len(cwd)-7]
-				exec_source := goroot + "/lib/wasm/wasm_exec.js"
-				exec_output := root + "/source/public/wasm_exec.js"
+				if err1 == nil {
 
-				stat1, err1 := os.Stat(exec_source)
+					goroot := strings.TrimSpace(string(tmp1))
+					root := cwd[0:len(cwd)-7]
+					exec_source := goroot + "/lib/wasm/wasm_exec.js"
+					exec_output := root + "/source/public/wasm_exec.js"
 
-				if err1 == nil && !stat1.IsDir() {
+					stat2, err2 := os.Stat(exec_source)
 
-					bytes, err2 := os.ReadFile(exec_source)
+					if err2 == nil && !stat2.IsDir() {
 
-					if err2 == nil {
-
-						err3 := os.WriteFile(exec_output, bytes, 0666)
+						bytes, err3 := os.ReadFile(exec_source)
 
 						if err3 == nil {
-							console.Log("> Renew /wasm_exec.js: success")
+
+							err4 := os.WriteFile(exec_output, bytes, 0666)
+
+							if err4 == nil {
+
+								console.Log("> " + request.Method + " /wasm_exec.js: " + http.StatusText(http.StatusOK))
+
+								response.Header().Set("Content-Type", "application/javascript")
+								response.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
+								response.Header().Set("Pragma", "no-cache")
+								response.Header().Set("Expires", "0")
+
+								fsrv.ServeHTTP(response, request)
+
+							} else {
+
+								console.Error("> " + request.Method + " /wasm_exec.js: " + http.StatusText(http.StatusInternalServerError))
+								console.Error(err4.Error())
+
+								response.Header().Set("Content-Type", "application/javascript")
+								response.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
+								response.Header().Set("Pragma", "no-cache")
+								response.Header().Set("Expires", "0")
+
+								response.WriteHeader(http.StatusInternalServerError)
+								response.Write([]byte("// " + err4.Error()))
+
+							}
+
 						} else {
-							console.Error("> Renew /wasm_exec.js: failure")
+
+							console.Error("> " + request.Method + " /wasm_exec.js: " + http.StatusText(http.StatusInternalServerError))
 							console.Error(err3.Error())
+
+							response.Header().Set("Content-Type", "application/javascript")
+							response.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
+							response.Header().Set("Pragma", "no-cache")
+							response.Header().Set("Expires", "0")
+
+							response.WriteHeader(http.StatusInternalServerError)
+							response.Write([]byte("// " + err3.Error()))
+
 						}
 
 					} else {
-						console.Error("> Renew /wasm_exec.js: failure")
-						console.Error(err2.Error())
+
+						console.Error("> " + request.Method + " /wasm_exec.js: " + http.StatusText(http.StatusNotFound))
+
+						if err2 != nil {
+							console.Error(err2.Error())
+						}
+
+						response.Header().Set("Content-Type", "application/javascript")
+						response.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
+						response.Header().Set("Pragma", "no-cache")
+						response.Header().Set("Expires", "0")
+
+						response.WriteHeader(http.StatusNotFound)
+
+						if err2 != nil {
+							response.Write([]byte("// " + err2.Error()))
+						} else {
+							response.Write([]byte(""))
+						}
+
 					}
 
 				} else {
-					console.Error("> Renew /wasm_exec.js: failure")
-					console.Error(err1.Error())
+
+					console.Error("> " + request.Method + " /wasm_exec.js: " + http.StatusText(http.StatusInternalServerError))
+
+					if err1 != nil {
+						console.Error(err1.Error())
+					}
+
+					response.Header().Set("Content-Type", "application/javascript")
+					response.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
+					response.Header().Set("Pragma", "no-cache")
+					response.Header().Set("Expires", "0")
+
+					response.WriteHeader(http.StatusInternalServerError)
+					response.Write([]byte(""))
+
 				}
 
 			} else {
-				console.Error("> Renew /wasm_exec.js: failure")
-				console.Error(err0.Error())
+
+				console.Log("> " + request.Method + " /wasm_exec.js: " + http.StatusText(http.StatusOK))
+
+				response.Header().Set("Content-Type", "application/javascript")
+				response.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
+				response.Header().Set("Pragma", "no-cache")
+				response.Header().Set("Expires", "0")
+
+				fsrv.ServeHTTP(response, request)
+
 			}
 
-		}
+		} else {
 
-		fsrv.ServeHTTP(response, request)
+			console.Error("> " + request.Method + " /wasm_exec.js: " + http.StatusText(http.StatusMethodNotAllowed))
+
+			response.Header().Set("Content-Type", "application/javascript")
+			response.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
+			response.Header().Set("Pragma", "no-cache")
+			response.Header().Set("Expires", "0")
+
+			response.WriteHeader(http.StatusMethodNotAllowed)
+			response.Write([]byte("[]"))
+
+		}
 
 	})
 
 	http.HandleFunc("/main.wasm", func(response http.ResponseWriter, request *http.Request) {
 
-		cwd, err0 := os.Getwd()
+		if request.Method == http.MethodGet {
 
-		if err0 == nil && strings.HasSuffix(cwd, "/source") {
+			cwd, err0 := os.Getwd()
 
-			root := cwd[0:len(cwd)-7]
-			go_source := root + "/app/main.go"
-			go_output := root + "/source/public/main.wasm"
+			if err0 == nil && strings.HasSuffix(cwd, "/source") {
 
-			var stdout1 bytes.Buffer
-			var stderr1 bytes.Buffer
+				root := cwd[0:len(cwd)-7]
+				go_source := root + "/app/main.go"
+				go_output := root + "/source/public/main.wasm"
 
-			cmd1 := exec.Command(
-				"env",
-				"CGO_ENABLED=0",
-				"GOOS=js",
-				"GOARCH=wasm",
-				"go",
-				"build",
-				"-o",
-				go_output,
-				go_source,
-			)
-			cmd1.Dir = root + "/app"
+				var stdout1 bytes.Buffer
+				var stderr1 bytes.Buffer
 
-			cmd1.Stdout = &stdout1
-			cmd1.Stderr = &stderr1
+				cmd1 := exec.Command(
+					"env",
+					"CGO_ENABLED=0",
+					"GOOS=js",
+					"GOARCH=wasm",
+					"go",
+					"build",
+					"-o",
+					go_output,
+					go_source,
+				)
+				cmd1.Dir = root + "/app"
 
-			err1 := cmd1.Run()
+				cmd1.Stdout = &stdout1
+				cmd1.Stderr = &stderr1
 
-			if err1 == nil {
+				err1 := cmd1.Run()
 
-				console.Log("> Rebuild /main.wasm: success")
+				if err1 == nil {
+
+					console.Log("> " + request.Method + " /main.wasm: " + http.StatusText(http.StatusOK))
+
+					response.Header().Set("Content-Type", "application/wasm")
+					response.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
+					response.Header().Set("Pragma", "no-cache")
+					response.Header().Set("Expires", "0")
+
+					fsrv.ServeHTTP(response, request)
+
+				} else {
+
+					console.Error("> " + request.Method + " /main.wasm: " + http.StatusText(http.StatusInternalServerError))
+
+					response.Header().Set("Content-Type", "application/wasm")
+					response.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
+					response.Header().Set("Pragma", "no-cache")
+					response.Header().Set("Expires", "0")
+
+					payload := []byte("// " + err1.Error())
+
+					lines := strings.Split(strings.TrimSpace(string(stderr1.Bytes())), "\n")
+
+					for l := 0; l < len(lines); l++ {
+						console.Error("> " + lines[l])
+						payload = append(payload, []byte(lines[l])...)
+					}
+
+					response.WriteHeader(http.StatusInternalServerError)
+					response.Write(payload)
+
+				}
 
 			} else {
 
-				console.Error("> Rebuild /main.wasm: failure")
+				console.Log("> " + request.Method + " /main.wasm: " + http.StatusText(http.StatusOK))
 
-				lines := strings.Split(strings.TrimSpace(string(stderr1.Bytes())), "\n")
+				response.Header().Set("Content-Type", "application/wasm")
+				response.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
+				response.Header().Set("Pragma", "no-cache")
+				response.Header().Set("Expires", "0")
 
-				for l := 0; l < len(lines); l++ {
-					console.Error(lines[l])
-				}
+				fsrv.ServeHTTP(response, request)
 
 			}
 
-		}
+		} else {
 
-		fsrv.ServeHTTP(response, request)
+			console.Error("> " + request.Method + " /main.wasm: " + http.StatusText(http.StatusMethodNotAllowed))
+
+			response.Header().Set("Content-Type", "application/wasm")
+			response.WriteHeader(http.StatusMethodNotAllowed)
+			response.Write([]byte(""))
+
+		}
 
 	})
 

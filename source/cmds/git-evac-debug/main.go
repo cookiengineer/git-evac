@@ -100,7 +100,9 @@ func main() {
 		console.GroupEnd("")
 
 		profile.Init()
+
 		server.Dispatch(profile)
+		server.DispatchRoutes(profile)
 		server.DispatchHotReload(profile)
 
 		if server.Serve(profile) == false {

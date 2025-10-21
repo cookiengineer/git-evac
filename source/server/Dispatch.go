@@ -1,13 +1,16 @@
 package server
 
-import "git-evac/server/api"
+import "git-evac/console"
+import "git-evac/schemas"
 import "git-evac/structs"
-import "net/http"
+import "encoding/json"
 import "io"
+import "net/http"
+import "os"
 
 func Dispatch(profile *structs.Profile) bool {
 
-	var result bool = false
+	var result bool
 
 	fs := http.FS(*profile.Filesystem)
 	fsrv := http.FileServer(fs)
@@ -73,61 +76,111 @@ func Dispatch(profile *structs.Profile) bool {
 		response.Write([]byte(""))
 	})
 
-	// Canonical to GET /api/terminal
-	http.HandleFunc("/api/fix/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {
-		api.Terminal(profile, request, response)
-	})
-
-	// GET /api/terminal
-	http.HandleFunc("/api/terminal/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {
-		api.Terminal(profile, request, response)
-	})
-
-	// GET /api/clone
-	http.HandleFunc("/api/clone/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {
-		api.Clone(profile, request, response)
-	})
-
-	// GET /api/backup || POST /api/backup
-	http.HandleFunc("/api/backup/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {
-		api.Backup(profile, request, response)
-	})
-
-	// PATCH /api/restore
-	http.HandleFunc("/api/restore/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {
-		api.Restore(profile, request, response)
-	})
-
-	// TODO: GET /api/diff
-	// http.HandleFunc("/api/diff/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {
-	// 	api.Diff(profile, request, response)
-	// })
-
-	// TODO: POST /api/commit
-	// http.HandleFunc("/api/commit/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {
-	// 	api.Commit(profile, request, response)
-	// })
-
-	// TODO: PATCH /api/pull
-	// http.HandleFunc("/api/pull/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {
-	// 	api.Pull(profile, request, response)
-	// })
-
-	http.HandleFunc("/api/push/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {
-		api.Push(profile, request, response)
-	})
-
-	http.HandleFunc("/api/index", func(response http.ResponseWriter, request *http.Request) {
-		profile.Refresh()
-		api.Index(profile, request, response)
-	})
-
-	http.HandleFunc("/api/status/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {
-		api.Status(profile, request, response)
-	})
-
 	http.HandleFunc("/api/settings", func(response http.ResponseWriter, request *http.Request) {
-		api.Settings(profile, request, response)
+
+		if request.Method == http.MethodGet {
+
+			payload, _ := json.MarshalIndent(schemas.Settings{
+				Settings: profile.Settings,
+			}, "", "\t")
+
+			console.Log("> GET /api/settings:" + http.StatusText(http.StatusOK))
+
+			response.Header().Set("Content-Type", "application/json")
+			response.WriteHeader(http.StatusOK)
+			response.Write(payload)
+
+		} else if request.Method == http.MethodPost {
+
+			bytes0, err0 := io.ReadAll(request.Body)
+
+			if err0 == nil {
+
+				var schema schemas.Settings
+
+				err1 := json.Unmarshal(bytes0, &schema)
+
+				if err1 == nil && schema.IsValid() {
+
+					profile.Settings.Backup        = schema.Settings.Backup
+					profile.Settings.Folder        = schema.Settings.Folder
+					profile.Settings.Port          = schema.Settings.Port
+					profile.Settings.Organizations = schema.Settings.Organizations
+
+					stat2, err2 := os.Stat(profile.Settings.Folder)
+
+					if err2 == nil && stat2.IsDir() {
+
+						payload, _ := json.MarshalIndent(schemas.Settings{
+							Settings: profile.Settings,
+						}, "", "\t")
+
+						err3 := os.WriteFile(profile.Settings.Folder + "/git-evac.json", payload, 0666)
+
+						if err3 == nil {
+
+							console.Log("> POST /api/settings: " + http.StatusText(http.StatusOK))
+
+							response.Header().Set("Content-Type", "application/json")
+							response.WriteHeader(http.StatusOK)
+							response.Write(payload)
+
+						} else {
+
+							console.Error("> POST /api/settings: " + http.StatusText(http.StatusInternalServerError))
+							console.Error("> " + err3.Error())
+
+							response.Header().Set("Content-Type", "application/json")
+							response.WriteHeader(http.StatusInternalServerError)
+							response.Write([]byte("{}"))
+
+						}
+
+					} else {
+
+						console.Error("> POST /api/settings: " + http.StatusText(http.StatusConflict))
+						console.Error("> " + err2.Error())
+
+						response.Header().Set("Content-Type", "application/json")
+						response.WriteHeader(http.StatusConflict)
+						response.Write([]byte("{}"))
+
+					}
+
+				} else {
+
+					console.Error("> POST /api/settings: " + http.StatusText(http.StatusBadRequest))
+
+					if err1 != nil {
+						console.Error("> " + err1.Error())
+					}
+
+					response.Header().Set("Content-Type", "application/json")
+					response.WriteHeader(http.StatusBadRequest)
+					response.Write([]byte("{}"))
+
+				}
+
+			} else {
+
+				console.Error("> POST /api/settings: " + http.StatusText(http.StatusBadRequest))
+
+				response.Header().Set("Content-Type", "application/json")
+				response.WriteHeader(http.StatusBadRequest)
+				response.Write([]byte("{}"))
+
+			}
+
+		} else {
+
+			console.Error("> " + request.Method + " /api/settings: " + http.StatusText(http.StatusMethodNotAllowed))
+
+			response.Header().Set("Content-Type", "application/json")
+			response.WriteHeader(http.StatusMethodNotAllowed)
+			response.Write([]byte("[]"))
+
+		}
+
 	})
 
 	return result

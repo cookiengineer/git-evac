@@ -178,6 +178,18 @@ func NewRepositories(main *app.Main, view interfaces.View) *Repositories {
 
 				}
 
+				length_all := 0
+
+				for _, owner := range controller.Schema.Owners {
+					length_all += len(owner.Repositories)
+				}
+
+				label, ok0 := components.UnwrapComponent[*ui_components.Label](footer.Query("footer > label"))
+
+				if ok0 == true {
+					label.SetLabel("Selected " + strconv.Itoa(len(attributes)) + " of " + strconv.Itoa(length_all) + " Repositories")
+				}
+
 				buttons_clone, ok1 := components.UnwrapComponent[*ui_components.Button](footer.Query("footer > button[data-action=\"clone\"]"))
 				buttons_fix, ok2 := components.UnwrapComponent[*ui_components.Button](footer.Query("footer > button[data-action=\"fix\"]"))
 				buttons_commit, ok3 := components.UnwrapComponent[*ui_components.Button](footer.Query("footer > button[data-action=\"commit\"]"))
@@ -274,7 +286,59 @@ func (controller *Repositories) Update() {
 			table, ok1 := components.UnwrapComponent[*app_components.RepositoriesTable](controller.View.Query("section > table"))
 
 			if len(controller.Schema.Owners) > 0 && ok1 == true {
+
+				table.Reset()
 				table.SetSchema(controller.Schema)
+
+			}
+
+			footer := controller.Main.Footer
+
+			if footer != nil {
+
+				length := 0
+
+				for _, owner := range controller.Schema.Owners {
+					length += len(owner.Repositories)
+				}
+
+				label, ok0 := components.UnwrapComponent[*ui_components.Label](footer.Query("footer > label"))
+
+				if ok0 == true {
+					label.SetLabel("Selected 0 of " + strconv.Itoa(length) + " Repositories")
+				}
+
+				buttons_clone, ok1 := components.UnwrapComponent[*ui_components.Button](footer.Query("footer > button[data-action=\"clone\"]"))
+				buttons_fix, ok2 := components.UnwrapComponent[*ui_components.Button](footer.Query("footer > button[data-action=\"fix\"]"))
+				buttons_commit, ok3 := components.UnwrapComponent[*ui_components.Button](footer.Query("footer > button[data-action=\"commit\"]"))
+				buttons_pull, ok4 := components.UnwrapComponent[*ui_components.Button](footer.Query("footer > button[data-action=\"pull\"]"))
+				buttons_push, ok5 := components.UnwrapComponent[*ui_components.Button](footer.Query("footer > button[data-action=\"push\"]"))
+
+				if ok1 == true {
+					buttons_clone.SetLabel("Clone 0")
+					buttons_clone.Disable()
+				}
+
+				if ok2 == true {
+					buttons_fix.SetLabel("Fix 0")
+					buttons_fix.Disable()
+				}
+
+				if ok3 == true {
+					buttons_commit.SetLabel("Commit 0")
+					buttons_commit.Disable()
+				}
+
+				if ok4 == true {
+					buttons_pull.SetLabel("Pull 0")
+					buttons_pull.Disable()
+				}
+
+				if ok5 == true {
+					buttons_push.SetLabel("Push 0")
+					buttons_push.Disable()
+				}
+
 			}
 
 		}

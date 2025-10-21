@@ -1,59 +1,49 @@
 
-# TODO
-
-
 # Backend
+
+## cmds/git-evac{-debug}
+
+- [ ] Implement parser for `$PWD/git-evac.json` into `profile.Settings`
+- [ ] Implement fallback to default of parsing `$HOME/Software/<owner>/<repo>` folders
+
+## server/api
+
+- [ ] Migrate `api.Clone()` to `actions.Clone()` and `routes.Clone()`
+- [ ] Migrate `api.Pull()` to `actions.Pull()` and `routes.Pull()`
+- [ ] Implement `actions.Commit()` and `routes.Commit()`
+- [ ] Implement `actions.Diff()` and `routes.Diff()`
+
+## structs/Profile
 
 - [ ] `Profile.Refresh()` needs to create new RepositoryOwner instances if there are new ones
 - [ ] `Profile.Refresh()` needs to remove owners if they were deleted
 - [ ] `Profile.Refresh()` needs to remove repos if they were deleted
 
-- [ ] Finish Implementation of `server/api/Restore.go`
-- [ ] Finish Implementation of `server/api/Pull.go`
 
 
-- [ ] Parse `~/Software/git-evac.json` as `Profile` if it exists, do that in `main.go`
-- [ ] Implement `git.GlobalConfig.Parse()`
-- [ ] Implement `git.LocalConfig.Parse()`
+# Frontend
 
-- [ ] Implement `api/Diff.go`
-- [ ] Implement `api/Commit.go`
-
-
-# App
+## app/actions
 
 - [ ] Implement `actions/Diff.go` when Schema is ready
 - [ ] Implement `actions/FixRemotes.go` when Workflow and Schema are ready
 
-## Repositories View
+## app/controllers/Repositories
 
-- [ ] Fix Action
-- [ ] Dialog: Fix Remotes workflow
-- [ ] Dialog: Fix Terminal workflow
+- [ ] Implement goroutine for Clone Action
+- [ ] Implement goroutine for Fix Action
+- [ ] Implement goroutine for Commit Action
+- [ ] Implement goroutine for Pull Action
+- [ ] Implement goroutine for Push Action
 
-- [ ] Diff Action
-- [ ] Dialog: Show Diff of Files
-- [ ] Dialog: Allow to check/select committed files
-- [ ] Dialog: Show label for "Commit x files, delete y files" depending on selection
+## app/controllers/Backups
 
-- [ ] Commit Action
-- [ ] Dialog: Commit Progress
+- [ ] Implement Backup Action
+- [ ] Implement Restore Action
+- [ ] Implement `components.BackupsTable`
+- [ ] Implement Dialog with `components.SchedulerTable`
 
-- [ ] Pull Action
-- [ ] Dialog: Pull Progress
-
-
-## Backups View
-
-- [ ] Select Repositories
-- [ ] Backup Action
-- [ ] Dialog: Backup Progress
-
-- [ ] Select Repositories
-- [ ] Restore Action
-- [ ] Dialog: Restore Progress
-
-## Settings View
+## app/controllers/Settings
 
 - [ ] Change Remote Properties (URL, Type)
 - [ ] Change Identity Properties (SSH Key, User Name, User Email)

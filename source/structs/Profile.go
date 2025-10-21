@@ -121,6 +121,26 @@ func (profile *Profile) GetOwner(name string, folder string) *RepositoryOwner {
 
 }
 
+func (profile *Profile) GetRepository(owner_name string, repo_name string) *Repository {
+
+	var result *Repository
+
+	owner, ok1 := profile.Owners[owner_name]
+
+	if ok1 == true {
+
+		repository, ok2 := owner.Repositories[repo_name]
+
+		if ok2 == true {
+			result = repository
+		}
+
+	}
+
+	return result
+
+}
+
 func (profile *Profile) HasOwner(name string) bool {
 
 	var result bool = false

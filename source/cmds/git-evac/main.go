@@ -157,7 +157,9 @@ func main() {
 		go func() {
 
 			profile.Init()
+
 			server.Dispatch(profile)
+			server.DispatchRoutes(profile)
 
 			result := server.Serve(profile)
 

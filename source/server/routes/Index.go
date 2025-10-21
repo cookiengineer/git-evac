@@ -1,4 +1,4 @@
-package api
+package routes
 
 import "git-evac/console"
 import "git-evac/schemas"
@@ -10,29 +10,19 @@ func Index(profile *structs.Profile, request *http.Request, response http.Respon
 
 	if request.Method == http.MethodGet {
 
-		payload, err := json.MarshalIndent(schemas.Repositories{
+		payload, _ := json.MarshalIndent(schemas.Repositories{
 			Owners: profile.Owners,
 		}, "", "\t")
 
-		if err == nil {
+		console.Log("> " + request.Method + " /api/index: " + http.StatusText(http.StatusOK))
 
-			console.Log("> api.Index()")
-
-			response.Header().Set("Content-Type", "application/json")
-			response.WriteHeader(http.StatusOK)
-			response.Write(payload)
-
-		} else {
-
-			console.Error("> api.Index()")
-
-			response.Header().Set("Content-Type", "application/json")
-			response.WriteHeader(http.StatusInternalServerError)
-			response.Write([]byte("[]"))
-
-		}
+		response.Header().Set("Content-Type", "application/json")
+		response.WriteHeader(http.StatusOK)
+		response.Write(payload)
 
 	} else {
+
+		console.Error("> " + request.Method + " /api/index: " + http.StatusText(http.StatusMethodNotAllowed))
 
 		response.Header().Set("Content-Type", "application/json")
 		response.WriteHeader(http.StatusMethodNotAllowed)

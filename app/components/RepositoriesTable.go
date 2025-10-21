@@ -174,6 +174,26 @@ func (table *RepositoriesTable) Mount() bool {
 
 }
 
+func (table *RepositoriesTable) Query(query string) interfaces.Component {
+
+	selectors := utils.SplitQuery(query)
+
+	if len(selectors) == 1 {
+
+		if table.Component.Element != nil {
+
+			if utils.MatchesQuery(table.Component.Element, selectors[0]) == true {
+				return table
+			}
+
+		}
+
+	}
+
+	return nil
+
+}
+
 func (table *RepositoriesTable) Render() *dom.Element {
 
 	if table.Component.Element != nil {
@@ -201,6 +221,7 @@ func (table *RepositoriesTable) Render() *dom.Element {
 			tr := dom.Document.CreateElement("tr")
 
 			html := ""
+			html += "<th><input type=\"checkbox\" title=\"Toggle all repositories\" data-action=\"select\"/></th>"
 			html += "<th>Repository</th>"
 			html += "<th>Remotes</th>"
 			html += "<th>Branches</th>"
@@ -305,6 +326,13 @@ func (table *RepositoriesTable) Render() *dom.Element {
 
 }
 
+func (table *RepositoriesTable) Reset() {
+
+	table.Schema   = nil
+	table.selected = make(map[string]bool)
+
+}
+
 func (table *RepositoriesTable) Deselect(names []string) {
 
 	for _, name := range names {
@@ -316,26 +344,6 @@ func (table *RepositoriesTable) Deselect(names []string) {
 		}
 
 	}
-
-}
-
-func (table *RepositoriesTable) Query(query string) interfaces.Component {
-
-	selectors := utils.SplitQuery(query)
-
-	if len(selectors) == 1 {
-
-		if table.Component.Element != nil {
-
-			if utils.MatchesQuery(table.Component.Element, selectors[0]) == true {
-				return table
-			}
-
-		}
-
-	}
-
-	return nil
 
 }
 
