@@ -64,7 +64,6 @@ func DispatchRoutes(profile *structs.Profile) bool {
 		routes.Terminal(profile, request, response)
 	})
 
-
 	return result
 
 }

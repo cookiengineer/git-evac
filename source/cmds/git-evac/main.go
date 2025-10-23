@@ -1,6 +1,5 @@
 package main
 
-import "git-evac/console"
 import "git-evac/public"
 import "git-evac/server"
 import "git-evac/structs"
@@ -20,6 +19,8 @@ func main() {
 	var folder string = ""
 	var port uint16 = 3000
 
+	console := structs.NewConsole(os.Stdout, os.Stderr, 0)
+
 	if len(os.Args) >= 2 {
 
 		parameters := os.Args[1:]
@@ -33,7 +34,7 @@ func main() {
 				tmp := strings.TrimSpace(parameter[9:])
 
 				if strings.HasPrefix(tmp, "\"") && strings.HasSuffix(tmp, "\"") {
-					tmp = strings.TrimSpace(tmp[1:len(tmp)-1])
+					tmp = strings.TrimSpace(tmp[1 : len(tmp)-1])
 				} else {
 					tmp = strings.TrimSpace(tmp)
 				}
@@ -66,7 +67,7 @@ func main() {
 				tmp := strings.TrimSpace(parameter[9:])
 
 				if strings.HasPrefix(tmp, "\"") && strings.HasSuffix(tmp, "\"") {
-					tmp = strings.TrimSpace(tmp[1:len(tmp)-1])
+					tmp = strings.TrimSpace(tmp[1 : len(tmp)-1])
 				} else {
 					tmp = strings.TrimSpace(tmp)
 				}
@@ -110,7 +111,6 @@ func main() {
 
 	}
 
-
 	user, err := os_user.Current()
 
 	if err == nil {
@@ -128,21 +128,15 @@ func main() {
 	if backup != "" && folder != "" {
 
 		filesystem, _ := fs.Sub(public.FS, ".")
-		profile := structs.NewProfile(backup, folder, port)
+		profile := structs.NewProfile(console, backup, folder, port)
 		profile.Filesystem = &filesystem
 
-		console.Clear()
+		console.Clear("")
 		console.Group("git-evac: Command-Line Arguments")
-		console.Inspect(struct {
-			Backup string
-			Folder string
-			Port   uint16
-		}{
-			Backup: backup,
-			Folder: folder,
-			Port:   port,
-		})
-		console.GroupEnd("")
+		console.Log("> Backup: " + backup)
+		console.Log("> Folder: " + folder)
+		console.Log("> Port:   " + strconv.FormatUint(uint64(port), 10))
+		console.GroupEnd("git-evac")
 
 		signal_channel := make(chan os.Signal, 1)
 		signal.Notify(

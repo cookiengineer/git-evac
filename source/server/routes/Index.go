@@ -1,6 +1,5 @@
 package routes
 
-import "git-evac/console"
 import "git-evac/schemas"
 import "git-evac/structs"
 import "encoding/json"
@@ -14,7 +13,7 @@ func Index(profile *structs.Profile, request *http.Request, response http.Respon
 			Owners: profile.Owners,
 		}, "", "\t")
 
-		console.Log("> " + request.Method + " /api/index: " + http.StatusText(http.StatusOK))
+		profile.Console.Log("> " + request.Method + " /api/index: " + http.StatusText(http.StatusOK))
 
 		response.Header().Set("Content-Type", "application/json")
 		response.WriteHeader(http.StatusOK)
@@ -22,7 +21,7 @@ func Index(profile *structs.Profile, request *http.Request, response http.Respon
 
 	} else {
 
-		console.Error("> " + request.Method + " /api/index: " + http.StatusText(http.StatusMethodNotAllowed))
+		profile.Console.Error("> " + request.Method + " /api/index: " + http.StatusText(http.StatusMethodNotAllowed))
 
 		response.Header().Set("Content-Type", "application/json")
 		response.WriteHeader(http.StatusMethodNotAllowed)

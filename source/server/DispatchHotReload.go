@@ -1,6 +1,5 @@
 package server
 
-import "git-evac/console"
 import "git-evac/structs"
 import "bytes"
 import "net/http"
@@ -10,7 +9,7 @@ import "strings"
 
 func DispatchHotReload(profile *structs.Profile) bool {
 
-	var result bool = false
+	var result bool
 
 	fs := http.FS(*profile.Filesystem)
 	fsrv := http.FileServer(fs)
@@ -29,7 +28,7 @@ func DispatchHotReload(profile *structs.Profile) bool {
 				if err1 == nil {
 
 					goroot := strings.TrimSpace(string(tmp1))
-					root := cwd[0:len(cwd)-7]
+					root := cwd[0 : len(cwd)-7]
 					exec_source := goroot + "/lib/wasm/wasm_exec.js"
 					exec_output := root + "/source/public/wasm_exec.js"
 
@@ -45,7 +44,7 @@ func DispatchHotReload(profile *structs.Profile) bool {
 
 							if err4 == nil {
 
-								console.Log("> " + request.Method + " /wasm_exec.js: " + http.StatusText(http.StatusOK))
+								profile.Console.Log("> " + request.Method + " /wasm_exec.js: " + http.StatusText(http.StatusOK))
 
 								response.Header().Set("Content-Type", "application/javascript")
 								response.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
@@ -56,8 +55,8 @@ func DispatchHotReload(profile *structs.Profile) bool {
 
 							} else {
 
-								console.Error("> " + request.Method + " /wasm_exec.js: " + http.StatusText(http.StatusInternalServerError))
-								console.Error(err4.Error())
+								profile.Console.Error("> " + request.Method + " /wasm_exec.js: " + http.StatusText(http.StatusInternalServerError))
+								profile.Console.Error(err4.Error())
 
 								response.Header().Set("Content-Type", "application/javascript")
 								response.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
@@ -71,8 +70,8 @@ func DispatchHotReload(profile *structs.Profile) bool {
 
 						} else {
 
-							console.Error("> " + request.Method + " /wasm_exec.js: " + http.StatusText(http.StatusInternalServerError))
-							console.Error(err3.Error())
+							profile.Console.Error("> " + request.Method + " /wasm_exec.js: " + http.StatusText(http.StatusInternalServerError))
+							profile.Console.Error(err3.Error())
 
 							response.Header().Set("Content-Type", "application/javascript")
 							response.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
@@ -86,10 +85,10 @@ func DispatchHotReload(profile *structs.Profile) bool {
 
 					} else {
 
-						console.Error("> " + request.Method + " /wasm_exec.js: " + http.StatusText(http.StatusNotFound))
+						profile.Console.Error("> " + request.Method + " /wasm_exec.js: " + http.StatusText(http.StatusNotFound))
 
 						if err2 != nil {
-							console.Error(err2.Error())
+							profile.Console.Error(err2.Error())
 						}
 
 						response.Header().Set("Content-Type", "application/javascript")
@@ -109,10 +108,10 @@ func DispatchHotReload(profile *structs.Profile) bool {
 
 				} else {
 
-					console.Error("> " + request.Method + " /wasm_exec.js: " + http.StatusText(http.StatusInternalServerError))
+					profile.Console.Error("> " + request.Method + " /wasm_exec.js: " + http.StatusText(http.StatusInternalServerError))
 
 					if err1 != nil {
-						console.Error(err1.Error())
+						profile.Console.Error(err1.Error())
 					}
 
 					response.Header().Set("Content-Type", "application/javascript")
@@ -127,7 +126,7 @@ func DispatchHotReload(profile *structs.Profile) bool {
 
 			} else {
 
-				console.Log("> " + request.Method + " /wasm_exec.js: " + http.StatusText(http.StatusOK))
+				profile.Console.Log("> " + request.Method + " /wasm_exec.js: " + http.StatusText(http.StatusOK))
 
 				response.Header().Set("Content-Type", "application/javascript")
 				response.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
@@ -140,7 +139,7 @@ func DispatchHotReload(profile *structs.Profile) bool {
 
 		} else {
 
-			console.Error("> " + request.Method + " /wasm_exec.js: " + http.StatusText(http.StatusMethodNotAllowed))
+			profile.Console.Error("> " + request.Method + " /wasm_exec.js: " + http.StatusText(http.StatusMethodNotAllowed))
 
 			response.Header().Set("Content-Type", "application/javascript")
 			response.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
@@ -162,7 +161,7 @@ func DispatchHotReload(profile *structs.Profile) bool {
 
 			if err0 == nil && strings.HasSuffix(cwd, "/source") {
 
-				root := cwd[0:len(cwd)-7]
+				root := cwd[0 : len(cwd)-7]
 				go_source := root + "/app/main.go"
 				go_output := root + "/source/public/main.wasm"
 
@@ -189,7 +188,7 @@ func DispatchHotReload(profile *structs.Profile) bool {
 
 				if err1 == nil {
 
-					console.Log("> " + request.Method + " /main.wasm: " + http.StatusText(http.StatusOK))
+					profile.Console.Log("> " + request.Method + " /main.wasm: " + http.StatusText(http.StatusOK))
 
 					response.Header().Set("Content-Type", "application/wasm")
 					response.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
@@ -200,7 +199,7 @@ func DispatchHotReload(profile *structs.Profile) bool {
 
 				} else {
 
-					console.Error("> " + request.Method + " /main.wasm: " + http.StatusText(http.StatusInternalServerError))
+					profile.Console.Error("> " + request.Method + " /main.wasm: " + http.StatusText(http.StatusInternalServerError))
 
 					response.Header().Set("Content-Type", "application/wasm")
 					response.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
@@ -212,7 +211,7 @@ func DispatchHotReload(profile *structs.Profile) bool {
 					lines := strings.Split(strings.TrimSpace(string(stderr1.Bytes())), "\n")
 
 					for l := 0; l < len(lines); l++ {
-						console.Error("> " + lines[l])
+						profile.Console.Error("> " + lines[l])
 						payload = append(payload, []byte(lines[l])...)
 					}
 
@@ -223,7 +222,7 @@ func DispatchHotReload(profile *structs.Profile) bool {
 
 			} else {
 
-				console.Log("> " + request.Method + " /main.wasm: " + http.StatusText(http.StatusOK))
+				profile.Console.Log("> " + request.Method + " /main.wasm: " + http.StatusText(http.StatusOK))
 
 				response.Header().Set("Content-Type", "application/wasm")
 				response.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
@@ -236,7 +235,7 @@ func DispatchHotReload(profile *structs.Profile) bool {
 
 		} else {
 
-			console.Error("> " + request.Method + " /main.wasm: " + http.StatusText(http.StatusMethodNotAllowed))
+			profile.Console.Error("> " + request.Method + " /main.wasm: " + http.StatusText(http.StatusMethodNotAllowed))
 
 			response.Header().Set("Content-Type", "application/wasm")
 			response.WriteHeader(http.StatusMethodNotAllowed)

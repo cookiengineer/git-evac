@@ -1,6 +1,5 @@
 package routes
 
-import "git-evac/console"
 import "git-evac/schemas"
 import "git-evac/structs"
 import "encoding/json"
@@ -19,7 +18,7 @@ func Status(profile *structs.Profile, request *http.Request, response http.Respo
 			repo.Status()
 		}
 
-		console.Log("> " + request.Method + " /api/status/" + owner + "/" + repository + ": " + http.StatusText(http.StatusOK))
+		profile.Console.Log("> " + request.Method + " /api/status/" + owner + "/" + repository + ": " + http.StatusText(http.StatusOK))
 
 		response.Header().Set("Content-Type", "application/json")
 		response.WriteHeader(http.StatusOK)
@@ -31,7 +30,7 @@ func Status(profile *structs.Profile, request *http.Request, response http.Respo
 
 	} else {
 
-		console.Error("> " + request.Method + " /api/status: " + http.StatusText(http.StatusMethodNotAllowed))
+		profile.Console.Error("> " + request.Method + " /api/status: " + http.StatusText(http.StatusMethodNotAllowed))
 
 		response.Header().Set("Content-Type", "application/json")
 		response.WriteHeader(http.StatusMethodNotAllowed)
@@ -40,4 +39,3 @@ func Status(profile *structs.Profile, request *http.Request, response http.Respo
 	}
 
 }
-

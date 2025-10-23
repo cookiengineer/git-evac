@@ -1,20 +1,27 @@
 package structs
 
-import "git-evac/console"
 import "io/fs"
 import "os"
 
 type Profile struct {
 	Owners     map[string]*RepositoryOwner `json:"owners"`
 	Settings   Settings                    `json:"settings"`
-	Filesystem *fs.FS
+	Console    *Console                    `json:"console"`
+	Filesystem *fs.FS                      `json:"-"`
 }
 
-func NewProfile(backup string, folder string, port uint16) *Profile {
+func NewProfile(console *Console, backup string, folder string, port uint16) *Profile {
 
 	var profile Profile
 
 	profile.Owners = make(map[string]*RepositoryOwner)
+
+	if console != nil {
+		profile.Console = console
+	} else {
+		profile.Console = NewConsole(nil, nil, 0)
+	}
+
 	profile.Filesystem = nil
 
 	profile.Settings.Backup        = backup
@@ -32,7 +39,7 @@ func (profile *Profile) Init() {
 
 	if err0 == nil && stat.IsDir() {
 
-		console.Group("Discover Repositories in \"" + profile.Settings.Folder + "\"")
+		profile.Console.Group("Init(): Discover Repositories in \"" + profile.Settings.Folder + "\"")
 
 		root := profile.Settings.Folder
 
@@ -63,7 +70,7 @@ func (profile *Profile) Init() {
 									repo := owner.GetRepository(entry2.Name())
 
 									if owner != nil && repo != nil {
-										console.Log("> Discovered " + owner.Name + "/" + repo.Name)
+										profile.Console.Log("> Discovered " + owner.Name + "/" + repo.Name)
 									}
 
 								}
@@ -80,7 +87,7 @@ func (profile *Profile) Init() {
 
 		}
 
-		console.GroupEnd("")
+		profile.Console.GroupEnd("Init()")
 
 	}
 

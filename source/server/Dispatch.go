@@ -1,6 +1,5 @@
 package server
 
-import "git-evac/console"
 import "git-evac/schemas"
 import "git-evac/structs"
 import "encoding/json"
@@ -84,7 +83,7 @@ func Dispatch(profile *structs.Profile) bool {
 				Settings: profile.Settings,
 			}, "", "\t")
 
-			console.Log("> GET /api/settings:" + http.StatusText(http.StatusOK))
+			profile.Console.Log("> GET /api/settings:" + http.StatusText(http.StatusOK))
 
 			response.Header().Set("Content-Type", "application/json")
 			response.WriteHeader(http.StatusOK)
@@ -102,9 +101,9 @@ func Dispatch(profile *structs.Profile) bool {
 
 				if err1 == nil && schema.IsValid() {
 
-					profile.Settings.Backup        = schema.Settings.Backup
-					profile.Settings.Folder        = schema.Settings.Folder
-					profile.Settings.Port          = schema.Settings.Port
+					profile.Settings.Backup = schema.Settings.Backup
+					profile.Settings.Folder = schema.Settings.Folder
+					profile.Settings.Port = schema.Settings.Port
 					profile.Settings.Organizations = schema.Settings.Organizations
 
 					stat2, err2 := os.Stat(profile.Settings.Folder)
@@ -115,11 +114,11 @@ func Dispatch(profile *structs.Profile) bool {
 							Settings: profile.Settings,
 						}, "", "\t")
 
-						err3 := os.WriteFile(profile.Settings.Folder + "/git-evac.json", payload, 0666)
+						err3 := os.WriteFile(profile.Settings.Folder+"/git-evac.json", payload, 0666)
 
 						if err3 == nil {
 
-							console.Log("> POST /api/settings: " + http.StatusText(http.StatusOK))
+							profile.Console.Log("> POST /api/settings: " + http.StatusText(http.StatusOK))
 
 							response.Header().Set("Content-Type", "application/json")
 							response.WriteHeader(http.StatusOK)
@@ -127,8 +126,8 @@ func Dispatch(profile *structs.Profile) bool {
 
 						} else {
 
-							console.Error("> POST /api/settings: " + http.StatusText(http.StatusInternalServerError))
-							console.Error("> " + err3.Error())
+							profile.Console.Error("> POST /api/settings: " + http.StatusText(http.StatusInternalServerError))
+							profile.Console.Error("> " + err3.Error())
 
 							response.Header().Set("Content-Type", "application/json")
 							response.WriteHeader(http.StatusInternalServerError)
@@ -138,8 +137,8 @@ func Dispatch(profile *structs.Profile) bool {
 
 					} else {
 
-						console.Error("> POST /api/settings: " + http.StatusText(http.StatusConflict))
-						console.Error("> " + err2.Error())
+						profile.Console.Error("> POST /api/settings: " + http.StatusText(http.StatusConflict))
+						profile.Console.Error("> " + err2.Error())
 
 						response.Header().Set("Content-Type", "application/json")
 						response.WriteHeader(http.StatusConflict)
@@ -149,10 +148,10 @@ func Dispatch(profile *structs.Profile) bool {
 
 				} else {
 
-					console.Error("> POST /api/settings: " + http.StatusText(http.StatusBadRequest))
+					profile.Console.Error("> POST /api/settings: " + http.StatusText(http.StatusBadRequest))
 
 					if err1 != nil {
-						console.Error("> " + err1.Error())
+						profile.Console.Error("> " + err1.Error())
 					}
 
 					response.Header().Set("Content-Type", "application/json")
@@ -163,7 +162,7 @@ func Dispatch(profile *structs.Profile) bool {
 
 			} else {
 
-				console.Error("> POST /api/settings: " + http.StatusText(http.StatusBadRequest))
+				profile.Console.Error("> POST /api/settings: " + http.StatusText(http.StatusBadRequest))
 
 				response.Header().Set("Content-Type", "application/json")
 				response.WriteHeader(http.StatusBadRequest)
@@ -173,7 +172,7 @@ func Dispatch(profile *structs.Profile) bool {
 
 		} else {
 
-			console.Error("> " + request.Method + " /api/settings: " + http.StatusText(http.StatusMethodNotAllowed))
+			profile.Console.Error("> " + request.Method + " /api/settings: " + http.StatusText(http.StatusMethodNotAllowed))
 
 			response.Header().Set("Content-Type", "application/json")
 			response.WriteHeader(http.StatusMethodNotAllowed)

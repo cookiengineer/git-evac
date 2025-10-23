@@ -1,7 +1,6 @@
 package routes
 
 import "git-evac/actions"
-import "git-evac/console"
 import "git-evac/schemas"
 import "git-evac/structs"
 import "encoding/json"
@@ -21,7 +20,7 @@ func Terminal(profile *structs.Profile, request *http.Request, response http.Res
 			repo := profile.GetRepository(owner, repository)
 			repo.Status()
 
-			console.Log("> " + request.Method + " /api/terminal/" + owner + "/" + repository + ": " + http.StatusText(http.StatusOK))
+			profile.Console.Log("> " + request.Method + " /api/terminal/" + owner + "/" + repository + ": " + http.StatusText(http.StatusOK))
 
 			response.Header().Set("Content-Type", "application/json")
 			response.WriteHeader(http.StatusOK)
@@ -33,8 +32,8 @@ func Terminal(profile *structs.Profile, request *http.Request, response http.Res
 
 		} else {
 
-			console.Error("> " + request.Method + " /api/terminal/" + owner + "/" + repository + ": " + http.StatusText(http.StatusInternalServerError))
-			console.Error("> " + err.Error())
+			profile.Console.Error("> " + request.Method + " /api/terminal/" + owner + "/" + repository + ": " + http.StatusText(http.StatusInternalServerError))
+			profile.Console.Error("> " + err.Error())
 
 			response.Header().Set("Content-Type", "application/json")
 			response.WriteHeader(http.StatusInternalServerError)
@@ -44,7 +43,7 @@ func Terminal(profile *structs.Profile, request *http.Request, response http.Res
 
 	} else {
 
-		console.Error("> " + request.Method + " /api/terminal: " + http.StatusText(http.StatusMethodNotAllowed))
+		profile.Console.Error("> " + request.Method + " /api/terminal: " + http.StatusText(http.StatusMethodNotAllowed))
 
 		response.Header().Set("Content-Type", "application/json")
 		response.WriteHeader(http.StatusMethodNotAllowed)
@@ -53,4 +52,3 @@ func Terminal(profile *structs.Profile, request *http.Request, response http.Res
 	}
 
 }
-

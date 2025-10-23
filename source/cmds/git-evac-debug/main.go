@@ -1,6 +1,5 @@
 package main
 
-import "git-evac/console"
 import "git-evac/server"
 import "git-evac/structs"
 import "os"
@@ -13,20 +12,20 @@ func main() {
 	var folder string = ""
 	var port uint16 = 3000
 
+	console := structs.NewConsole(os.Stderr, os.Stdout, 0)
+
 	if len(os.Args) >= 2 {
 
 		parameters := os.Args[1:]
 
-		for p := 0; p < len(parameters); p++ {
-
-			parameter := parameters[p]
+		for _, parameter := range parameters {
 
 			if strings.HasPrefix(parameter, "--folder=") {
 
 				tmp := strings.TrimSpace(parameter[9:])
 
 				if strings.HasPrefix(tmp, "\"") && strings.HasSuffix(tmp, "\"") {
-					tmp = strings.TrimSpace(tmp[1:len(tmp)-1])
+					tmp = strings.TrimSpace(tmp[1 : len(tmp)-1])
 				} else {
 					tmp = strings.TrimSpace(tmp)
 				}
@@ -83,21 +82,15 @@ func main() {
 	if folder != "" {
 
 		fsys := os.DirFS("public")
-		profile := structs.NewProfile("/tmp/backup", folder, port)
+		profile := structs.NewProfile(console, "/tmp/backup", folder, port)
 		profile.Filesystem = &fsys
 
-		console.Clear()
+		console.Clear("")
 		console.Group("git-evac-debug: Command-Line Arguments")
-		console.Inspect(struct {
-			Backup string
-			Folder string
-			Port   uint16
-		}{
-			Backup: "/tmp/backup",
-			Folder: folder,
-			Port:   port,
-		})
-		console.GroupEnd("")
+		console.Log("> Backup: /tmp/backup")
+		console.Log("> Folder: " + folder)
+		console.Log("> Port:   " + strconv.FormatUint(uint64(port), 10))
+		console.GroupEnd("git-evac-debug")
 
 		profile.Init()
 

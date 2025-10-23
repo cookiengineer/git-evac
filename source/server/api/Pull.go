@@ -1,13 +1,12 @@
 package api
 
-import "git-evac/console"
 // import "git-evac/schemas"
 import "git-evac/structs"
 // import "encoding/json"
 import "net/http"
 import "os/exec"
 
-func Pull(profile *structs.Profile, request *http.Request, response http.ResponseWriter) {
+func Pull(console *structs.Console, profile *structs.Profile, request *http.Request, response http.ResponseWriter) {
 
 	if request.Method == http.MethodGet {
 

@@ -1,6 +1,5 @@
 package api
 
-import "git-evac/console"
 import "git-evac/schemas"
 import "git-evac/structs"
 import utils_remotes "git-evac/utils/remotes"
@@ -11,7 +10,7 @@ import "os"
 import "os/exec"
 import "strings"
 
-func Clone(profile *structs.Profile, request *http.Request, response http.ResponseWriter) {
+func Clone(console *structs.Console, profile *structs.Profile, request *http.Request, response http.ResponseWriter) {
 
 	if request.Method == http.MethodGet {
 

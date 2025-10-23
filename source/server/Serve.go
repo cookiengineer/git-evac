@@ -1,15 +1,15 @@
 package server
 
-import "git-evac/console"
 import "git-evac/structs"
 import "net/http"
 import "strconv"
 
 func Serve(profile *structs.Profile) bool {
 
-	var result bool = false
+	var result bool
 
-	console.Group("Listening on http://localhost:" + strconv.FormatUint(uint64(profile.Settings.Port), 10))
+	profile.Console.Group("Serve()")
+	profile.Console.Log("Listening on http://localhost:" + strconv.FormatUint(uint64(profile.Settings.Port), 10))
 
 	err1 := http.ListenAndServe(":"+strconv.FormatUint(uint64(profile.Settings.Port), 10), nil)
 
@@ -17,7 +17,7 @@ func Serve(profile *structs.Profile) bool {
 		result = true
 	}
 
-	console.GroupEnd("")
+	profile.Console.GroupEnd("Serve()")
 
 	return result
 
