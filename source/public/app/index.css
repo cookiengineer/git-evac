@@ -6,6 +6,7 @@
 @import url("./views/Backups.css");
 @import url("./views/Repositories.css");
 @import url("./views/Settings.css");
+@import url("./palette.css");
 
 body > header ul li a[data-view="repositories"]:before { content: '\f1e0'; }
 body > header ul li a[data-view="backups"]:before      { content: '\e807'; }

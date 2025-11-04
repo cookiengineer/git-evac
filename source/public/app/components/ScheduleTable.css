@@ -45,7 +45,7 @@ table[data-type="schedule"] tr td:nth-of-type(3) {
 		width: 128px;
 		height: 16px;
 		border: none;
-		background-color: var(--input-default-background);
+		background-color: var(--progress-active-background);
 		border-radius: 4px;
 		overflow: hidden;
 		appearance: none;
@@ -63,10 +63,10 @@ table[data-type="schedule"] tr td:nth-of-type(3) {
 		background-color: transparent;
 		background-image: repeating-linear-gradient(
 			90deg,
-			var(--input-active-background),
-			var(--input-active-background) 32px,
-			var(--input-default-background) 32px,
-			var(--input-default-background) 160px
+			var(--progress-active-background),
+			var(--progress-active-background) 32px,
+			var(--progress-active-background) 32px,
+			var(--progress-active-background) 160px
 		);
 		border-radius: 4px;
 		animation: move-stripes 3s linear infinite;
@@ -82,17 +82,17 @@ table[data-type="schedule"] tr td:nth-of-type(3) {
 	}
 
 	table[data-type="schedule"] progress[value]::-webkit-progress-bar {
-		background: var(--input-default-background);
+		background: var(--progress-active-background);
 		border-radius: 4px;
 	}
 
 	table[data-type="schedule"] progress[value]::-webkit-progress-value {
-		background: var(--input-active-background);
+		background: var(--progress-active-background);
 		border-radius: 4px;
 	}
 
 	table[data-type="schedule"] progress[value][data-finished="false"]::-webkit-progress-value {
-		background: var(--input-invalid-background);
+		background: var(--progress-invalid-background);
 		border-radius: 4px;
 	}
 

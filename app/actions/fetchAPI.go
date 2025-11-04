@@ -3,6 +3,8 @@ package actions
 import "github.com/cookiengineer/gooey/bindings/fetch"
 import "git-evac/schemas"
 import "encoding/json"
+import "errors"
+import "strconv"
 import "strings"
 
 func fetchAPI(method string, path string, owner string, repository string) (*schemas.Repository, error) {
@@ -24,14 +26,20 @@ func fetchAPI(method string, path string, owner string, repository string) (*sch
 
 		if err1 == nil {
 
-			schema := schemas.Repository{}
-			err2   := json.Unmarshal(response.Body, &schema)
+			if response.Status == 200 || response.Status == 304 {
 
-			if err2 == nil {
-				result_schema = &schema
-				result_error  = nil
+				schema := schemas.Repository{}
+				err2   := json.Unmarshal(response.Body, &schema)
+
+				if err2 == nil {
+					result_schema = &schema
+					result_error  = nil
+				} else {
+					result_error = err2
+				}
+
 			} else {
-				result_error = err2
+				result_error = errors.New(strconv.Itoa(response.Status) + ": " + response.StatusText)
 			}
 
 		} else {
