@@ -1,18 +1,18 @@
 
 # git-evac
 
-Git EVAC is my experimental repository management tool, because to me it is hard to keep track of
-my over 300 local repositories on my development systems.
+Git EVAC (`/ɡɪt ˈɛvæk/`) is my experimental repository management tool. Its purpose is to fix,
+pull, push, and manage all local repositories as automated as possible, without having to intervene
+actively.
 
-It's hard to keep track of what I changed in which repository and what I already synchronized/pushed
-to which remote, so this tool tries to give me a graphical UI that is made for batch-tasks, where I
-can start a backup procedure for all repositories and just leave the computer alone or do something
-else in the meantime.
+But, as git isn't failsafe, the restrictions fit my workflow. If you have a different workflow,
+you have to either use my strictly triangular workflow with feature branches or look for a different
+tool.
 
 
 ## Screenshot
 
-![Screenshot](./asset/screenshot.jpg)
+![Screenshot](./assets/screenshot.jpg)
 
 
 ## Opinions
@@ -21,75 +21,66 @@ else in the meantime.
 - No rebases that lose reference to `master` branch.
 - No shallow clones, use your gogs or gitea instance for that.
 - Users or Organizations can be hosted on multiple remotes. [2]
-- Convention for folder structure is `~/Software/<orga or user>/<repository>/.git`
-
+- All remotes must use the same branch names.
+- `origin` remote must be the source of truth for merge conflicts. [3]
+- Folder structure is `~/Software/<organization or user>/<repository>/.git`.
 
 [1] If one of the selected repositories requires a fix for a detached HEAD because of a merge conflict,
 you have to do that one first. If you have an uncommited change, you have to commit. Only clean work
 trees can be pushed and pulled to/from remotes.
 
-[2] Remote names are e.g. github, gitlab, gogs, or gitea. API endpoints are currently unsupported, but
-will be (hopefully) supported to get an overview of available repositories; so that cloning/replicating
-them locally can be automated.
+[2] Remote name conventions are `github`, `gitlab`, `gogs`, or `gitea`. API endpoints are currently
+unsupported, but will be hopefully supported to get an overview of available repositories; so that
+batch cloning them locally can be automated, too.
+
+[3] If there is no `origin` remote, you have to fix that.
 
 
 ## Actions
 
 This tool is very opinionated and enforces a triangular workflow, where work on downstream forks has
-to be done in either feature-specific branches or on the master branch directly. It assumes that local
-repositories are always in a clean state before push and pull actions, meaning that no uncommited
-changes to the work tree are allowed.
+to be done in either feature-specific branches or on the master branch directly. Git Evac assumes that
+local repositories are always in a clean state before `push` and `pull` actions, meaning that no
+uncommited changes to the work tree are allowed.
 
-All actions are batchable, meaning that they can be applied to multiple selected repositories in an
-unattended manner once configured/setup in a preceding dialog.
+All actions are batchable, meaning that they can be applied to multiple selected repositories in a
+queued manner once confirmed in a preceding overview dialog.
 
-- The `fix` action precedes all others, and is displayed for a `merge conflict`, `detached HEAD` or
-  otherwise unmergeable changes where the `index` differs too much from `work tree`.
+- The [Fix](/source/actions/Fix.go) action precedes all others, and is displayed for a `merge conflict`,
+  `detached HEAD` or otherwise unmergeable changes where the `index` differs too much from the `work tree`.
 
-- The `commit` action is displayed when the `index` differs from `work tree` and uncommited local
-  or remote changes exist.
+- The [Commit](/source/actions/Commit.go) action is displayed when the `index` differs from `work tree`
+  and uncommited local changes exist.
 
-- The `pull` action pulls changes from remotes, and assumes that the current branch is in a clean
-  and merged state.
+- The [Pull](/source/actions/Pull.go) action pulls changes from all remotes, and assumes that the current
+  branch is in a clean state. After the initial `fetch` it will attempt to `diff` against `origin/<branch>`
+  to figure out whether a `git merge origin/<branch>` is possible.
 
-- The `push` action pushes changes to remotes, and assumes that the current branch is in a clean
-  and merged state.
+- The [Push](/source/actions/Push.go) action pushes changes to all remotes, and assumes that the current
+  branch is in a clean and merged state.
 
-- The `backup` action exports a repository into a backup folder that will store the compressed `.tar.gz` file.
+- The [Backup](/source/actions/Backup.go) action exports a repository into a backup folder that will store
+  the compressed file as `~/Backup/<organization or user>/<repository>.tar.gz` file.
 
-- The `restore` action imports a repository from a backup folder that stores the compressed `.tar.gz` file.
+- The [Restore](/source/actions/Restore.go) action imports a repository from a backup folder's compressed
+  file into the `~/Software/<organization or user>/<repository>` repository. If that repository already exists,
+  it is renamed to `<repository>.bak` to prevent loss of changes.
 
 
 ## Work-in-Progress
 
-Currently, this tool is heavily experimental. Most things don't work yet, there's a separate
-[TODO.md](/TODO.md) that tries to structure my cluttered ideas for this.
+Currently, this tool is highly experimental. Most UI things don't work yet, there's a separate
+[TODO.md](/docs/TODO.md) document that structures my cluttered ideas. As Go doesn't have a reasonable
+UI framework, I literally created the [Gooey Framework](https://github.com/cookiengineer/gooey) in
+parallel for this App.
 
-
-## API
-
-Basic APIs:
-
-- [x] GET [/api/index](/source/server/api/Index.go) responds with [schemas.Repositories](/source/server/schemas/Repositories.go)
-- [x] GET [/api/settings](/source/server/api/Settings.go) reads the Profile Settings and responds with [schemas.Settings](/source/server/schemas/Settings.go)
-- [ ] POST [/api/settings](/source/server/api/Settings.go) saves the Profile Settings and responds with [schemas.Settings](/source/server/schemas/Settings.go)
-
-Repository Interaction APIs:
-
-- [x] GET [/api/clone](/source/server/api/Clone.go) clones a repository and responds with [schemas.Repository](/source/server/schemas/Repository.go)
-- [x] GET [/api/terminal](/source/server/api/Terminal.go) opens a terminal, and after it closes responds with [schemas.Repository](/source/server/schemas/Repository.go)
-- [ ] POST [/api/commit](/source/server/api/Commit.go) commits uncommited changes and responds with [schemas.Repository](/source/server/schemas/Repository.go)
-- [ ] GET [/api/diff](/source/server/api/Diff.go) responds with [schemas.Diff](/source/server/api/schemas/Diff.go)
-- [ ] PATCH [/api/pull](/source/server/api/Pull.go) fetches, diffs and merges from all remotes and responds with [schemas.Repository](/source/server/schemas/Repository.go)
-- [x] GET [/api/push](/source/server/api/Push.go) pushes to all remotes and responds with [schemas.Repository](/source/server/schemas/Repository.go)
-- [x] PATCH [/api/backup](/source/server/api/Backup.go) creates a backup and responds with [schemas.Repository](/source/server/schemas/Repository.go)
-- [x] PATCH [/api/restore](/source/server/api/Restore.go) restores a backup and responds with [schemas.Repository](/source/server/schemas/Repository.go)
-- [x] GET [/api/status](/source/server/api/Status.go) responds with [schemas.Repository](/source/server/schemas/Repository.go)
+- The [ARCHITECTURE.md](/docs/ARCHITECTURE.md) documents how the architecture and Web APIs.
+- The [TODO.md](/docs/TODO.md) documents what is planned as features and not implemented yet.
 
 
 ## Building
 
-Use the [git-evac](/source/cmds/git-evac) for production usage, it will use the embedded
+Build the [git-evac](/source/cmds/git-evac) command for production usage, it will use the embedded
 [public.FS](/source/public/FS.go).
 
 ```bash
@@ -106,14 +97,15 @@ bash build.sh;
 
 ## Development Workflow (with Hot Reload)
 
-Use the [git-evac-debug](/source/cmds/git-evac-debug) for development purposes, it will use the
-local filesystem and doesn't use the embedded [public.FS](/source/public/FS.go). It will automatically
-rebuild the `wasm_exec.js` and `main.wasm` files in the [public](/source/public) folder.
+Run the [git-evac-debug](/source/cmds/git-evac-debug) command for development purposes, it uses the
+local filesystem and doesn't use the embedded [public.FS](/source/public/FS.go). It automatically
+rebuilds the `wasm_exec.js` and `main.wasm` files in the [public](/source/public) folder on the fly
+(also known as hot reload).
 
 ```bash
 cd ./source;
 
-# starts a local development server on http://localhost:1234
+# starts a local development server on http://localhost:3000
 go run cmds/git-evac-debug/main.go;
 ```
 

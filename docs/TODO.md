@@ -9,7 +9,6 @@
 ## server/api
 
 - [ ] Migrate `api.Clone()` to `actions.Clone()` and `routes.Clone()`
-- [ ] Migrate `api.Pull()` to `actions.Pull()` and `routes.Pull()`
 - [ ] Implement `actions.Commit()` and `routes.Commit()`
 - [ ] Implement `actions.Diff()` and `routes.Diff()`
 
@@ -19,29 +18,26 @@
 - [ ] `Profile.Refresh()` needs to remove owners if they were deleted
 - [ ] `Profile.Refresh()` needs to remove repos if they were deleted
 
+## actions
+
+- [ ] Implement `actions/Clone.go`
+- [ ] Implement `actions/Commit.go`
+- [ ] Implement `actions/Diff.go`
+- [ ] Implement `actions/FixRemotes.go`
 
 
 # Frontend
 
-## app/actions
+## app/components
 
-- [ ] Implement `actions/Diff.go` when Schema is ready
-- [ ] Implement `actions/FixRemotes.go` when Workflow and Schema are ready
-
-## app/controllers/Repositories
-
-- [ ] Implement goroutine for Clone Action
-- [ ] Implement goroutine for Fix Action
-- [ ] Implement goroutine for Commit Action
-- [ ] Implement goroutine for Pull Action
-- [ ] Implement goroutine for Push Action
+- [ ] Implement BackupsTable Component
 
 ## app/controllers/Backups
 
-- [ ] Implement Backup Action
-- [ ] Implement Restore Action
 - [ ] Implement `components.BackupsTable`
 - [ ] Implement Dialog with `components.SchedulerTable`
+- [ ] Implement Backup Action
+- [ ] Implement Restore Action
 
 ## app/controllers/Settings
 
