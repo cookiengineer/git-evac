@@ -44,10 +44,10 @@ func DispatchRoutes(profile *structs.Profile) bool {
 		routes.Terminal(profile, request, response)
 	})
 
-	// TODO: PATCH /api/pull
-	// http.HandleFunc("/api/pull/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {
-	// 	routes.Pull(profile, request, response)
-	// })
+	// PATCH /api/pull
+	http.HandleFunc("/api/pull/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {
+		routes.Pull(profile, request, response)
+	})
 
 	// GET /api/push
 	http.HandleFunc("/api/push/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {

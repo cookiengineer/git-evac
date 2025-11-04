@@ -80,9 +80,19 @@ func (repo *Repository) Status() bool {
 					line := lines[l]
 
 					if strings.HasPrefix(line, "??") {
+
 						// Untracked
+
 					} else if strings.HasPrefix(line, "!!") {
+
 						// Ignored
+
+					} else if strings.HasPrefix(line, "UU") {
+
+						// Merge Conflict
+						repo.HasLocalChanges = true
+						repo.HasRemoteChanges = true
+
 					} else if len(line) > 3 {
 
 						// X: index, Y: worktree
