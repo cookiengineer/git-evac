@@ -41,7 +41,7 @@ func NewRepositories(main *app.Main, view interfaces.View) *Repositories {
 
 					if action == "confirm" {
 
-						schedule_table, ok2 := components.UnwrapComponent[*app_components.ScheduleTable](dialog.Query("dialog > table[data-name=\"schedule\"]"))
+						schedule_table, ok2 := components.UnwrapComponent[*app_components.SchedulerTable](dialog.Query("dialog > table[data-name=\"schedule\"]"))
 
 						if ok2 == true {
 
@@ -53,7 +53,7 @@ func NewRepositories(main *app.Main, view interfaces.View) *Repositories {
 
 					} else if action == "cancel" {
 
-						schedule_table, ok2 := components.UnwrapComponent[*app_components.ScheduleTable](dialog.Query("dialog > table[data-name=\"schedule\"]"))
+						schedule_table, ok2 := components.UnwrapComponent[*app_components.SchedulerTable](dialog.Query("dialog > table[data-name=\"schedule\"]"))
 
 						if ok2 == true {
 
@@ -378,7 +378,7 @@ func (controller *Repositories) showDialog(selected map[string]string) {
 
 		if len(actions_clone) > 0 {
 
-			table := app_components.NewScheduleTable("schedule", actions_clone)
+			table := app_components.NewSchedulerTable("scheduler", actions_clone)
 
 			dialog.SetTitle("Clone " + strconv.Itoa(len(actions_clone)) + " Repositories")
 			dialog.SetContent(interfaces.Component(&table))
@@ -386,7 +386,7 @@ func (controller *Repositories) showDialog(selected map[string]string) {
 
 		} else if len(actions_fix) > 0 {
 
-			table := app_components.NewScheduleTable("schedule", actions_fix)
+			table := app_components.NewSchedulerTable("scheduler", actions_fix)
 
 			dialog.SetTitle("Fix " + strconv.Itoa(len(actions_fix)) + " Repositories")
 			dialog.SetContent(interfaces.Component(&table))
@@ -394,7 +394,7 @@ func (controller *Repositories) showDialog(selected map[string]string) {
 
 		} else if len(actions_commit) > 0 {
 
-			table := app_components.NewScheduleTable("schedule", actions_commit)
+			table := app_components.NewSchedulerTable("scheduler", actions_commit)
 
 			dialog.SetTitle("Commit " + strconv.Itoa(len(actions_commit)) + " Repositories")
 			dialog.SetContent(interfaces.Component(&table))
@@ -402,7 +402,7 @@ func (controller *Repositories) showDialog(selected map[string]string) {
 
 		} else if len(actions_pull) > 0 {
 
-			table := app_components.NewScheduleTable("schedule", actions_pull)
+			table := app_components.NewSchedulerTable("scheduler", actions_pull)
 
 			dialog.SetTitle("Pull " + strconv.Itoa(len(actions_pull)) + " Repositories")
 			dialog.SetContent(interfaces.Component(&table))
@@ -410,7 +410,7 @@ func (controller *Repositories) showDialog(selected map[string]string) {
 
 		} else if len(actions_push) > 0 {
 
-			table := app_components.NewScheduleTable("schedule", actions_push)
+			table := app_components.NewSchedulerTable("scheduler", actions_push)
 
 			dialog.SetTitle("Push " + strconv.Itoa(len(actions_push)) + " Repositories")
 			dialog.SetContent(interfaces.Component(&table))

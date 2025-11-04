@@ -11,13 +11,13 @@ import "sort"
 import "strings"
 import "time"
 
-type ScheduleProgress struct {
+type SchedulerProgress struct {
 	Start    time.Time `json:"start"`
 	Stop     time.Time `json:"Stop"`
 	Finished bool      `json:"finished"`
 }
 
-type ScheduleTable struct {
+type SchedulerTable struct {
 	Name       string                      `json:"name"`
 	Schema     map[string]string           `json:"schema"`
 	Component  *components.Component       `json:"component"`
@@ -25,9 +25,9 @@ type ScheduleTable struct {
 	progress   map[string]*ScheduleProgress
 }
 
-func NewScheduleTable(name string, schema map[string]string) ScheduleTable {
+func NewSchedulerTable(name string, schema map[string]string) SchedulerTable {
 
-	var table ScheduleTable
+	var table SchedulerTable
 
 	element := dom.Document.CreateElement("table")
 	component := components.NewComponent(element)
@@ -36,7 +36,7 @@ func NewScheduleTable(name string, schema map[string]string) ScheduleTable {
 	table.Component = &component
 	table.Name      = strings.TrimSpace(strings.ToLower(name))
 	table.Scheduler = structs.NewScheduler()
-	table.progress  = make(map[string]*ScheduleProgress)
+	table.progress  = make(map[string]*SchedulerProgress)
 
 	table.SetSchema(schema)
 
@@ -44,9 +44,9 @@ func NewScheduleTable(name string, schema map[string]string) ScheduleTable {
 
 }
 
-func ToScheduleTable(element *dom.Element) *ScheduleTable {
+func ToSchedulerTable(element *dom.Element) *SchedulerTable {
 
-	var table ScheduleTable
+	var table SchedulerTable
 
 	component := components.NewComponent(element)
 
@@ -54,21 +54,21 @@ func ToScheduleTable(element *dom.Element) *ScheduleTable {
 	table.Component = &component
 	table.Name      = ""
 	table.Scheduler = structs.NewScheduler()
-	table.progress  = make(map[string]*ScheduleProgress)
+	table.progress  = make(map[string]*SchedulerProgress)
 
 	return &table
 
 }
 
-func (table *ScheduleTable) Disable() bool {
+func (table *SchedulerTable) Disable() bool {
 	return false
 }
 
-func (table *ScheduleTable) Enable() bool {
+func (table *SchedulerTable) Enable() bool {
 	return false
 }
 
-func (table *ScheduleTable) Mount() bool {
+func (table *SchedulerTable) Mount() bool {
 
 	if table.Component != nil {
 
@@ -99,12 +99,12 @@ func (table *ScheduleTable) Mount() bool {
 
 }
 
-func (table *ScheduleTable) Render() *dom.Element {
+func (table *SchedulerTable) Render() *dom.Element {
 
 	if table.Component.Element != nil {
 
 		table.Component.Element.SetAttribute("data-name", table.Name)
-		table.Component.Element.SetAttribute("data-type", "schedule")
+		table.Component.Element.SetAttribute("data-type", "scheduler")
 
 		thead := table.Component.Element.QuerySelector("thead")
 		tbody := table.Component.Element.QuerySelector("tbody")
@@ -211,7 +211,7 @@ func (table *ScheduleTable) Render() *dom.Element {
 
 }
 
-func (table *ScheduleTable) Reset() {
+func (table *SchedulerTable) Reset() {
 
 	table.Schema   = make(map[string]string)
 	table.Scheduler.Reset()
@@ -221,7 +221,7 @@ func (table *ScheduleTable) Reset() {
 
 }
 
-func (table *ScheduleTable) Query(query string) interfaces.Component {
+func (table *SchedulerTable) Query(query string) interfaces.Component {
 
 	selectors := utils.SplitQuery(query)
 
@@ -241,7 +241,7 @@ func (table *ScheduleTable) Query(query string) interfaces.Component {
 
 }
 
-func (table *ScheduleTable) SetSchema(schema map[string]string) {
+func (table *SchedulerTable) SetSchema(schema map[string]string) {
 
 	if len(schema) > 0 {
 
@@ -276,7 +276,7 @@ func (table *ScheduleTable) SetSchema(schema map[string]string) {
 
 }
 
-func (table *ScheduleTable) Start() {
+func (table *SchedulerTable) Start() {
 
 	for repository, _ := range table.Schema {
 
@@ -326,7 +326,7 @@ func (table *ScheduleTable) Start() {
 
 }
 
-func (table *ScheduleTable) Stop() {
+func (table *SchedulerTable) Stop() {
 
 	table.Scheduler.Stop()
 
@@ -353,21 +353,18 @@ func (table *ScheduleTable) Stop() {
 
 }
 
-func (table *ScheduleTable) String() string {
+func (table *SchedulerTable) String() string {
 
 	html := "<table"
 	html += " data-name=\"" + table.Name + "\""
-	html += " data-type=\"repositories\""
+	html += " data-type=\"scheduler\""
 	html += ">"
 
 	html += "<thead>"
 	html += "<tr>"
-	html += "<th><input type=\"checkbox\" title=\"Toggle all repositories\" data-action=\"select\"/></th>"
 	html += "<th>Repository</th>"
-	html += "<th>Remotes</th>"
-	html += "<th>Branches</th>"
-	html += "<th>Actions</th>"
-
+	html += "<th>Action</th>"
+	html += "<th>Progress</th>"
 	html += "</tr>"
 	html += "</thead>"
 
@@ -375,77 +372,57 @@ func (table *ScheduleTable) String() string {
 
 	if table.Schema != nil {
 
-		// owner_names := make([]string, 0)
+		for _, action := range []string{
+			"backup",
+			"restore",
+			"clone",
+			"fix",
+			"commit",
+			"pull",
+			"push",
+		} {
 
-		// for _, owner := range table.Schema.Owners {
-		// 	owner_names = append(owner_names, owner.Name)
-		// }
+			filtered := make([]string, 0)
 
-		// sort.Strings(owner_names)
+			for repo_name, repo_action := range table.Schema {
 
-		// for _, owner_name := range owner_names {
+				if repo_action == action {
+					filtered = append(filtered, repo_name)
+				}
 
-		// 	repository_names := make([]string, 0)
+			}
 
-		// 	for _, repository := range table.Schema.Owners[owner_name].Repositories {
-		// 		repository_names = append(repository_names, repository.Name)
-		// 	}
+			sort.Strings(filtered)
 
-		// 	sort.Strings(repository_names)
+			for _, repository := range filtered {
 
-		// 	for _, repository_name := range repository_names {
+				html += "<tr data-id=\"" + repository + "\">"
+				html += "<td>" + repository + "</td>"
+				html += "<td>" + action + "</td>"
 
-		// 		id := owner_name + "/" + repository_name
-		// 		repository := table.Schema.Owners[owner_name].Repositories[repository_name]
-		// 		actions := make([]string, 0)
-		// 		branches := make([]string, 0)
-		// 		remotes := make([]string, 0)
+				progress, ok := table.progress[repository]
 
-		// 		for _, branch_name := range repository.Branches {
-		// 			branches = append(branches, "<label>" + branch_name + "</label>")
-		// 		}
+				if progress != nil && ok == true {
 
-		// 		for remote_name, _ := range repository.Remotes {
-		// 			remotes = append(remotes, "<label>" + remote_name + "</label>")
-		// 		}
+					if !progress.Start.IsZero() && !progress.Stop.IsZero() && progress.Finished == true {
+						html += "<td><progress data-finished=\"true\" min=\"0\" max=\"100\" value=\"100\">" + formatDuration(progress.Start, progress.Stop) + "</progress></td>"
+					} else if !progress.Start.IsZero() && !progress.Stop.IsZero() && progress.Finished == false {
+						html += "<td><progress data-finished=\"false\" min=\"0\" max=\"100\" value=\"100\">" + formatDuration(progress.Start, progress.Stop) + "</progress></td>"
+					} else if !progress.Start.IsZero() && progress.Stop.IsZero() {
+						html += "<td><progress min=\"0\" max=\"100\">" + formatDuration(progress.Start, progress.Stop) + "</progress></td>"
+					} else {
+						html += "<td><progress min=\"0\" max=\"100\" value=\"0\"></td>"
+					}
 
-		// 		if repository.HasRemoteChanges == true {
-		// 			actions = append(actions, "<button data-action=\"fix\">Fix</button>")
-		// 		} else if repository.HasLocalChanges == true {
-		// 			actions = append(actions, "<button data-action=\"commit\">Commit</button>")
-		// 		} else {
-		// 			actions = append(actions, "<button data-action=\"pull\">Pull</button>")
-		// 			actions = append(actions, "<button data-action=\"push\">Push</button>")
-		// 		}
+				} else {
+					html += "<td><progress min=\"0\" max=\"100\" value=\"0\"></td>"
+				}
 
-		// 		sort.Strings(actions)
-		// 		sort.Strings(branches)
-		// 		sort.Strings(remotes)
+				html += "</tr>"
 
-		// 		html += "<tr data-id=\"" + id + "\""
+			}
 
-		// 		if table.selected[id] == true {
-		// 			html += " data-select=\"true\""
-		// 		}
-
-		// 		html += ">"
-
-		// 		if table.selected[id] == true {
-		// 			html += "<td><input type=\"checkbox\" data-action=\"select\" checked/></td>"
-		// 		} else {
-		// 			html += "<td><input type=\"checkbox\" data-action=\"select\"/></td>"
-		// 		}
-
-		// 		html += "<td>" + id + "</td>"
-		// 		html += "<td>" + strings.Join(remotes, " ") + "</td>"
-		// 		html += "<td>" + strings.Join(branches, " ") + "</td>"
-		// 		html += "<td>" + strings.Join(actions, " ") + "</td>"
-
-		// 		html += "</tr>"
-
-		// 	}
-
-		// }
+		}
 
 	}
 
@@ -456,7 +433,7 @@ func (table *ScheduleTable) String() string {
 
 }
 
-func (table *ScheduleTable) Unmount() bool {
+func (table *SchedulerTable) Unmount() bool {
 
 	if table.Component.Element != nil {
 		table.Component.Element.RemoveEventListener("click", nil)

@@ -1,5 +1,5 @@
 
-table[data-type="schedule"] {
+table[data-type="scheduler"] {
 	margin: 0px;
 	padding: 0px;
 	min-width: 640px;
@@ -7,31 +7,31 @@ table[data-type="schedule"] {
 	border-spacing: 0px;
 }
 
-table[data-type="schedule"] tr th {
+table[data-type="scheduler"] tr th {
 	padding: 8px 8px;
 }
 
-table[data-type="schedule"] tr td {
+table[data-type="scheduler"] tr td {
 	padding: 0px 8px;
 }
 
-table[data-type="schedule"] tr th:nth-of-type(1),
-table[data-type="schedule"] tr td:nth-of-type(1) {
+table[data-type="scheduler"] tr th:nth-of-type(1),
+table[data-type="scheduler"] tr td:nth-of-type(1) {
 	width: auto;
 	text-overflow: ellipsis;
 	overflow: hidden;
 	vertical-align: middle;
 }
 
-table[data-type="schedule"] tr th:nth-of-type(2),
-table[data-type="schedule"] tr td:nth-of-type(2) {
+table[data-type="scheduler"] tr th:nth-of-type(2),
+table[data-type="scheduler"] tr td:nth-of-type(2) {
 	width: 96px;
 	text-align: center;
 	vertical-align: middle;
 }
 
-table[data-type="schedule"] tr th:nth-of-type(3),
-table[data-type="schedule"] tr td:nth-of-type(3) {
+table[data-type="scheduler"] tr th:nth-of-type(3),
+table[data-type="scheduler"] tr td:nth-of-type(3) {
 	width: 128px;
 	text-align: center;
 	vertical-align: middle;
@@ -40,7 +40,7 @@ table[data-type="schedule"] tr td:nth-of-type(3) {
 /* Well, fuck Firefox in particular */
 @supports(-webkit-appearance: none) {
 
-	table[data-type="schedule"] progress {
+	table[data-type="scheduler"] progress {
 		position: relative;
 		width: 128px;
 		height: 16px;
@@ -53,7 +53,7 @@ table[data-type="schedule"] tr td:nth-of-type(3) {
 		-webkit-appearance: none;
 	}
 
-	table[data-type="schedule"] progress::before {
+	table[data-type="scheduler"] progress::before {
 		content: "";
 		position: absolute;
 		top: 0px;
@@ -77,21 +77,21 @@ table[data-type="schedule"] tr td:nth-of-type(3) {
 		to   { left: 0px; }
 	}
 
-	table[data-type="schedule"] progress[value]::before {
+	table[data-type="scheduler"] progress[value]::before {
 		display: none;
 	}
 
-	table[data-type="schedule"] progress[value]::-webkit-progress-bar {
+	table[data-type="scheduler"] progress[value]::-webkit-progress-bar {
 		background: var(--progress-active-background);
 		border-radius: 4px;
 	}
 
-	table[data-type="schedule"] progress[value]::-webkit-progress-value {
+	table[data-type="scheduler"] progress[value]::-webkit-progress-value {
 		background: var(--progress-active-background);
 		border-radius: 4px;
 	}
 
-	table[data-type="schedule"] progress[value][data-finished="false"]::-webkit-progress-value {
+	table[data-type="scheduler"] progress[value][data-finished="false"]::-webkit-progress-value {
 		background: var(--progress-invalid-background);
 		border-radius: 4px;
 	}
