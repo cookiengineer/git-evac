@@ -1,16 +1,16 @@
 package structs
 
 import "context"
-import "git-evac/actions"
+import "git-evac-app/actions"
 import "git-evac/schemas"
 import "sync"
 
 type Action struct {
-	Type       string      `json:"type"`
-	Owner      string      `json:"owner"`
-	Repository string      `json:"repository"`
-	Response   *Repository `json:"response"`
-	Error      error       `json:"error"`
+	Type       string              `json:"type"`
+	Owner      string              `json:"owner"`
+	Repository string              `json:"repository"`
+	Response   *schemas.Repository `json:"response"`
+	Error      error               `json:"error"`
 }
 
 type Scheduler struct {
@@ -29,7 +29,7 @@ func NewScheduler() *Scheduler {
 	scheduler.Results = make(chan Action, 0)
 	scheduler.cancelfunc = nil
 	scheduler.mutex = &sync.Mutex{}
-	scheduler.waitgroup = sync.WaitGroup{}
+	scheduler.waitgroup = &sync.WaitGroup{}
 
 	return &scheduler
 
@@ -51,7 +51,7 @@ func (scheduler *Scheduler) Add(typ string, owner string, repository string) boo
 	if found == false {
 
 		scheduler.mutex.Lock()
-		scheduler.Queue = append(scheduler.Queue, &Action{
+		scheduler.Queue = append(scheduler.Queue, Action{
 			Type:       typ,
 			Owner:      owner,
 			Repository: repository,
@@ -86,7 +86,7 @@ func (scheduler *Scheduler) Reset() {
 		scheduler.waitgroup.Wait()
 		close(scheduler.Results)
 
-		scheduler.waitgroup = sync.WaitGroup{}
+		scheduler.waitgroup = &sync.WaitGroup{}
 		scheduler.Queue = make([]Action, 0)
 		scheduler.Results = make(chan Action, 0)
 

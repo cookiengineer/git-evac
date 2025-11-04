@@ -6,6 +6,7 @@ import "github.com/cookiengineer/gooey/bindings/dom"
 import "github.com/cookiengineer/gooey/components"
 import "github.com/cookiengineer/gooey/components/utils"
 import "github.com/cookiengineer/gooey/components/interfaces"
+import "git-evac-app/structs"
 import "sort"
 import "strings"
 import "time"
@@ -20,6 +21,7 @@ type ScheduleTable struct {
 	Name       string                      `json:"name"`
 	Schema     map[string]string           `json:"schema"`
 	Component  *components.Component       `json:"component"`
+	Scheduler  *structs.Scheduler          `json:"scheduler"`
 	progress   map[string]*ScheduleProgress
 }
 
@@ -33,6 +35,7 @@ func NewScheduleTable(name string, schema map[string]string) ScheduleTable {
 	table.Schema    = make(map[string]string)
 	table.Component = &component
 	table.Name      = strings.TrimSpace(strings.ToLower(name))
+	table.Scheduler = structs.NewScheduler()
 	table.progress  = make(map[string]*ScheduleProgress)
 
 	table.SetSchema(schema)
@@ -50,6 +53,7 @@ func ToScheduleTable(element *dom.Element) *ScheduleTable {
 	table.Schema    = make(map[string]string)
 	table.Component = &component
 	table.Name      = ""
+	table.Scheduler = structs.NewScheduler()
 	table.progress  = make(map[string]*ScheduleProgress)
 
 	return &table
@@ -210,6 +214,7 @@ func (table *ScheduleTable) Render() *dom.Element {
 func (table *ScheduleTable) Reset() {
 
 	table.Schema   = make(map[string]string)
+	table.Scheduler.Reset()
 	table.progress = make(map[string]*ScheduleProgress)
 
 	table.Render()
@@ -243,13 +248,27 @@ func (table *ScheduleTable) SetSchema(schema map[string]string) {
 		table.Schema   = schema
 		table.progress = make(map[string]*ScheduleProgress)
 
-		for repository, _ := range table.Schema {
+		for repository, action := range table.Schema {
 
-			table.progress[repository] = &ScheduleProgress{
-				Start:    time.Time{},
-				Stop:     time.Time{},
-				Finished: false,
+			if strings.Contains(repository, "/") {
+
+				repo := strings.TrimSpace(repository[strings.LastIndex(repository, "/")+1:])
+				owner := strings.TrimSpace(repository[0:strings.Index(repository, "/")])
+
+				if owner != "" && repo != "" {
+
+					table.Scheduler.Add(action, owner, repo)
+
+					table.progress[owner + "/" + repo] = &ScheduleProgress{
+						Start:    time.Time{},
+						Stop:     time.Time{},
+						Finished: false,
+					}
+
+				}
+
 			}
+
 
 		}
 
@@ -257,46 +276,13 @@ func (table *ScheduleTable) SetSchema(schema map[string]string) {
 
 }
 
-func (table *ScheduleTable) Start(repository string) bool {
+func (table *ScheduleTable) Start() {
 
-	if repository == "*" || repository == "all" || repository == "any" {
+	for repository, _ := range table.Schema {
 
-		for repository, _ := range table.Schema {
+		progress, ok := table.progress[repository]
 
-			progress, ok := table.progress[repository]
-
-			if ok == true {
-
-				if progress.Start.IsZero() {
-
-					progress.Start = time.Now()
-					progress.Stop = time.Time{}
-					progress.Finished = false
-
-				}
-
-			} else {
-
-				table.progress[repository] = &ScheduleProgress{
-					Start: time.Time{},
-					Stop: time.Time{},
-					Finished: false,
-				}
-
-			}
-
-		}
-
-		table.Render()
-
-		return true
-
-	} else {
-
-		progress, ok1 := table.progress[repository]
-		_, ok2 := table.Schema[repository]
-
-		if ok1 == true {
+		if ok == true {
 
 			if progress.Start.IsZero() {
 
@@ -304,96 +290,66 @@ func (table *ScheduleTable) Start(repository string) bool {
 				progress.Stop = time.Time{}
 				progress.Finished = false
 
-				table.Render()
-
-				return true
-
 			}
-
-		} else if ok2 == true {
-
-			table.progress[repository] = &ScheduleProgress{
-				Start: time.Time{},
-				Stop: time.Time{},
-				Finished: false,
-			}
-
-			return true
 
 		}
 
 	}
 
-	return false
+	table.Scheduler.Start()
 
-}
+	for action := range table.Scheduler.Results {
 
-func (table *ScheduleTable) Finish(repository string) bool {
+		if action.Error != nil {
 
-	progress, ok := table.progress[repository]
-
-	if ok == true {
-
-		if !progress.Start.IsZero() {
-
-			progress.Stop = time.Now()
-			progress.Finished = true
-
-			table.Render()
-
-		} else {
-
-			progress.Start = time.Now()
-			progress.Stop = time.Now()
-			progress.Finished = true
-
-			table.Render()
-
-		}
-
-		return true
-
-	}
-
-	return false
-
-}
-
-func (table *ScheduleTable) Stop(repository string) bool {
-
-	if repository == "*" || repository == "all" || repository == "any" {
-
-		for repository, _ := range table.Schema {
-
-			progress, ok := table.progress[repository]
+			progress, ok := table.progress[action.Owner + "/" + action.Repository]
 
 			if ok == true {
 				progress.Stop = time.Now()
+				progress.Finished = false
+			}
+
+		} else if action.Response != nil {
+
+			progress, ok := table.progress[action.Owner + "/" + action.Repository]
+
+			if ok == true {
+				progress.Stop = time.Now()
+				progress.Finished = true
 			}
 
 		}
 
 		table.Render()
 
-		return true
+	}
 
-	} else {
+}
+
+func (table *ScheduleTable) Stop() {
+
+	table.Scheduler.Stop()
+
+	for repository, _ := range table.Schema {
 
 		progress, ok := table.progress[repository]
 
 		if ok == true {
 
-			progress.Stop = time.Now()
-
-			table.Render()
-
-			return true
+			if progress.Start.IsZero() {
+				progress.Start = time.Now()
+				progress.Stop = time.Now()
+				progress.Finished = false
+			} else {
+				progress.Stop = time.Now()
+				progress.Finished = false
+			}
 
 		}
 
 	}
 
-	return false
+	table.Render()
 
 }
 

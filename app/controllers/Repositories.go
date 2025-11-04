@@ -2,7 +2,6 @@
 
 package controllers
 
-// import "github.com/cookiengineer/gooey/bindings/dom"
 import "github.com/cookiengineer/gooey/components"
 import "github.com/cookiengineer/gooey/components/app"
 import "github.com/cookiengineer/gooey/components/interfaces"
@@ -12,7 +11,6 @@ import app_actions "git-evac-app/actions"
 import app_components "git-evac-app/components"
 import app_views "git-evac-app/views"
 import "strconv"
-import "fmt"
 
 type Repositories struct {
 	Main   *app.Main               `json:"main"`
@@ -47,15 +45,9 @@ func NewRepositories(main *app.Main, view interfaces.View) *Repositories {
 
 						if ok2 == true {
 
-							schedule_table.Start("any")
-
-							// TODO: Execute all tasks in the prioritized order
-							// Execute all clones
-							// Execute all fixes
-
-
-							fmt.Println("Start all goroutines now")
-							// TODO: Start all tasks asynchronously and call schedule_table.Finish(repository, &response)
+							go func() {
+								schedule_table.Start()
+							}()
 
 						}
 
@@ -63,10 +55,13 @@ func NewRepositories(main *app.Main, view interfaces.View) *Repositories {
 
 						schedule_table, ok2 := components.UnwrapComponent[*app_components.ScheduleTable](dialog.Query("dialog > table[data-name=\"schedule\"]"))
 
-						fmt.Println(schedule_table, ok2)
-
 						if ok2 == true {
-							schedule_table.Reset()
+
+							go func() {
+								schedule_table.Stop()
+								schedule_table.Reset()
+							}()
+
 						}
 
 						dialog.Hide()
