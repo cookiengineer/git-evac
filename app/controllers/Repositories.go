@@ -41,25 +41,25 @@ func NewRepositories(main *app.Main, view interfaces.View) *Repositories {
 
 					if action == "confirm" {
 
-						schedule_table, ok2 := components.UnwrapComponent[*app_components.SchedulerTable](dialog.Query("dialog > table[data-name=\"schedule\"]"))
+						scheduler_table, ok2 := components.UnwrapComponent[*app_components.SchedulerTable](dialog.Query("dialog > table[data-name=\"scheduler\"]"))
 
 						if ok2 == true {
 
 							go func() {
-								schedule_table.Start()
+								scheduler_table.Start()
 							}()
 
 						}
 
 					} else if action == "cancel" {
 
-						schedule_table, ok2 := components.UnwrapComponent[*app_components.SchedulerTable](dialog.Query("dialog > table[data-name=\"schedule\"]"))
+						scheduler_table, ok2 := components.UnwrapComponent[*app_components.SchedulerTable](dialog.Query("dialog > table[data-name=\"scheduler\"]"))
 
 						if ok2 == true {
 
 							go func() {
-								schedule_table.Stop()
-								schedule_table.Reset()
+								scheduler_table.Stop()
+								scheduler_table.Reset()
 							}()
 
 						}
@@ -278,7 +278,7 @@ func (controller *Repositories) Update() {
 			controller.Schema = schema
 			controller.Main.Storage.Write("repositories", schema)
 
-			table, ok1 := components.UnwrapComponent[*app_components.RepositoriesTable](controller.View.Query("section > table"))
+			table, ok1 := components.UnwrapComponent[*app_components.RepositoriesTable](controller.View.Query("section > table[data-name=\"repositories\"]"))
 
 			if len(controller.Schema.Owners) > 0 && ok1 == true {
 

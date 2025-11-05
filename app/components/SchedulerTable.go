@@ -11,7 +11,7 @@ import "sort"
 import "strings"
 import "time"
 
-type SchedulerProgress struct {
+type scheduler_progress struct {
 	Start    time.Time `json:"start"`
 	Stop     time.Time `json:"Stop"`
 	Finished bool      `json:"finished"`
@@ -22,7 +22,7 @@ type SchedulerTable struct {
 	Schema     map[string]string           `json:"schema"`
 	Component  *components.Component       `json:"component"`
 	Scheduler  *structs.Scheduler          `json:"scheduler"`
-	progress   map[string]*ScheduleProgress
+	progress   map[string]*scheduler_progress
 }
 
 func NewSchedulerTable(name string, schema map[string]string) SchedulerTable {
@@ -36,7 +36,7 @@ func NewSchedulerTable(name string, schema map[string]string) SchedulerTable {
 	table.Component = &component
 	table.Name      = strings.TrimSpace(strings.ToLower(name))
 	table.Scheduler = structs.NewScheduler()
-	table.progress  = make(map[string]*SchedulerProgress)
+	table.progress  = make(map[string]*scheduler_progress)
 
 	table.SetSchema(schema)
 
@@ -54,7 +54,7 @@ func ToSchedulerTable(element *dom.Element) *SchedulerTable {
 	table.Component = &component
 	table.Name      = ""
 	table.Scheduler = structs.NewScheduler()
-	table.progress  = make(map[string]*SchedulerProgress)
+	table.progress  = make(map[string]*scheduler_progress)
 
 	return &table
 
@@ -215,7 +215,7 @@ func (table *SchedulerTable) Reset() {
 
 	table.Schema   = make(map[string]string)
 	table.Scheduler.Reset()
-	table.progress = make(map[string]*ScheduleProgress)
+	table.progress = make(map[string]*scheduler_progress)
 
 	table.Render()
 
@@ -246,7 +246,7 @@ func (table *SchedulerTable) SetSchema(schema map[string]string) {
 	if len(schema) > 0 {
 
 		table.Schema   = schema
-		table.progress = make(map[string]*ScheduleProgress)
+		table.progress = make(map[string]*scheduler_progress)
 
 		for repository, action := range table.Schema {
 
@@ -259,7 +259,7 @@ func (table *SchedulerTable) SetSchema(schema map[string]string) {
 
 					table.Scheduler.Add(action, owner, repo)
 
-					table.progress[owner + "/" + repo] = &ScheduleProgress{
+					table.progress[owner + "/" + repo] = &scheduler_progress{
 						Start:    time.Time{},
 						Stop:     time.Time{},
 						Finished: false,
