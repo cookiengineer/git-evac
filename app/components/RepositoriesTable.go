@@ -23,9 +23,9 @@ func ToRepositoriesTable(element *dom.Element) *RepositoriesTable {
 
 	component := components.NewComponent(element)
 
-	table.Schema    = nil
 	table.Component = &component
 	table.Name      = ""
+	table.Schema    = nil
 	table.selected  = make(map[string]bool)
 
 	return &table

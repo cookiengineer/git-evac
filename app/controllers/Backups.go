@@ -10,9 +10,12 @@ import app_components "git-evac-app/components"
 import app_views "git-evac-app/views"
 
 type Backups struct {
-	Main   *app.Main          `json:"main"`
-	Schema *schemas.Backups   `json:"schema"`
-	View   *app_views.Backups `json:"view"`
+	Main    *app.Main          `json:"main"`
+	View    *app_views.Backups `json:"view"`
+	Schemas struct {
+		Backups      *schemas.Backups      `json:"backups"`
+		Repositories *schemas.Repositories `json:"repositories"`
+	} `json:"schemas"`
 }
 
 func NewBackups(main *app.Main, view interfaces.View) *Backups {
@@ -219,19 +222,23 @@ func (controller *Backups) Update() {
 
 	if controller.Main != nil {
 
-		schema, err := actions.Backups()
+		schema_backups, err_backups := actions.Backups()
+		schema_repositories, err_repositories := actions.Repositories()
 
-		if err == nil {
+		if err_backups == nil && err_repositories == nil {
 
-			controller.Schema = schema
-			controller.Main.Storage.Write("backups", schema)
+			controller.Schemas.Backups = schema_backups
+			controller.Schemas.Repositories = schema_repositories
+
+			controller.Main.Storage.Write("backups", schema_backups)
+			controller.Main.Storage.Write("repositories", schema_repositories)
 
 			table, ok1 := components.UnwrapComponent[*app_components.BackupsTable](controller.View.Query("section > table[data-name=\"backups\"]"))
 
 			if len(controller.Schema.Owners) > 0 && ok1 == true {
 
 				table.Reset()
-				table.SetSchema(controller.Schema)
+				table.SetSchema(controller.Schemas.Backups, controller.Schemas.Repositories)
 
 			}
 
@@ -239,16 +246,28 @@ func (controller *Backups) Update() {
 
 			if footer != nil {
 
-				length := 0
+				mapped := make(map[string]bool)
 
-				for _, owner := range controller.Schema.Owners {
-					length += len(owner.Backups)
+				for _, repository_owner := range controller.Schemas.Repositories.Owners {
+
+					for _, repository := range repository_owner.Repositories {
+						mapped[repository_owner.Name + "/" + repository.Name] = false
+					}
+
+				}
+
+				for _, backup_owner := range controller.Schemas.Backups.Owners {
+
+					for _, backup := range backup_owner.Repositories {
+						mapped[backup_owner.Name + "/" + backup.Name] = true
+					}
+
 				}
 
 				label, ok0 := components.UnwrapComponent[*ui_components.Label](footer.Query("footer > label"))
 
 				if ok0 == true {
-					label.SetLabel("Selected 0 of " + strconv.Itoa(length) + " Items")
+					label.SetLabel("Selected 0 of " + strconv.Itoa(len(mapped)) + " Items")
 				}
 
 				buttons_backup, ok1 := components.UnwrapComponent[*ui_components.Button](footer.Query("footer > button[data-action=\"backup\"]"))
