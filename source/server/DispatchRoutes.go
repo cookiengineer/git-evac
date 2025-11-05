@@ -8,10 +8,16 @@ func DispatchRoutes(profile *structs.Profile) bool {
 
 	var result bool
 
-	// GET /api/index
-	http.HandleFunc("/api/index", func(response http.ResponseWriter, request *http.Request) {
+	// GET /api/backups
+	http.HandleFunc("/api/backups", func(response http.ResponseWriter, request *http.Request) {
 		profile.Refresh()
-		routes.Index(profile, request, response)
+		routes.Backups(profile, request, response)
+	})
+
+	// GET /api/repositories
+	http.HandleFunc("/api/repositories", func(response http.ResponseWriter, request *http.Request) {
+		profile.Refresh()
+		routes.Repositories(profile, request, response)
 	})
 
 	// GET /api/backup || POST /api/backup

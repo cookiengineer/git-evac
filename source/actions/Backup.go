@@ -7,11 +7,11 @@ import "os/exec"
 
 func Backup(profile *structs.Profile, owner_name string, repo_name string) error {
 
-	if profile.HasOwner(owner_name) {
+	if profile.HasRepositoryOwner(owner_name) {
 
-		owner := profile.GetOwner(owner_name, profile.Settings.Folder + "/" + owner_name)
+		owner := profile.GetRepositoryOwner(owner_name)
 
-		if owner.HasRepository(repo_name) {
+		if owner != nil && owner.HasRepository(repo_name) {
 
 			repository := owner.GetRepository(repo_name)
 

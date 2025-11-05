@@ -55,7 +55,7 @@ func (settings *OrganizationSettings) GetIdentity(name string) *IdentitySettings
 
 func (settings *OrganizationSettings) GetRemote(name string) *RemoteSettings {
 
-	var result *RemoteSettings = nil
+	var result *RemoteSettings
 
 	if name != "" {
 
@@ -73,7 +73,7 @@ func (settings *OrganizationSettings) GetRemote(name string) *RemoteSettings {
 
 func (settings *OrganizationSettings) RemoveIdentity(name string) bool {
 
-	var result bool = false
+	var result bool
 
 	if name != "" {
 
@@ -92,7 +92,7 @@ func (settings *OrganizationSettings) RemoveIdentity(name string) bool {
 
 func (settings *OrganizationSettings) RemoveRemote(name string) bool {
 
-	var result bool = false
+	var result bool
 
 	if name != "" {
 
@@ -111,7 +111,7 @@ func (settings *OrganizationSettings) RemoveRemote(name string) bool {
 
 func (settings *OrganizationSettings) SetIdentity(value IdentitySettings) bool {
 
-	var result bool = false
+	var result bool
 
 	if value.Name != "" {
 		settings.Identities[value.Name] = value
@@ -124,7 +124,7 @@ func (settings *OrganizationSettings) SetIdentity(value IdentitySettings) bool {
 
 func (settings *OrganizationSettings) SetRemote(value RemoteSettings) bool {
 
-	var result bool = false
+	var result bool
 
 	if value.Name != "" {
 		settings.Remotes[value.Name] = value

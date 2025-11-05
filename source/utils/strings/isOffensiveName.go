@@ -4,11 +4,9 @@ import "strings"
 
 func isOffensiveName(name string) bool {
 
-	var result bool = false
+	var result bool
 
-	for o := 0; o < len(OffensiveWords); o++ {
-
-		word := OffensiveWords[o]
+	for _, word := range OffensiveWords {
 
 		if word == name || strings.Contains(name, word) {
 			result = true

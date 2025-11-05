@@ -18,20 +18,31 @@ func NewRepositoryOwner(name string, folder string) RepositoryOwner {
 
 }
 
+func (owner *RepositoryOwner) AddRepository(name string) bool {
+
+	_, ok := owner.Repositories[name]
+
+	if ok == false {
+
+		repo := NewRepository(name, owner.Folder + "/" + name + "/.git")
+		owner.Repositories[name] = &repo
+
+		return true
+
+	}
+
+	return false
+
+}
+
 func (owner *RepositoryOwner) GetRepository(name string) *Repository {
 
-	var result *Repository = nil
+	var result *Repository
 
 	tmp, ok := owner.Repositories[name]
 
 	if ok == true {
 		result = tmp
-	} else {
-
-		repo := NewRepository(name, owner.Folder + "/" + name + "/.git")
-		owner.Repositories[name] = &repo
-		result = owner.Repositories[name]
-
 	}
 
 	return result
@@ -40,7 +51,7 @@ func (owner *RepositoryOwner) GetRepository(name string) *Repository {
 
 func (owner *RepositoryOwner) HasRepository(name string) bool {
 
-	var result bool = false
+	var result bool
 
 	_, ok := owner.Repositories[name]
 

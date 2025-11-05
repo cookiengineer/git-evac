@@ -16,8 +16,7 @@ func RegisterTo(document *components.Document) {
 		if typ == "repositories" {
 			return ToRepositoriesTable(element)
 		} else if typ == "backups" {
-			// TODO: BackupsTable
-			return nil
+			return ToBackupsTable(element)
 		} else if typ == "scheduler" {
 			return ToSchedulerTable(element)
 		} else {

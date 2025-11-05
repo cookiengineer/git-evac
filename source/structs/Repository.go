@@ -40,7 +40,7 @@ func NewRepository(name string, folder string) Repository {
 
 func (repo *Repository) Status() bool {
 
-	var result bool = false
+	var result bool
 
 	stat, err0 := os.Stat(repo.Folder)
 

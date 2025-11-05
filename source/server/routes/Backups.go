@@ -5,15 +5,15 @@ import "git-evac/structs"
 import "encoding/json"
 import "net/http"
 
-func Index(profile *structs.Profile, request *http.Request, response http.ResponseWriter) {
+func Backups(profile *structs.Profile, request *http.Request, response http.ResponseWriter) {
 
 	if request.Method == http.MethodGet {
 
-		payload, _ := json.MarshalIndent(schemas.Repositories{
-			Owners: profile.Owners,
+		payload, _ := json.MarshalIndent(schemas.Backups{
+			Owners: profile.Backups,
 		}, "", "\t")
 
-		profile.Console.Log("> " + request.Method + " /api/index: " + http.StatusText(http.StatusOK))
+		profile.Console.Log("> " + request.Method + " /api/backups: " + http.StatusText(http.StatusOK))
 
 		response.Header().Set("Content-Type", "application/json")
 		response.WriteHeader(http.StatusOK)
@@ -21,7 +21,7 @@ func Index(profile *structs.Profile, request *http.Request, response http.Respon
 
 	} else {
 
-		profile.Console.Error("> " + request.Method + " /api/index: " + http.StatusText(http.StatusMethodNotAllowed))
+		profile.Console.Error("> " + request.Method + " /api/backups: " + http.StatusText(http.StatusMethodNotAllowed))
 
 		response.Header().Set("Content-Type", "application/json")
 		response.WriteHeader(http.StatusMethodNotAllowed)

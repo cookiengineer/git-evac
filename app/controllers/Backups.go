@@ -5,13 +5,13 @@ import "github.com/cookiengineer/gooey/components"
 import "github.com/cookiengineer/gooey/components/app"
 import "github.com/cookiengineer/gooey/components/content"
 import "github.com/cookiengineer/gooey/components/interfaces"
-import "git-evac-app/actions"
+import app_actions "git-evac-app/actions"
 import app_components "git-evac-app/components"
 import app_views "git-evac-app/views"
 
 type Backups struct {
 	Main   *app.Main          `json:"main"`
-	Schema any                `json:"schema"`
+	Schema *schemas.Backups   `json:"schema"`
 	View   *app_views.Backups `json:"view"`
 }
 
@@ -163,13 +163,13 @@ func NewBackups(main *app.Main, view interfaces.View) *Backups {
 				length_all := 0
 
 				for _, owner := range controller.Schema.Owners {
-					length_all += len(owner.Repositories)
+					length_all += len(owner.Backups)
 				}
 
 				label, ok0 := components.UnwrapComponent[*ui_components.Label](footer.Query("footer > label"))
 
 				if ok0 == true {
-					label.SetLabel("Selected " + strconv.Itoa(len(attributes)) + " of " + strconv.Itoa(length_all) + " Repositories")
+					label.SetLabel("Selected " + strconv.Itoa(len(attributes)) + " of " + strconv.Itoa(length_all) + " Items")
 				}
 
 				buttons_backup, ok1 := components.UnwrapComponent[*ui_components.Button](footer.Query("footer > button[data-action=\"backup\"]"))
@@ -219,12 +219,12 @@ func (controller *Backups) Update() {
 
 	if controller.Main != nil {
 
-		schema, err := actions.Index()
+		schema, err := actions.Backups()
 
 		if err == nil {
 
 			controller.Schema = schema
-			controller.Main.Storage.Write("repositories", schema)
+			controller.Main.Storage.Write("backups", schema)
 
 			table, ok1 := components.UnwrapComponent[*app_components.BackupsTable](controller.View.Query("section > table[data-name=\"backups\"]"))
 
@@ -242,13 +242,13 @@ func (controller *Backups) Update() {
 				length := 0
 
 				for _, owner := range controller.Schema.Owners {
-					length += len(owner.Repositories)
+					length += len(owner.Backups)
 				}
 
 				label, ok0 := components.UnwrapComponent[*ui_components.Label](footer.Query("footer > label"))
 
 				if ok0 == true {
-					label.SetLabel("Selected 0 of " + strconv.Itoa(length) + " Repositories")
+					label.SetLabel("Selected 0 of " + strconv.Itoa(length) + " Items")
 				}
 
 				buttons_backup, ok1 := components.UnwrapComponent[*ui_components.Button](footer.Query("footer > button[data-action=\"backup\"]"))
@@ -309,7 +309,7 @@ func (controller *Backups) showDialog(selected map[string]string) {
 
 			table := app_components.NewSchedulerTable("scheduler", actions_restore)
 
-			dialog.SetTitle("Restore " + strconv.Itoa(len(actions_restore)) + " Repositories")
+			dialog.SetTitle("Restore " + strconv.Itoa(len(actions_restore)) + " Backups")
 			dialog.SetContent(interfaces.Component(&table))
 			dialog.Show()
 

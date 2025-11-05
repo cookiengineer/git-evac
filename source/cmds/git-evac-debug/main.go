@@ -9,6 +9,7 @@ import "strings"
 
 func main() {
 
+	var backup string = ""
 	var folder string = ""
 	var port uint16 = 3000
 
@@ -69,6 +70,16 @@ func main() {
 
 	}
 
+	if backup == "" {
+
+		user, err := os_user.Current()
+
+		if err == nil {
+			backup = user.HomeDir + "/Backup"
+		}
+
+	}
+
 	if folder == "" {
 
 		user, err := os_user.Current()
@@ -82,12 +93,12 @@ func main() {
 	if folder != "" {
 
 		fsys := os.DirFS("public")
-		profile := structs.NewProfile(console, "/tmp/backup", folder, port)
+		profile := structs.NewProfile(console, backup, folder, port)
 		profile.Filesystem = &fsys
 
 		console.Clear("")
 		console.Group("git-evac-debug: Command-Line Arguments")
-		console.Log("> Backup: /tmp/backup")
+		console.Log("> Backup: " + backup)
 		console.Log("> Folder: " + folder)
 		console.Log("> Port:   " + strconv.FormatUint(uint64(port), 10))
 		console.GroupEnd("git-evac-debug")

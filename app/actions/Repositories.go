@@ -4,12 +4,12 @@ import "github.com/cookiengineer/gooey/bindings/fetch"
 import "git-evac/schemas"
 import "encoding/json"
 
-func Index() (*schemas.Repositories, error) {
+func Repositories() (*schemas.Repositories, error) {
 
 	var result_schema *schemas.Repositories = nil
 	var result_error error = nil
 
-	response, err1 := fetch.Fetch("/api/index", &fetch.Request{
+	response, err1 := fetch.Fetch("/api/repositories", &fetch.Request{
 		Method:   fetch.MethodGet,
 		Mode:     fetch.ModeSameOrigin,
 		Cache:    fetch.CacheDefault,

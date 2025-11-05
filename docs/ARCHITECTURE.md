@@ -25,11 +25,12 @@ correct HTTP verbs to reflect their idempotency. Each action on a repository wil
 
 ### Basic APIs
 
-|  ?  | Verb          | Path                             | Route                                                | Response                                                |
-|:---:|:--------------|:---------------------------------|:-----------------------------------------------------|:--------------------------------------------------------|
-| [x] | `GET`         | `/api/index`                     | [routes.Index](/source/server/routes/Index.go)       | [schemas.Repositories](/source/schemas/Repositories.go) |
-| [ ] | `GET`         | `/api/diff/<owner>/<repository>` | [routes.Diff](/source/server/routes/Clone.go)        | [schemas.Diff](/source/schemas/Diff.go)                 |
-| [ ] | `GET`, `POST` | `/api/settings`                  | [routes.Settings](/source/server/routes/Settings.go) | [schemas.Settings](/source/schemas/Settings.go)         |
+|  ?  | Verb          | Path                             | Route                                                        | Response                                                |
+|:---:|:--------------|:---------------------------------|:-------------------------------------------------------------|:--------------------------------------------------------|
+| [x] | `GET`         | `/api/backups`                   | [routes.Backups](/source/server/routes/Backups.go)           | [schemas.Backups](/source/schemas/Backups.go)           |
+| [x] | `GET`         | `/api/repositories`              | [routes.Repositories](/source/server/routes/Repositories.go) | [schemas.Repositories](/source/schemas/Repositories.go) |
+| [ ] | `GET`         | `/api/diff/<owner>/<repository>` | [routes.Diff](/source/server/routes/Clone.go)                | [schemas.Diff](/source/schemas/Diff.go)                 |
+| [ ] | `GET`, `POST` | `/api/settings`                  | [routes.Settings](/source/server/routes/Settings.go)         | [schemas.Settings](/source/schemas/Settings.go)         |
 
 ### Git Repository APIs
 

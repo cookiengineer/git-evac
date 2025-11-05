@@ -2,19 +2,22 @@ package structs
 
 import "io/fs"
 import "os"
+import "strings"
 
 type Profile struct {
-	Owners     map[string]*RepositoryOwner `json:"owners"`
-	Settings   Settings                    `json:"settings"`
-	Console    *Console                    `json:"console"`
-	Filesystem *fs.FS                      `json:"-"`
+	Backups      map[string]*BackupOwner     `json:"backups"`
+	Repositories map[string]*RepositoryOwner `json:"repositories"`
+	Settings     Settings                    `json:"settings"`
+	Console      *Console                    `json:"console"`
+	Filesystem   *fs.FS                      `json:"-"`
 }
 
 func NewProfile(console *Console, backup string, folder string, port uint16) *Profile {
 
 	var profile Profile
 
-	profile.Owners = make(map[string]*RepositoryOwner)
+	profile.Backups = make(map[string]*BackupOwner)
+	profile.Repositories = make(map[string]*RepositoryOwner)
 
 	if console != nil {
 		profile.Console = console
@@ -35,42 +38,43 @@ func NewProfile(console *Console, backup string, folder string, port uint16) *Pr
 
 func (profile *Profile) Init() {
 
-	stat, err0 := os.Stat(profile.Settings.Folder)
+	stat0, err0 := os.Stat(profile.Settings.Folder)
+	stat1, err1 := os.Stat(profile.Settings.Backup)
 
-	if err0 == nil && stat.IsDir() {
+	profile.Console.Group("Init()")
 
-		profile.Console.Group("Init(): Discover Repositories in \"" + profile.Settings.Folder + "\"")
+	if err0 == nil && stat0.IsDir() {
 
-		root := profile.Settings.Folder
+		profile.Console.Group("Discover Repositories")
 
-		entries1, err1 := os.ReadDir(root)
+		info_owners, err_owners := os.ReadDir(profile.Settings.Folder)
 
-		if err1 == nil {
+		if err_owners == nil {
 
-			for _, entry1 := range entries1 {
+			for _, info_owner := range info_owners {
 
-				if entry1.IsDir() {
+				if info_owner.IsDir() == true {
 
-					entries2, err2 := os.ReadDir(root + "/" + entry1.Name())
+					info_repositories, err_repositories := os.ReadDir(profile.Settings.Folder + "/" + info_owner.Name())
 
-					if err2 == nil {
+					if err_repositories == nil {
 
-						for _, entry2 := range entries2 {
+						for _, info_repository := range info_repositories {
 
-							if entry2.IsDir() {
+							if info_repository.IsDir() == true {
 
-								stat, err3 := os.Stat(root + "/" + entry1.Name() + "/" + entry2.Name() + "/.git")
+								stat, err := os.Stat(profile.Settings.Folder + "/" + info_owner.Name() + "/" + info_repository.Name() + "/.git")
 
-								if err3 == nil && stat.IsDir() {
+								if err == nil && stat.IsDir() == true {
 
-									// TODO: Read and parse .git/config
-									// TODO: Use the user.name or user.email setting to detect identity
+									if profile.HasRepositoryOwner(info_owner.Name()) == false {
+										profile.AddRepositoryOwner(info_owner.Name(), profile.Settings.Folder + "/" + info_owner.Name())
+									}
 
-									owner := profile.GetOwner(entry1.Name(), root + "/" + entry1.Name())
-									repo := owner.GetRepository(entry2.Name())
-
-									if owner != nil && repo != nil {
-										profile.Console.Log("> Discovered " + owner.Name + "/" + repo.Name)
+									if profile.HasRepository(info_owner.Name(), info_repository.Name()) == false {
+										owner := profile.GetRepositoryOwner(info_owner.Name())
+										owner.AddRepository(info_repository.Name())
+										profile.Console.Log("> " + info_owner.Name() + "/" + info_repository.Name())
 									}
 
 								}
@@ -87,9 +91,61 @@ func (profile *Profile) Init() {
 
 		}
 
-		profile.Console.GroupEnd("Init()")
+		profile.Console.GroupEnd("Discover Repositories")
 
+	} else {
+		profile.Console.Warn("No Repositories in \"" + profile.Settings.Folder + "\"")
 	}
+
+	if err1 == nil && stat1.IsDir() {
+
+		profile.Console.Group("Discover Backups")
+
+		info_owners, err_owners := os.ReadDir(profile.Settings.Backup)
+
+		if err_owners == nil {
+
+			for _, info_owner := range info_owners {
+
+				if info_owner.IsDir() == true {
+
+					info_backups, err_backups := os.ReadDir(profile.Settings.Backup + "/" + info_owner.Name())
+
+					if err_backups == nil {
+
+						for _, info_backup := range info_backups {
+
+							if info_backup.IsDir() == false && strings.HasSuffix(info_backup.Name(), ".tar.gz") {
+
+								if profile.HasBackupOwner(info_owner.Name()) == false {
+									profile.AddBackupOwner(info_owner.Name(), profile.Settings.Backup + "/" + info_owner.Name())
+								}
+
+								if profile.HasBackup(info_owner.Name(), info_backup.Name()) == false {
+									owner := profile.GetBackupOwner(info_owner.Name())
+									owner.AddBackup(info_backup.Name())
+									profile.Console.Log("> " + info_owner.Name() + "/" + info_backup.Name())
+								}
+
+							}
+
+						}
+
+					}
+
+				}
+
+			}
+
+		}
+
+		profile.Console.GroupEnd("Discover Backups")
+
+	} else {
+		profile.Console.Warn("No Backups in \"" + profile.Settings.Backup + "\"")
+	}
+
+	profile.Console.GroupEnd("Init()")
 
 }
 
@@ -98,67 +154,21 @@ func (profile *Profile) Refresh() {
 	// TODO: Refresh owners if there are new ones
 	// TODO: For each owner refresh repo Status
 
-	for _, owner := range profile.Owners {
+	for _, owner := range profile.Backups {
+
+		for _, backup := range owner.Backups {
+			backup.Status()
+		}
+
+	}
+
+	for _, owner := range profile.Repositories {
 
 		for _, repo := range owner.Repositories {
 			repo.Status()
 		}
 
 	}
-
-}
-
-func (profile *Profile) GetOwner(name string, folder string) *RepositoryOwner {
-
-	var result *RepositoryOwner = nil
-
-	tmp, ok := profile.Owners[name]
-
-	if ok == true {
-		result = tmp
-	} else {
-
-		owner := NewRepositoryOwner(name, folder)
-		profile.Owners[name] = &owner
-		result = profile.Owners[name]
-
-	}
-
-	return result
-
-}
-
-func (profile *Profile) GetRepository(owner_name string, repo_name string) *Repository {
-
-	var result *Repository
-
-	owner, ok1 := profile.Owners[owner_name]
-
-	if ok1 == true {
-
-		repository, ok2 := owner.Repositories[repo_name]
-
-		if ok2 == true {
-			result = repository
-		}
-
-	}
-
-	return result
-
-}
-
-func (profile *Profile) HasOwner(name string) bool {
-
-	var result bool = false
-
-	_, ok := profile.Owners[name]
-
-	if ok == true {
-		result = true
-	}
-
-	return result
 
 }
 

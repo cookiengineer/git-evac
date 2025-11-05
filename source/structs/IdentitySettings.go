@@ -41,7 +41,7 @@ func NewIdentitySettings(name string) IdentitySettings {
 
 func (settings *IdentitySettings) IsValid() bool {
 
-	var result bool = false
+	var result bool
 
 	if utils_strings.IsName(settings.Name) {
 

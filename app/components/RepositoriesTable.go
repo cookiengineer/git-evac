@@ -36,11 +36,11 @@ func (table *RepositoriesTable) Disable() bool {
 
 	var result bool
 
-	inputs := table.Component.Element.QuerySelectorAll("input[type=\"checkbox\"]")
+	elements := table.Component.Element.QuerySelectorAll("button, input[type=\"checkbox\"]")
 
-	if len(inputs) > 0 {
+	if len(elements) > 0 {
 
-		for _, element := range inputs {
+		for _, element := range elements {
 			element.SetAttribute("disabled", "")
 		}
 
@@ -56,11 +56,11 @@ func (table *RepositoriesTable) Enable() bool {
 
 	var result bool
 
-	inputs := table.Component.Element.QuerySelectorAll("input[type=\"checkbox\"]")
+	elements := table.Component.Element.QuerySelectorAll("button, input[type=\"checkbox\"]")
 
-	if len(inputs) > 0 {
+	if len(elements) > 0 {
 
-		for _, element := range inputs {
+		for _, element := range elements {
 			element.RemoveAttribute("disabled")
 		}
 

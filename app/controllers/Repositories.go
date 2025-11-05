@@ -271,7 +271,7 @@ func (controller *Repositories) Update() {
 
 	if controller.Main != nil {
 
-		schema, err := app_actions.Index()
+		schema, err := app_actions.Repositories()
 
 		if err == nil {
 
