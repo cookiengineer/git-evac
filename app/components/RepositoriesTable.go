@@ -302,7 +302,7 @@ func (table *RepositoriesTable) Render() *dom.Element {
 							html += "<td><input type=\"checkbox\" data-action=\"select\"/></td>"
 						}
 
-						html += "<td>" + id + "</td>"
+						html += "<td><label>" + id + "</label></td>"
 						html += "<td>" + strings.Join(remotes, " ") + "</td>"
 						html += "<td>" + strings.Join(branches, " ") + "</td>"
 						html += "<td>" + strings.Join(actions, " ") + "</td>"
@@ -333,14 +333,14 @@ func (table *RepositoriesTable) Reset() {
 
 }
 
-func (table *RepositoriesTable) Deselect(names []string) {
+func (table *RepositoriesTable) Deselect(identifiers []string) {
 
-	for _, name := range names {
+	for _, id := range identifiers {
 
-		_, ok := table.selected[name]
+		_, ok := table.selected[id]
 
 		if ok == true {
-			table.selected[name] = false
+			table.selected[id] = false
 		}
 
 	}
@@ -410,7 +410,7 @@ func (table *RepositoriesTable) Selected() map[string]any {
 
 }
 
-func (table *RepositoriesTable) SetSchema(schema *schemas.Repositories) {
+func (table *RepositoriesTable) SetSchema(schema *schemas.Repositories) bool {
 
 	if schema != nil && len(schema.Owners) > 0 {
 
@@ -425,7 +425,11 @@ func (table *RepositoriesTable) SetSchema(schema *schemas.Repositories) {
 
 		}
 
+		return true
+
 	}
+
+	return false
 
 }
 
@@ -443,7 +447,6 @@ func (table *RepositoriesTable) String() string {
 	html += "<th>Remotes</th>"
 	html += "<th>Branches</th>"
 	html += "<th>Actions</th>"
-
 	html += "</tr>"
 	html += "</thead>"
 

@@ -1,0 +1,52 @@
+table[data-type="backups"] button[data-action="backup"]:before  { content: '\e807'; }
+table[data-type="backups"] button[data-action="restore"]:before { content: '\e808'; }
+
+table[data-type="backups"] button[data-action="backup"] {
+	color: var(--palette-primary-color);
+	background: var(--palette-primary-background);
+}
+
+table[data-type="backups"] button[data-action="restore"] {
+	color: var(--palette-secondary-color);
+	background: var(--palette-secondary-background);
+}
+
+table[data-type="backups"] tr th:nth-of-type(1),
+table[data-type="backups"] tr td:nth-of-type(1) {
+	width: 32px;
+	text-align: center;
+}
+
+table[data-type="backups"] tr th:nth-of-type(2),
+table[data-type="backups"] tr th:nth-of-type(3) {
+	width: auto;
+	text-align: left;
+}
+
+table[data-type="backups"] tr td:nth-of-type(2),
+table[data-type="backups"] tr td:nth-of-type(3) {
+	width: auto;
+	text-align: left;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+table[data-type="backups"] tr th:nth-of-type(4),
+table[data-type="backups"] tr td:nth-of-type(4) {
+	width: 192px;
+	text-align: center;
+}
+
+table[data-type="backups"] tr th:nth-of-type(5),
+table[data-type="backups"] tr td:nth-of-type(5) {
+	width: 128px;
+	text-align: center;
+}
+
+table[data-type="backups"] tr th:nth-of-type(6),
+table[data-type="backups"] tr td:nth-of-type(6) {
+	width: 192px;
+	text-align: center;
+}
+

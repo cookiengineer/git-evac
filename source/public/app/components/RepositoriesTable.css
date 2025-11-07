@@ -5,16 +5,17 @@ table[data-type="repositories"] button[data-action="commit"]:before { content: '
 table[data-type="repositories"] button[data-action="pull"]:before   { content: '\f0ed'; }
 table[data-type="repositories"] button[data-action="push"]:before   { content: '\f0ee'; }
 
-table[data-type="repositories"] button[data-action="commit"],
-table[data-type="repositories"] button[data-action="fix"] {
-	color: var(--palette-secondary-color);
-	background: var(--palette-secondary-background);
-}
-
+table[data-type="repositories"] button[data-action="clone"],
 table[data-type="repositories"] button[data-action="pull"],
 table[data-type="repositories"] button[data-action="push"] {
 	color: var(--palette-primary-color);
 	background: var(--palette-primary-background);
+}
+
+table[data-type="repositories"] button[data-action="commit"],
+table[data-type="repositories"] button[data-action="fix"] {
+	color: var(--palette-secondary-color);
+	background: var(--palette-secondary-background);
 }
 
 table[data-type="repositories"] tr th:nth-of-type(1),
@@ -50,7 +51,7 @@ table[data-type="repositories"] tr td:nth-of-type(4) {
 
 table[data-type="repositories"] tr th:nth-of-type(5),
 table[data-type="repositories"] tr td:nth-of-type(5) {
-	width: 180px;
+	width: 192px;
 	text-align: center;
 }
 

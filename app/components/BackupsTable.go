@@ -7,6 +7,8 @@ import "github.com/cookiengineer/gooey/components"
 import "github.com/cookiengineer/gooey/components/utils"
 import "github.com/cookiengineer/gooey/components/interfaces"
 import "git-evac/schemas"
+import "git-evac/structs"
+import "slices"
 import "sort"
 import "strings"
 
@@ -203,7 +205,7 @@ func (table *BackupsTable) Render() *dom.Element {
 	if table.Component.Element != nil {
 
 		table.Component.Element.SetAttribute("data-name", table.Name)
-		table.Component.Element.SetAttribute("data-type", "repositories")
+		table.Component.Element.SetAttribute("data-type", "backups")
 
 		thead := table.Component.Element.QuerySelector("thead")
 		tbody := table.Component.Element.QuerySelector("tbody")
@@ -228,7 +230,7 @@ func (table *BackupsTable) Render() *dom.Element {
 			html += "<th><input type=\"checkbox\" title=\"Toggle all repositories\" data-action=\"select\"/></th>"
 			html += "<th>Repository</th>"
 			html += "<th>Backup</th>"
-			html += "<th>Datetime</th>"
+			html += "<th>Time</th>"
 			html += "<th>Size</th>"
 			html += "<th>Actions</th>"
 
@@ -252,7 +254,11 @@ func (table *BackupsTable) Render() *dom.Element {
 				}
 
 				for _, owner := range table.Schemas.Repositories.Owners {
-					owner_names = append(owner_names, owner.Name)
+
+					if !slices.Contains(owner_names, owner.Name) {
+						owner_names = append(owner_names, owner.Name)
+					}
+
 				}
 
 				sort.Strings(owner_names)
@@ -261,7 +267,7 @@ func (table *BackupsTable) Render() *dom.Element {
 
 					repository_names := make([]string, 0)
 
-					_, ok1 := table.Schemas.Backups.Owners[owner_name]
+					backup_owner, ok1 := table.Schemas.Backups.Owners[owner_name]
 
 					if ok1 == true {
 
@@ -271,12 +277,16 @@ func (table *BackupsTable) Render() *dom.Element {
 
 					}
 
-					_, ok2 := table.Schemas.Repositories.Owners[owner_name]
+					repository_owner, ok2 := table.Schemas.Repositories.Owners[owner_name]
 
 					if ok2 == true {
 
 						for _, repository := range table.Schemas.Repositories.Owners[owner_name].Repositories {
-							repository_names = append(repository_names, repository.Name)
+
+							if !slices.Contains(repository_names, repository.Name) {
+								repository_names = append(repository_names, repository.Name)
+							}
+
 						}
 
 					}
@@ -287,32 +297,17 @@ func (table *BackupsTable) Render() *dom.Element {
 
 						id := owner_name + "/" + repository_name
 
-						// TODO: If has repository and no backup, then render:
-						// Repository name, backup name, file size, action is backup and restore
+						var backup *structs.Backup = nil
 
-						// TODO: Else If has backup, then render:
-						// Repository name, backup name, file size, action is restore
-
-						// TODO: Else if has repository, then render:
-						// Repository name, action is backup
-
-
-						repository := table.Schema.Owners[owner_name].Backups[repository_name]
-						// TODO: backup := table.Schema.Owners[owner_name].Backups[repository_name]
-						actions := make([]string, 0)
-
-						// TODO: backup action when repository is available
-						// TODO: restore action when backup file is available
-						if repository.HasRemoteChanges == true {
-							actions = append(actions, "<button data-action=\"fix\">Fix</button>")
-						} else if repository.HasLocalChanges == true {
-							actions = append(actions, "<button data-action=\"commit\">Commit</button>")
-						} else {
-							actions = append(actions, "<button data-action=\"pull\">Pull</button>")
-							actions = append(actions, "<button data-action=\"push\">Push</button>")
+						if backup_owner != nil {
+							backup = backup_owner.GetBackup(repository_name)
 						}
 
-						sort.Strings(actions)
+						var repository *structs.Repository = nil
+
+						if repository_owner != nil {
+							repository = repository_owner.GetRepository(repository_name)
+						}
 
 						tr := dom.Document.CreateElement("tr")
 						tr.SetAttribute("data-id", id)
@@ -329,11 +324,36 @@ func (table *BackupsTable) Render() *dom.Element {
 							html += "<td><input type=\"checkbox\" data-action=\"select\"/></td>"
 						}
 
-						html += "<td>" + id + "</td>"
-						html += "<td>TODO</td>" // /path/to/tar.gz
-						html += "<td>TODO</td>" // formatted time.Time
-						html += "<td>TODO</td>" // Filesize if exists (otherwise 0.00 MB)
-						html += "<td>" + strings.Join(actions, " ") + "</td>"
+						if repository != nil && backup != nil {
+
+							html += "<td><label>" + id + "</label></td>"
+							html += "<td><label data-type=\"file\" data-path=\"" + backup.File + "\">" + id + ".tar.gz</label></td>"
+							html += "<td><label>" + formatTime(backup.Time) + "</label></td>"
+							html += "<td><label>" + formatSize(backup.Size) + "</label></td>"
+							html += "<td>" + strings.Join([]string{
+								"<button data-action=\"backup\">Backup</button>",
+								"<button data-action=\"restore\">Restore</button>",
+							}, " ") + "</td>"
+
+						} else if repository != nil && backup == nil {
+
+							html += "<td><label>" + id + "</label></td>"
+							html += "<td></td>"
+							html += "<td></td>"
+							html += "<td></td>"
+							html += "<td><button data-action=\"backup\">Backup</button></td>"
+
+						} else if repository == nil && backup != nil {
+
+							html += "<td></td>"
+							html += "<td><label data-type=\"file\" data-path=\"" + backup.File + "\">" + id + ".tar.gz</label></td>"
+							html += "<td><label>" + formatTime(backup.Time) + "</label></td>"
+							html += "<td><label>" + formatSize(backup.Size) + "</label></td>"
+							html += "<td><button data-action=\"restore\">Restore</button></td>"
+
+						} else if repository == nil && backup == nil {
+							// Should never happen
+						}
 
 						tr.SetInnerHTML(html)
 						elements = append(elements, tr)
@@ -354,9 +374,269 @@ func (table *BackupsTable) Render() *dom.Element {
 
 }
 
+func (table *BackupsTable) Reset() {
 
+	table.Schemas.Backups      = nil
+	table.Schemas.Repositories = nil
+	table.selected             = make(map[string]bool)
 
-// TODO: Render
+}
 
+func (table *BackupsTable) Deselect(identifiers []string) {
 
+	for _, id := range identifiers {
 
+		_, ok := table.selected[id]
+
+		if ok == true {
+			table.selected[id] = false
+		}
+
+	}
+
+}
+
+func (table *BackupsTable) Select(identifiers []string) {
+
+	for _, id := range identifiers {
+
+		_, ok := table.selected[id]
+
+		if ok == true {
+			table.selected[id] = true
+		}
+
+	}
+
+}
+
+func (table *BackupsTable) Selected() map[string]any {
+
+	result := make(map[string]any)
+
+	if table.Schemas.Backups != nil && table.Schemas.Repositories != nil {
+
+		for id, is_selected := range table.selected {
+
+			if is_selected == true {
+
+				id_owner      := id[0:strings.Index(id, "/")]
+				id_repository := id[strings.Index(id, "/")+1:]
+
+				var backup *structs.Backup = nil
+
+				if backup_owner, ok := table.Schemas.Backups.Owners[id_owner]; ok == true {
+					backup = backup_owner.GetBackup(id_repository)
+				}
+
+				var repository *structs.Repository = nil
+
+				if repository_owner, ok := table.Schemas.Repositories.Owners[id_owner]; ok == true {
+					repository = repository_owner.GetRepository(id_repository)
+				}
+
+				if repository != nil && backup != nil {
+					result[id] = "backup-or-restore"
+				} else if repository != nil && backup == nil {
+					result[id] = "backup"
+				} else if repository == nil && backup != nil {
+					result[id] = "restore"
+				} else if repository == nil && backup == nil {
+					// No action
+				}
+
+			}
+
+		}
+
+	}
+
+	return result
+
+}
+
+func (table *BackupsTable) SetSchema(schema1 *schemas.Backups, schema2 *schemas.Repositories) bool {
+
+	if schema1 != nil && schema2 != nil {
+
+		table.Schemas.Backups = schema1
+		table.Schemas.Repositories = schema2
+		table.selected = make(map[string]bool)
+
+		for _, owner := range table.Schemas.Backups.Owners {
+
+			for _, backup := range owner.Backups {
+				table.selected[owner.Name + "/" + backup.Name] = false
+			}
+
+		}
+
+		for _, owner := range table.Schemas.Repositories.Owners {
+
+			for _, repository := range owner.Repositories {
+				table.selected[owner.Name + "/" + repository.Name] = false
+			}
+
+		}
+
+		return true
+
+	}
+
+	return false
+
+}
+
+func (table *BackupsTable) String() string {
+
+	html := "<table"
+	html += " data-name=\"" + table.Name + "\""
+	html += " data-type=\"backups\""
+	html += ">"
+
+	html += "<thead>"
+	html += "<tr>"
+	html += "<th><input type=\"checkbox\" title=\"Toggle all repositories\" data-action=\"select\"/></th>"
+	html += "<th>Repository</th>"
+	html += "<th>Backup</th>"
+	html += "<th>Time</th>"
+	html += "<th>Size</th>"
+	html += "<th>Actions</th>"
+	html += "</tr>"
+	html += "</thead>"
+
+	html += "<tbody>"
+
+	if table.Schemas.Backups != nil && table.Schemas.Repositories != nil {
+
+		owner_names := make([]string, 0)
+
+		for _, owner := range table.Schemas.Backups.Owners {
+			owner_names = append(owner_names, owner.Name)
+		}
+
+		for _, owner := range table.Schemas.Repositories.Owners {
+
+			if !slices.Contains(owner_names, owner.Name) {
+				owner_names = append(owner_names, owner.Name)
+			}
+
+		}
+
+		sort.Strings(owner_names)
+
+		for _, owner_name := range owner_names {
+
+			repository_names := make([]string, 0)
+
+			backup_owner, ok1 := table.Schemas.Backups.Owners[owner_name]
+
+			if ok1 == true {
+
+				for _, backup := range table.Schemas.Backups.Owners[owner_name].Backups {
+					repository_names = append(repository_names, backup.Name)
+				}
+
+			}
+
+			repository_owner, ok2 := table.Schemas.Repositories.Owners[owner_name]
+
+			if ok2 == true {
+
+				for _, repository := range table.Schemas.Repositories.Owners[owner_name].Repositories {
+
+					if !slices.Contains(repository_names, repository.Name) {
+						repository_names = append(repository_names, repository.Name)
+					}
+
+				}
+
+			}
+
+			sort.Strings(repository_names)
+
+			for _, repository_name := range repository_names {
+
+				id := owner_name + "/" + repository_name
+
+				var backup *structs.Backup = nil
+
+				if backup_owner != nil {
+					backup = backup_owner.GetBackup(repository_name)
+				}
+
+				var repository *structs.Repository = nil
+
+				if repository_owner != nil {
+					repository = repository_owner.GetRepository(repository_name)
+				}
+
+				html += "<tr data-id=\"" + id + "\""
+
+				if table.selected[id] == true {
+					html += " data-select=\"true\""
+				}
+
+				html += ">"
+
+				if table.selected[id] == true {
+					html += "<td><input type=\"checkbox\" data-action=\"select\" checked/></td>"
+				} else {
+					html += "<td><input type=\"checkbox\" data-action=\"select\"/></td>"
+				}
+
+				if repository != nil && backup != nil {
+
+					html += "<td><label>" + id + "</label></td>"
+					html += "<td><label data-type=\"file\" data-path=\"" + backup.File + "\">" + id + ".tar.gz</label></td>"
+					html += "<td><label>" + formatTime(backup.Time) + "</label></td>"
+					html += "<td><label>" + formatSize(backup.Size) + "</label></td>"
+					html += "<td>" + strings.Join([]string{
+						"<button data-action=\"backup\">Backup</button>",
+						"<button data-action=\"restore\">Restore</button>",
+					}, " ") + "</td>"
+
+				} else if repository != nil && backup == nil {
+
+					html += "<td><label>" + id + "</label></td>"
+					html += "<td></td>"
+					html += "<td></td>"
+					html += "<td></td>"
+					html += "<td><button data-action=\"backup\">Backup</button></td>"
+
+				} else if repository == nil && backup != nil {
+
+					html += "<td></td>"
+					html += "<td><label data-type=\"file\" data-path=\"" + backup.File + "\">" + id + ".tar.gz</label></td>"
+					html += "<td><label>" + formatTime(backup.Time) + "</label></td>"
+					html += "<td><label>" + formatSize(backup.Size) + "</label></td>"
+					html += "<td><button data-action=\"restore\">Restore</button></td>"
+
+				} else if repository == nil && backup == nil {
+					// Should never happen
+				}
+
+				html += "</tr>"
+
+			}
+
+		}
+
+	}
+
+	html += "</tbody>"
+	html += "</table>"
+
+	return html
+
+}
+
+func (table *BackupsTable) Unmount() bool {
+
+	if table.Component.Element != nil {
+		table.Component.Element.RemoveEventListener("click", nil)
+	}
+
+	return true
+
+}

@@ -1,13 +1,14 @@
 package controllers
 
-// import "github.com/cookiengineer/gooey/bindings/dom"
 import "github.com/cookiengineer/gooey/components"
 import "github.com/cookiengineer/gooey/components/app"
-import "github.com/cookiengineer/gooey/components/content"
 import "github.com/cookiengineer/gooey/components/interfaces"
+import ui_components "github.com/cookiengineer/gooey/components/ui"
+import "git-evac/schemas"
 import app_actions "git-evac-app/actions"
 import app_components "git-evac-app/components"
 import app_views "git-evac-app/views"
+import "strconv"
 
 type Backups struct {
 	Main    *app.Main          `json:"main"`
@@ -163,16 +164,28 @@ func NewBackups(main *app.Main, view interfaces.View) *Backups {
 
 				}
 
-				length_all := 0
+				mapped := make(map[string]bool)
 
-				for _, owner := range controller.Schema.Owners {
-					length_all += len(owner.Backups)
+				for _, owner := range controller.Schemas.Backups.Owners {
+
+					for _, backup := range owner.Backups {
+						mapped[owner.Name + "/" + backup.Name] = true
+					}
+
+				}
+
+				for _, owner := range controller.Schemas.Repositories.Owners {
+
+					for _, repository := range owner.Repositories {
+						mapped[owner.Name + "/" + repository.Name] = true
+					}
+
 				}
 
 				label, ok0 := components.UnwrapComponent[*ui_components.Label](footer.Query("footer > label"))
 
 				if ok0 == true {
-					label.SetLabel("Selected " + strconv.Itoa(len(attributes)) + " of " + strconv.Itoa(length_all) + " Items")
+					label.SetLabel("Selected " + strconv.Itoa(len(attributes)) + " of " + strconv.Itoa(len(mapped)) + " Items")
 				}
 
 				buttons_backup, ok1 := components.UnwrapComponent[*ui_components.Button](footer.Query("footer > button[data-action=\"backup\"]"))
@@ -222,8 +235,8 @@ func (controller *Backups) Update() {
 
 	if controller.Main != nil {
 
-		schema_backups, err_backups := actions.Backups()
-		schema_repositories, err_repositories := actions.Repositories()
+		schema_backups, err_backups := app_actions.Backups()
+		schema_repositories, err_repositories := app_actions.Repositories()
 
 		if err_backups == nil && err_repositories == nil {
 
@@ -235,7 +248,7 @@ func (controller *Backups) Update() {
 
 			table, ok1 := components.UnwrapComponent[*app_components.BackupsTable](controller.View.Query("section > table[data-name=\"backups\"]"))
 
-			if len(controller.Schema.Owners) > 0 && ok1 == true {
+			if ok1 == true && (len(controller.Schemas.Backups.Owners) > 0 || len(controller.Schemas.Repositories.Owners) > 0) {
 
 				table.Reset()
 				table.SetSchema(controller.Schemas.Backups, controller.Schemas.Repositories)
@@ -248,18 +261,18 @@ func (controller *Backups) Update() {
 
 				mapped := make(map[string]bool)
 
-				for _, repository_owner := range controller.Schemas.Repositories.Owners {
+				for _, backup_owner := range controller.Schemas.Backups.Owners {
 
-					for _, repository := range repository_owner.Repositories {
-						mapped[repository_owner.Name + "/" + repository.Name] = false
+					for _, backup := range backup_owner.Backups {
+						mapped[backup_owner.Name + "/" + backup.Name] = true
 					}
 
 				}
 
-				for _, backup_owner := range controller.Schemas.Backups.Owners {
+				for _, repository_owner := range controller.Schemas.Repositories.Owners {
 
-					for _, backup := range backup_owner.Repositories {
-						mapped[backup_owner.Name + "/" + backup.Name] = true
+					for _, repository := range repository_owner.Repositories {
+						mapped[repository_owner.Name + "/" + repository.Name] = false
 					}
 
 				}

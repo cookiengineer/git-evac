@@ -280,7 +280,7 @@ func (controller *Repositories) Update() {
 
 			table, ok1 := components.UnwrapComponent[*app_components.RepositoriesTable](controller.View.Query("section > table[data-name=\"repositories\"]"))
 
-			if len(controller.Schema.Owners) > 0 && ok1 == true {
+			if ok1 == true && len(controller.Schema.Owners) > 0 {
 
 				table.Reset()
 				table.SetSchema(controller.Schema)
