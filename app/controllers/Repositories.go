@@ -25,6 +25,12 @@ func NewRepositories(main *app.Main, view interfaces.View) *Repositories {
 	controller.Main = main
 	controller.View = view.(*app_views.Repositories)
 
+	return &controller
+
+}
+
+func (controller *Repositories) Enter() bool {
+
 	dialog := controller.Main.Dialog
 	footer := controller.Main.Footer
 	table, ok1 := components.UnwrapComponent[*app_components.RepositoriesTable](controller.View.Query("section > table[data-name=\"repositories\"]"))
@@ -257,9 +263,30 @@ func NewRepositories(main *app.Main, view interfaces.View) *Repositories {
 
 	}
 
-	controller.Update()
+	go controller.Update()
 
-	return &controller
+	return true
+
+}
+
+func (controller *Repositories) Leave() bool {
+
+	if controller.Main.Dialog != nil {
+		controller.Main.Dialog.Component.RemoveEventListener("action", nil)
+	}
+
+	if controller.Main.Footer != nil {
+		controller.Main.Footer.Component.RemoveEventListener("action", nil)
+	}
+
+	table, ok1 := components.UnwrapComponent[*app_components.RepositoriesTable](controller.View.Query("section > table[data-name=\"repositories\"]"))
+
+	if table != nil && ok1 == true {
+		table.Component.RemoveEventListener("action", nil)
+		table.Component.RemoveEventListener("select", nil)
+	}
+
+	return true
 
 }
 

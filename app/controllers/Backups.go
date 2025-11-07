@@ -26,6 +26,12 @@ func NewBackups(main *app.Main, view interfaces.View) *Backups {
 	controller.Main = main
 	controller.View = view.(*app_views.Backups)
 
+	return &controller
+
+}
+
+func (controller *Backups) Enter() bool {
+
 	dialog := controller.Main.Dialog
 	footer := controller.Main.Footer
 
@@ -221,9 +227,30 @@ func NewBackups(main *app.Main, view interfaces.View) *Backups {
 
 	}
 
-	controller.Update()
+	go controller.Update()
 
-	return &controller
+	return true
+
+}
+
+func (controller *Backups) Leave() bool {
+
+	if controller.Main.Dialog != nil {
+		controller.Main.Dialog.Component.RemoveEventListener("action", nil)
+	}
+
+	if controller.Main.Footer != nil {
+		controller.Main.Footer.Component.RemoveEventListener("action", nil)
+	}
+
+	table, ok1 := components.UnwrapComponent[*app_components.BackupsTable](controller.View.Query("section > table[data-name=\"backups\"]"))
+
+	if table != nil && ok1 == true {
+		table.Component.RemoveEventListener("action", nil)
+		table.Component.RemoveEventListener("select", nil)
+	}
+
+	return true
 
 }
 

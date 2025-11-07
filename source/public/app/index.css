@@ -12,3 +12,8 @@ body > header ul li a[data-view="repositories"]:before { content: '\f1e0'; }
 body > header ul li a[data-view="backups"]:before      { content: '\e807'; }
 body > header ul li a[data-view="settings"]:before     { content: '\e80d'; }
 
+body > header button[data-action="refresh"]:before     { content: '\e815'; }
+body > header button[data-action="refresh"] {
+	color: var(--palette-primary-color);
+	background: var(--palette-primary-background);
+}

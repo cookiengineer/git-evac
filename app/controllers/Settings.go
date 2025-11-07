@@ -20,11 +20,25 @@ func NewSettings(main *app.Main, view interfaces.View) *Settings {
 	controller.Main = main
 	controller.View = view.(*app.View)
 
-	// TODO
-
-	controller.Update()
-
 	return &controller
+
+}
+
+func (controller *Settings) Enter() bool {
+
+	// TODO: Add Event Listeners
+
+	go controller.Update()
+
+	return true
+
+}
+
+func (controller *Settings) Leave() bool {
+
+	// TODO: Remove Event Listeners
+
+	return true
 
 }
 

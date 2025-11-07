@@ -2,3 +2,7 @@
 footer button[data-action="backup"]:before  { content: '\e807'; }
 footer button[data-action="restore"]:before { content: '\e808'; }
 
+footer div:last-of-type button[data-action="restore"] {
+	color: var(--palette-secondary-color);
+	background: var(--palette-secondary-background);
+}
