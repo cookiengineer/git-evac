@@ -69,12 +69,13 @@ queued manner once confirmed in a preceding overview dialog.
 
 ## Work-in-Progress
 
-Currently, this tool is highly experimental. Most UI things don't work yet, there's a separate
-[TODO.md](/docs/TODO.md) document that structures my cluttered ideas. As Go doesn't have a reasonable
-UI framework, I literally created the [Gooey Framework](https://github.com/cookiengineer/gooey) in
-parallel for this App.
+Currently, this tool is highly experimental. The Settings View/Controller isn't implemented yet, and
+there's a separate [TODO.md](/docs/TODO.md) document that structures my cluttered ideas.
 
-- The [ARCHITECTURE.md](/docs/ARCHITECTURE.md) documents how the architecture and Web APIs.
+As Go doesn't have a reasonable UI framework, I created the [Gooey Framework](https://github.com/cookiengineer/gooey)
+so that I can write all App related code in Go, too.
+
+- The [ARCHITECTURE.md](/docs/ARCHITECTURE.md) documents the structure of the App and its Web APIs.
 - The [TODO.md](/docs/TODO.md) documents what is planned as features and not implemented yet.
 
 
