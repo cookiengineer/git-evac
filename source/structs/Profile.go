@@ -67,14 +67,17 @@ func (profile *Profile) Init() {
 
 								if err == nil && stat.IsDir() == true {
 
-									if profile.HasRepositoryOwner(info_owner.Name()) == false {
-										profile.AddRepositoryOwner(info_owner.Name(), profile.Settings.Folder + "/" + info_owner.Name())
+									owner_name := info_owner.Name()
+									repository_name := info_repository.Name()
+
+									if profile.HasRepositoryOwner(owner_name) == false {
+										profile.AddRepositoryOwner(owner_name, profile.Settings.Folder + "/" + owner_name)
 									}
 
-									if profile.HasRepository(info_owner.Name(), info_repository.Name()) == false {
-										owner := profile.GetRepositoryOwner(info_owner.Name())
-										owner.AddRepository(info_repository.Name())
-										profile.Console.Log("> " + info_owner.Name() + "/" + info_repository.Name())
+									if profile.HasRepository(owner_name, repository_name) == false {
+										owner := profile.GetRepositoryOwner(owner_name)
+										owner.AddRepository(repository_name)
+										profile.Console.Log("> " + owner_name + "/" + repository_name)
 									}
 
 								}
@@ -115,16 +118,21 @@ func (profile *Profile) Init() {
 
 						for _, info_backup := range info_backups {
 
-							if info_backup.IsDir() == false && strings.HasSuffix(info_backup.Name(), ".tar.gz") {
+							filename := info_backup.Name()
 
-								if profile.HasBackupOwner(info_owner.Name()) == false {
-									profile.AddBackupOwner(info_owner.Name(), profile.Settings.Backup + "/" + info_owner.Name())
+							if info_backup.IsDir() == false && strings.HasSuffix(filename, ".tar.gz") {
+
+								owner_name := info_owner.Name()
+								backup_name := filename[0:len(filename)-7]
+
+								if profile.HasBackupOwner(owner_name) == false {
+									profile.AddBackupOwner(owner_name, profile.Settings.Backup + "/" + owner_name)
 								}
 
-								if profile.HasBackup(info_owner.Name(), info_backup.Name()) == false {
-									owner := profile.GetBackupOwner(info_owner.Name())
-									owner.AddBackup(info_backup.Name())
-									profile.Console.Log("> " + info_owner.Name() + "/" + info_backup.Name())
+								if profile.HasBackup(owner_name, backup_name) == false {
+									owner := profile.GetBackupOwner(owner_name)
+									owner.AddBackup(backup_name)
+									profile.Console.Log("> " + owner_name + "/" + backup_name)
 								}
 
 							}
