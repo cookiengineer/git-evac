@@ -1,5 +1,6 @@
 package controllers
 
+import "github.com/cookiengineer/gooey/bindings/location"
 import "github.com/cookiengineer/gooey/components"
 import "github.com/cookiengineer/gooey/components/app"
 import "github.com/cookiengineer/gooey/components/interfaces"
@@ -32,14 +33,11 @@ func NewBackups(main *app.Main, view interfaces.View) *Backups {
 
 func (controller *Backups) Enter() bool {
 
-	dialog := controller.Main.Dialog
-	footer := controller.Main.Footer
-
 	table, ok1 := components.UnwrapComponent[*app_components.BackupsTable](controller.View.Query("section > table[data-name=\"backups\"]"))
 
-	if dialog != nil && footer != nil && table != nil && ok1 == true {
+	if controller.Main.Dialog != nil && controller.Main.Footer != nil && table != nil && ok1 == true {
 
-		dialog.Component.AddEventListener("action", components.ToEventListener(func(event string, attributes map[string]any) {
+		controller.Main.Dialog.Component.AddEventListener("action", components.ToEventListener(func(event string, attributes map[string]any) {
 
 			if event == "action" {
 
@@ -49,14 +47,14 @@ func (controller *Backups) Enter() bool {
 
 					if action == "confirm" {
 
-						scheduler_table, ok2 := components.UnwrapComponent[*app_components.SchedulerTable](dialog.Query("dialog > table[data-name=\"scheduler\"]"))
+						scheduler_table, ok2 := components.UnwrapComponent[*app_components.SchedulerTable](controller.Main.Dialog.Query("dialog > table[data-name=\"scheduler\"]"))
 
 						if ok2 == true {
 
 							go func() {
 
-								cancel_button := dialog.Query("dialog > footer > button[data-action=\"cancel\"]")
-								confirm_button := dialog.Query("dialog > footer > button[data-action=\"confirm\"]")
+								cancel_button := controller.Main.Dialog.Query("dialog > footer > button[data-action=\"cancel\"]")
+								confirm_button := controller.Main.Dialog.Query("dialog > footer > button[data-action=\"confirm\"]")
 
 								if confirm_button != nil {
 									confirm_button.Disable()
@@ -75,7 +73,7 @@ func (controller *Backups) Enter() bool {
 
 					} else if action == "cancel" {
 
-						scheduler_table, ok2 := components.UnwrapComponent[*app_components.SchedulerTable](dialog.Query("dialog > table[data-name=\"scheduler\"]"))
+						scheduler_table, ok2 := components.UnwrapComponent[*app_components.SchedulerTable](controller.Main.Dialog.Query("dialog > table[data-name=\"scheduler\"]"))
 
 						if ok2 == true {
 
@@ -86,8 +84,8 @@ func (controller *Backups) Enter() bool {
 
 						}
 
-						dialog.Disable()
-						dialog.Hide()
+						controller.Main.Dialog.Disable()
+						controller.Main.Dialog.Hide()
 
 					}
 
@@ -97,7 +95,7 @@ func (controller *Backups) Enter() bool {
 
 		}, false))
 
-		footer.Component.AddEventListener("action", components.ToEventListener(func(event string, attributes map[string]any) {
+		controller.Main.Footer.Component.AddEventListener("action", components.ToEventListener(func(event string, attributes map[string]any) {
 
 			if event == "action" {
 
@@ -203,14 +201,14 @@ func (controller *Backups) Enter() bool {
 
 				}
 
-				label, ok0 := components.UnwrapComponent[*ui_components.Label](footer.Query("footer > label"))
+				label, ok0 := components.UnwrapComponent[*ui_components.Label](controller.Main.Footer.Query("footer > label"))
 
 				if ok0 == true {
 					label.SetLabel("Selected " + strconv.Itoa(len(attributes)) + " of " + strconv.Itoa(len(mapped)) + " Items")
 				}
 
-				buttons_backup, ok1 := components.UnwrapComponent[*ui_components.Button](footer.Query("footer > button[data-action=\"backup\"]"))
-				buttons_restore, ok2 := components.UnwrapComponent[*ui_components.Button](footer.Query("footer > button[data-action=\"restore\"]"))
+				buttons_backup, ok1 := components.UnwrapComponent[*ui_components.Button](controller.Main.Footer.Query("footer > button[data-action=\"backup\"]"))
+				buttons_restore, ok2 := components.UnwrapComponent[*ui_components.Button](controller.Main.Footer.Query("footer > button[data-action=\"restore\"]"))
 
 				if ok1 == true {
 
@@ -242,6 +240,28 @@ func (controller *Backups) Enter() bool {
 
 	}
 
+	if controller.Main.Header != nil {
+
+		controller.Main.Header.Component.AddEventListener("action", components.ToEventListener(func(event string, attributes map[string]any) {
+
+			if event == "action" {
+
+				action, ok := attributes["action"].(string)
+
+				if ok == true {
+
+					if action == "refresh" {
+						location.Location.Reload()
+					}
+
+				}
+
+			}
+
+		}, false))
+
+	}
+
 	go controller.Update()
 
 	return true
@@ -249,6 +269,10 @@ func (controller *Backups) Enter() bool {
 }
 
 func (controller *Backups) Leave() bool {
+
+	if controller.Main.Header != nil {
+		controller.Main.Header.Component.RemoveEventListener("action", nil)
+	}
 
 	if controller.Main.Dialog != nil {
 		controller.Main.Dialog.Component.RemoveEventListener("action", nil)

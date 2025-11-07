@@ -150,7 +150,7 @@ func main() {
 
 		go func() {
 
-			profile.Init()
+			profile.Refresh()
 
 			server.Dispatch(profile)
 			server.DispatchRoutes(profile)
@@ -167,7 +167,7 @@ func main() {
 
 		go func() {
 
-			time.Sleep(1 * time.Second)
+			time.Sleep(3 * time.Second)
 
 			console.Log("Opening WebView...")
 

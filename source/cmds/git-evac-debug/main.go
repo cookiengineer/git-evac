@@ -103,7 +103,7 @@ func main() {
 		console.Log("> Port:   " + strconv.FormatUint(uint64(port), 10))
 		console.GroupEnd("git-evac-debug")
 
-		profile.Init()
+		profile.Refresh()
 
 		server.Dispatch(profile)
 		server.DispatchRoutes(profile)

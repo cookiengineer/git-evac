@@ -2,6 +2,7 @@
 
 package controllers
 
+import "github.com/cookiengineer/gooey/bindings/location"
 import "github.com/cookiengineer/gooey/components"
 import "github.com/cookiengineer/gooey/components/app"
 import "github.com/cookiengineer/gooey/components/interfaces"
@@ -31,13 +32,11 @@ func NewRepositories(main *app.Main, view interfaces.View) *Repositories {
 
 func (controller *Repositories) Enter() bool {
 
-	dialog := controller.Main.Dialog
-	footer := controller.Main.Footer
 	table, ok1 := components.UnwrapComponent[*app_components.RepositoriesTable](controller.View.Query("section > table[data-name=\"repositories\"]"))
 
-	if dialog != nil && footer != nil && table != nil && ok1 == true {
+	if controller.Main.Dialog != nil && controller.Main.Footer != nil && table != nil && ok1 == true {
 
-		dialog.Component.AddEventListener("action", components.ToEventListener(func(event string, attributes map[string]any) {
+		controller.Main.Dialog.Component.AddEventListener("action", components.ToEventListener(func(event string, attributes map[string]any) {
 
 			if event == "action" {
 
@@ -47,14 +46,14 @@ func (controller *Repositories) Enter() bool {
 
 					if action == "confirm" {
 
-						scheduler_table, ok2 := components.UnwrapComponent[*app_components.SchedulerTable](dialog.Query("dialog > table[data-name=\"scheduler\"]"))
+						scheduler_table, ok2 := components.UnwrapComponent[*app_components.SchedulerTable](controller.Main.Dialog.Query("dialog > table[data-name=\"scheduler\"]"))
 
 						if ok2 == true {
 
 							go func() {
 
-								cancel_button := dialog.Query("dialog > footer > button[data-action=\"cancel\"]")
-								confirm_button := dialog.Query("dialog > footer > button[data-action=\"confirm\"]")
+								cancel_button := controller.Main.Dialog.Query("dialog > footer > button[data-action=\"cancel\"]")
+								confirm_button := controller.Main.Dialog.Query("dialog > footer > button[data-action=\"confirm\"]")
 
 								if confirm_button != nil {
 									confirm_button.Disable()
@@ -73,7 +72,7 @@ func (controller *Repositories) Enter() bool {
 
 					} else if action == "cancel" {
 
-						scheduler_table, ok2 := components.UnwrapComponent[*app_components.SchedulerTable](dialog.Query("dialog > table[data-name=\"scheduler\"]"))
+						scheduler_table, ok2 := components.UnwrapComponent[*app_components.SchedulerTable](controller.Main.Dialog.Query("dialog > table[data-name=\"scheduler\"]"))
 
 						if ok2 == true {
 
@@ -84,8 +83,8 @@ func (controller *Repositories) Enter() bool {
 
 						}
 
-						dialog.Disable()
-						dialog.Hide()
+						controller.Main.Dialog.Disable()
+						controller.Main.Dialog.Hide()
 
 					}
 
@@ -95,7 +94,7 @@ func (controller *Repositories) Enter() bool {
 
 		}, false))
 
-		footer.Component.AddEventListener("action", components.ToEventListener(func(event string, attributes map[string]any) {
+		controller.Main.Footer.Component.AddEventListener("action", components.ToEventListener(func(event string, attributes map[string]any) {
 
 			if event == "action" {
 
@@ -200,17 +199,17 @@ func (controller *Repositories) Enter() bool {
 					length_all += len(owner.Repositories)
 				}
 
-				label, ok0 := components.UnwrapComponent[*ui_components.Label](footer.Query("footer > label"))
+				label, ok0 := components.UnwrapComponent[*ui_components.Label](controller.Main.Footer.Query("footer > label"))
 
 				if ok0 == true {
 					label.SetLabel("Selected " + strconv.Itoa(len(attributes)) + " of " + strconv.Itoa(length_all) + " Repositories")
 				}
 
-				buttons_clone, ok1 := components.UnwrapComponent[*ui_components.Button](footer.Query("footer > button[data-action=\"clone\"]"))
-				buttons_fix, ok2 := components.UnwrapComponent[*ui_components.Button](footer.Query("footer > button[data-action=\"fix\"]"))
-				buttons_commit, ok3 := components.UnwrapComponent[*ui_components.Button](footer.Query("footer > button[data-action=\"commit\"]"))
-				buttons_pull, ok4 := components.UnwrapComponent[*ui_components.Button](footer.Query("footer > button[data-action=\"pull\"]"))
-				buttons_push, ok5 := components.UnwrapComponent[*ui_components.Button](footer.Query("footer > button[data-action=\"push\"]"))
+				buttons_clone, ok1 := components.UnwrapComponent[*ui_components.Button](controller.Main.Footer.Query("footer > button[data-action=\"clone\"]"))
+				buttons_fix, ok2 := components.UnwrapComponent[*ui_components.Button](controller.Main.Footer.Query("footer > button[data-action=\"fix\"]"))
+				buttons_commit, ok3 := components.UnwrapComponent[*ui_components.Button](controller.Main.Footer.Query("footer > button[data-action=\"commit\"]"))
+				buttons_pull, ok4 := components.UnwrapComponent[*ui_components.Button](controller.Main.Footer.Query("footer > button[data-action=\"pull\"]"))
+				buttons_push, ok5 := components.UnwrapComponent[*ui_components.Button](controller.Main.Footer.Query("footer > button[data-action=\"push\"]"))
 
 				if ok1 == true {
 
@@ -278,6 +277,28 @@ func (controller *Repositories) Enter() bool {
 
 	}
 
+	if controller.Main.Header != nil {
+
+		controller.Main.Header.Component.AddEventListener("action", components.ToEventListener(func(event string, attributes map[string]any) {
+
+			if event == "action" {
+
+				action, ok := attributes["action"].(string)
+
+				if ok == true {
+
+					if action == "refresh" {
+						location.Location.Reload()
+					}
+
+				}
+
+			}
+
+		}, false))
+
+	}
+
 	go controller.Update()
 
 	return true
@@ -285,6 +306,10 @@ func (controller *Repositories) Enter() bool {
 }
 
 func (controller *Repositories) Leave() bool {
+
+	if controller.Main.Header != nil {
+		controller.Main.Header.Component.RemoveEventListener("action", nil)
+	}
 
 	if controller.Main.Dialog != nil {
 		controller.Main.Dialog.Component.RemoveEventListener("action", nil)
@@ -329,9 +354,7 @@ func (controller *Repositories) Update() {
 
 			}
 
-			footer := controller.Main.Footer
-
-			if footer != nil {
+			if controller.Main.Footer != nil {
 
 				length := 0
 
@@ -339,17 +362,17 @@ func (controller *Repositories) Update() {
 					length += len(owner.Repositories)
 				}
 
-				label, ok0 := components.UnwrapComponent[*ui_components.Label](footer.Query("footer > label"))
+				label, ok0 := components.UnwrapComponent[*ui_components.Label](controller.Main.Footer.Query("footer > label"))
 
 				if ok0 == true {
 					label.SetLabel("Selected 0 of " + strconv.Itoa(length) + " Repositories")
 				}
 
-				buttons_clone, ok1 := components.UnwrapComponent[*ui_components.Button](footer.Query("footer > button[data-action=\"clone\"]"))
-				buttons_fix, ok2 := components.UnwrapComponent[*ui_components.Button](footer.Query("footer > button[data-action=\"fix\"]"))
-				buttons_commit, ok3 := components.UnwrapComponent[*ui_components.Button](footer.Query("footer > button[data-action=\"commit\"]"))
-				buttons_pull, ok4 := components.UnwrapComponent[*ui_components.Button](footer.Query("footer > button[data-action=\"pull\"]"))
-				buttons_push, ok5 := components.UnwrapComponent[*ui_components.Button](footer.Query("footer > button[data-action=\"push\"]"))
+				buttons_clone, ok1 := components.UnwrapComponent[*ui_components.Button](controller.Main.Footer.Query("footer > button[data-action=\"clone\"]"))
+				buttons_fix, ok2 := components.UnwrapComponent[*ui_components.Button](controller.Main.Footer.Query("footer > button[data-action=\"fix\"]"))
+				buttons_commit, ok3 := components.UnwrapComponent[*ui_components.Button](controller.Main.Footer.Query("footer > button[data-action=\"commit\"]"))
+				buttons_pull, ok4 := components.UnwrapComponent[*ui_components.Button](controller.Main.Footer.Query("footer > button[data-action=\"pull\"]"))
+				buttons_push, ok5 := components.UnwrapComponent[*ui_components.Button](controller.Main.Footer.Query("footer > button[data-action=\"push\"]"))
 
 				if ok1 == true {
 					buttons_clone.SetLabel("Clone 0")
@@ -392,10 +415,9 @@ func (controller *Repositories) Render() {
 
 func (controller *Repositories) showDialog(selected map[string]string) {
 
-	dialog := controller.Main.Dialog
+	if controller.Main.Dialog != nil {
 
-	if dialog != nil {
-
+		dialog         := controller.Main.Dialog
 		actions_clone  := make(map[string]string)
 		actions_fix    := make(map[string]string)
 		actions_commit := make(map[string]string)

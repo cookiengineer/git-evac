@@ -10,13 +10,13 @@ func DispatchRoutes(profile *structs.Profile) bool {
 
 	// GET /api/backups
 	http.HandleFunc("/api/backups", func(response http.ResponseWriter, request *http.Request) {
-		profile.Refresh()
+		profile.RefreshBackups()
 		routes.Backups(profile, request, response)
 	})
 
 	// GET /api/repositories
 	http.HandleFunc("/api/repositories", func(response http.ResponseWriter, request *http.Request) {
-		profile.Refresh()
+		profile.RefreshRepositories()
 		routes.Repositories(profile, request, response)
 	})
 
