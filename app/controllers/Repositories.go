@@ -52,7 +52,21 @@ func (controller *Repositories) Enter() bool {
 						if ok2 == true {
 
 							go func() {
+
+								cancel_button := dialog.Query("dialog > footer > button[data-action=\"cancel\"]")
+								confirm_button := dialog.Query("dialog > footer > button[data-action=\"confirm\"]")
+
+								if confirm_button != nil {
+									confirm_button.Disable()
+								}
+
 								scheduler_table.Start()
+								scheduler_table.Wait()
+
+								if cancel_button != nil {
+									cancel_button.Disable()
+								}
+
 							}()
 
 						}
@@ -70,6 +84,7 @@ func (controller *Repositories) Enter() bool {
 
 						}
 
+						dialog.Disable()
 						dialog.Hide()
 
 					}
@@ -409,6 +424,8 @@ func (controller *Repositories) showDialog(selected map[string]string) {
 
 			dialog.SetTitle("Clone " + strconv.Itoa(len(actions_clone)) + " Repositories")
 			dialog.SetContent(interfaces.Component(&table))
+
+			dialog.Enable()
 			dialog.Show()
 
 		} else if len(actions_fix) > 0 {
@@ -417,6 +434,8 @@ func (controller *Repositories) showDialog(selected map[string]string) {
 
 			dialog.SetTitle("Fix " + strconv.Itoa(len(actions_fix)) + " Repositories")
 			dialog.SetContent(interfaces.Component(&table))
+
+			dialog.Enable()
 			dialog.Show()
 
 		} else if len(actions_commit) > 0 {
@@ -425,6 +444,8 @@ func (controller *Repositories) showDialog(selected map[string]string) {
 
 			dialog.SetTitle("Commit " + strconv.Itoa(len(actions_commit)) + " Repositories")
 			dialog.SetContent(interfaces.Component(&table))
+
+			dialog.Enable()
 			dialog.Show()
 
 		} else if len(actions_pull) > 0 {
@@ -433,6 +454,8 @@ func (controller *Repositories) showDialog(selected map[string]string) {
 
 			dialog.SetTitle("Pull " + strconv.Itoa(len(actions_pull)) + " Repositories")
 			dialog.SetContent(interfaces.Component(&table))
+
+			dialog.Enable()
 			dialog.Show()
 
 		} else if len(actions_push) > 0 {
@@ -441,6 +464,8 @@ func (controller *Repositories) showDialog(selected map[string]string) {
 
 			dialog.SetTitle("Push " + strconv.Itoa(len(actions_push)) + " Repositories")
 			dialog.SetContent(interfaces.Component(&table))
+
+			dialog.Enable()
 			dialog.Show()
 
 		}

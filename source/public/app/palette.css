@@ -1,6 +1,13 @@
 
 body {
-	--progress-active-background: #55aaee;
-	--progress-active-background-stripe: #405060;
-	--progress-invalid-background: #e25252;
+
+	--progress-disabled-color: #304050;
+	--progress-disabled-background: #304050;
+
+	--progress-active-color: #55aaee;
+	--progress-active-background: #304050;
+
+	--progress-invalid-color: #e25252;
+	--progress-invalid-background: #304050;
+
 }

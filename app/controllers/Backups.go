@@ -54,7 +54,21 @@ func (controller *Backups) Enter() bool {
 						if ok2 == true {
 
 							go func() {
+
+								cancel_button := dialog.Query("dialog > footer > button[data-action=\"cancel\"]")
+								confirm_button := dialog.Query("dialog > footer > button[data-action=\"confirm\"]")
+
+								if confirm_button != nil {
+									confirm_button.Disable()
+								}
+
 								scheduler_table.Start()
+								scheduler_table.Wait()
+
+								if cancel_button != nil {
+									cancel_button.Disable()
+								}
+
 							}()
 
 						}
@@ -72,6 +86,7 @@ func (controller *Backups) Enter() bool {
 
 						}
 
+						dialog.Disable()
 						dialog.Hide()
 
 					}
@@ -362,6 +377,8 @@ func (controller *Backups) showDialog(selected map[string]string) {
 
 			dialog.SetTitle("Backup " + strconv.Itoa(len(actions_backup)) + " Repositories")
 			dialog.SetContent(interfaces.Component(&table))
+
+			dialog.Enable()
 			dialog.Show()
 
 		} else if len(actions_restore) > 0 {
@@ -370,6 +387,8 @@ func (controller *Backups) showDialog(selected map[string]string) {
 
 			dialog.SetTitle("Restore " + strconv.Itoa(len(actions_restore)) + " Backups")
 			dialog.SetContent(interfaces.Component(&table))
+
+			dialog.Enable()
 			dialog.Show()
 
 		}

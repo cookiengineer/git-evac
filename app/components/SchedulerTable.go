@@ -179,17 +179,22 @@ func (table *SchedulerTable) Render() *dom.Element {
 						if progress != nil && ok == true {
 
 							if !progress.Start.IsZero() && !progress.Stop.IsZero() && progress.Finished == true {
+								// Started, stopped, and finished
 								html += "<td><progress data-finished=\"true\" min=\"0\" max=\"100\" value=\"100\">" + formatDuration(progress.Start, progress.Stop) + "</progress></td>"
 							} else if !progress.Start.IsZero() && !progress.Stop.IsZero() && progress.Finished == false {
+								// Started, stopped, and errored
 								html += "<td><progress data-finished=\"false\" min=\"0\" max=\"100\" value=\"100\">" + formatDuration(progress.Start, progress.Stop) + "</progress></td>"
 							} else if !progress.Start.IsZero() && progress.Stop.IsZero() {
-								html += "<td><progress min=\"0\" max=\"100\">" + formatDuration(progress.Start, progress.Stop) + "</progress></td>"
+								// Started
+								html += "<td><progress>" + formatDuration(progress.Start, progress.Stop) + "</progress></td>"
 							} else {
-								html += "<td><progress min=\"0\" max=\"100\" value=\"0\"></td>"
+								// Not started
+								html += "<td><progress disabled></progress></td>"
 							}
 
 						} else {
-							html += "<td><progress min=\"0\" max=\"100\" value=\"0\"></td>"
+							// Not started
+							html += "<td><progress disabled></progress></td>"
 						}
 
 						tr.SetInnerHTML(html)
@@ -296,6 +301,7 @@ func (table *SchedulerTable) Start() {
 
 	}
 
+	table.Render()
 	table.Scheduler.Start()
 
 	for action := range table.Scheduler.Results {
@@ -441,4 +447,8 @@ func (table *SchedulerTable) Unmount() bool {
 
 	return true
 
+}
+
+func (table *SchedulerTable) Wait() {
+	table.Scheduler.Wait()
 }
