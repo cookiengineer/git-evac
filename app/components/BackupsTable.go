@@ -213,8 +213,8 @@ func (table *BackupsTable) Render() *dom.Element {
 		if thead == nil && tbody == nil {
 
 			table.Component.Element.ReplaceChildren([]*dom.Element{
-				dom.Document.CreateElement("thead"),
-				dom.Document.CreateElement("tbody"),
+				document.CreateElement("thead"),
+				document.CreateElement("tbody"),
 			})
 
 			thead = table.Component.Element.QuerySelector("thead")
@@ -224,7 +224,7 @@ func (table *BackupsTable) Render() *dom.Element {
 
 		if thead != nil {
 
-			tr := dom.Document.CreateElement("tr")
+			tr := document.CreateElement("tr")
 
 			html := ""
 			html += "<th><input type=\"checkbox\" title=\"Toggle all repositories\" data-action=\"select\"/></th>"
@@ -309,7 +309,7 @@ func (table *BackupsTable) Render() *dom.Element {
 							repository = repository_owner.GetRepository(repository_name)
 						}
 
-						tr := dom.Document.CreateElement("tr")
+						tr := document.CreateElement("tr")
 						tr.SetAttribute("data-id", id)
 
 						if table.selected[id] == true {

@@ -288,7 +288,7 @@ func (controller *Repositories) Enter() bool {
 				if ok == true {
 
 					if action == "refresh" {
-						location.Location.Reload()
+						location.GetLocation().Reload()
 					}
 
 				}

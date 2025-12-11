@@ -29,7 +29,7 @@ func NewSchedulerTable(name string, schema map[string]string) SchedulerTable {
 
 	var table SchedulerTable
 
-	element := dom.Document.CreateElement("table")
+	element := document.CreateElement("table")
 	component := components.NewComponent(element)
 
 	table.Schema    = make(map[string]string)
@@ -112,8 +112,8 @@ func (table *SchedulerTable) Render() *dom.Element {
 		if thead == nil && tbody == nil {
 
 			table.Component.Element.ReplaceChildren([]*dom.Element{
-				dom.Document.CreateElement("thead"),
-				dom.Document.CreateElement("tbody"),
+				document.CreateElement("thead"),
+				document.CreateElement("tbody"),
 			})
 
 			thead = table.Component.Element.QuerySelector("thead")
@@ -123,7 +123,7 @@ func (table *SchedulerTable) Render() *dom.Element {
 
 		if thead != nil {
 
-			tr := dom.Document.CreateElement("tr")
+			tr := document.CreateElement("tr")
 
 			html := ""
 			html += "<th>Repository</th>"
@@ -167,7 +167,7 @@ func (table *SchedulerTable) Render() *dom.Element {
 
 					for _, repository := range filtered {
 
-						tr := dom.Document.CreateElement("tr")
+						tr := document.CreateElement("tr")
 						tr.SetAttribute("data-id", repository)
 
 						html := ""

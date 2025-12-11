@@ -251,7 +251,7 @@ func (controller *Backups) Enter() bool {
 				if ok == true {
 
 					if action == "refresh" {
-						location.Location.Reload()
+						location.GetLocation().Reload()
 					}
 
 				}
