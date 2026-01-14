@@ -2,13 +2,14 @@ package structs
 
 import utils_strings "git-evac/utils/strings"
 
-type OrganizationSettings struct {
+type SettingsOwner struct {
 	Name       string                      `json:"name"`
 	Identities map[string]IdentitySettings `json:"identities"`
 	Remotes    map[string]RemoteSettings   `json:"remotes"`
+	Services   map[string]ServiceSettings  `json:"services"`
 }
 
-func (settings *OrganizationSettings) IsValid() bool {
+func (settings *SettingsOwner) IsValid() bool {
 
 	valid_identities := true
 	valid_remotes := true
@@ -35,7 +36,7 @@ func (settings *OrganizationSettings) IsValid() bool {
 
 }
 
-func (settings *OrganizationSettings) GetIdentity(name string) *IdentitySettings {
+func (settings *SettingsOwner) GetIdentity(name string) *IdentitySettings {
 
 	var result *IdentitySettings = nil
 
@@ -53,7 +54,7 @@ func (settings *OrganizationSettings) GetIdentity(name string) *IdentitySettings
 
 }
 
-func (settings *OrganizationSettings) GetRemote(name string) *RemoteSettings {
+func (settings *SettingsOwner) GetRemote(name string) *RemoteSettings {
 
 	var result *RemoteSettings
 
@@ -71,7 +72,25 @@ func (settings *OrganizationSettings) GetRemote(name string) *RemoteSettings {
 
 }
 
-func (settings *OrganizationSettings) RemoveIdentity(name string) bool {
+func (settings *SettingsOwner) GetService(name string) *ServiceSettings {
+
+	var result *ServiceSettings
+
+	if name != "" {
+
+		tmp, ok := settings.Services[name]
+
+		if ok == true {
+			result = &tmp
+		}
+
+	}
+
+	return result
+
+}
+
+func (settings *SettingsOwner) RemoveIdentity(name string) bool {
 
 	var result bool
 
@@ -90,7 +109,7 @@ func (settings *OrganizationSettings) RemoveIdentity(name string) bool {
 
 }
 
-func (settings *OrganizationSettings) RemoveRemote(name string) bool {
+func (settings *SettingsOwner) RemoveRemote(name string) bool {
 
 	var result bool
 
@@ -109,7 +128,26 @@ func (settings *OrganizationSettings) RemoveRemote(name string) bool {
 
 }
 
-func (settings *OrganizationSettings) SetIdentity(value IdentitySettings) bool {
+func (settings *SettingsOwner) RemoveService(name string) bool {
+
+	var result bool
+
+	if name != "" {
+
+		_, ok := settings.Services[name]
+
+		if ok == true {
+			delete(settings.Services, name)
+			result = true
+		}
+
+	}
+
+	return result
+
+}
+
+func (settings *SettingsOwner) SetIdentity(value IdentitySettings) bool {
 
 	var result bool
 
@@ -122,12 +160,25 @@ func (settings *OrganizationSettings) SetIdentity(value IdentitySettings) bool {
 
 }
 
-func (settings *OrganizationSettings) SetRemote(value RemoteSettings) bool {
+func (settings *SettingsOwner) SetRemote(value RemoteSettings) bool {
 
 	var result bool
 
 	if value.Name != "" {
 		settings.Remotes[value.Name] = value
+		result = true
+	}
+
+	return result
+
+}
+
+func (settings *SettingsOwner) SetService(value ServiceSettings) bool {
+
+	var result bool
+
+	if value.Name != "" {
+		settings.Services[value.Name] = value
 		result = true
 	}
 

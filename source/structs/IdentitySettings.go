@@ -6,10 +6,8 @@ import "path/filepath"
 import "strings"
 
 type IdentitySettings struct {
-
 	Name   string `json:"name"`
-	SSHKey string `json:"ssh_key"`
-
+	SSHKey string `json:"ssh-key"`
 	Git struct {
 		Core struct {
 			// git config --file .git/config core.sshCommand "ssh -i \"/home/cookiengineer/.ssh/identity.key\" -F /dev/null"

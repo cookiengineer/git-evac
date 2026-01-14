@@ -80,7 +80,7 @@ func Dispatch(profile *structs.Profile) bool {
 		if request.Method == http.MethodGet {
 
 			payload, _ := json.MarshalIndent(schemas.Settings{
-				Settings: profile.Settings,
+				Settings: *profile.Settings,
 			}, "", "\t")
 
 			profile.Console.Log("> GET /api/settings:" + http.StatusText(http.StatusOK))
@@ -104,14 +104,14 @@ func Dispatch(profile *structs.Profile) bool {
 					profile.Settings.Backup = schema.Settings.Backup
 					profile.Settings.Folder = schema.Settings.Folder
 					profile.Settings.Port = schema.Settings.Port
-					profile.Settings.Organizations = schema.Settings.Organizations
+					profile.Settings.Owners = schema.Settings.Owners
 
 					stat2, err2 := os.Stat(profile.Settings.Folder)
 
 					if err2 == nil && stat2.IsDir() {
 
 						payload, _ := json.MarshalIndent(schemas.Settings{
-							Settings: profile.Settings,
+							Settings: *profile.Settings,
 						}, "", "\t")
 
 						err3 := os.WriteFile(profile.Settings.Folder+"/git-evac.json", payload, 0666)

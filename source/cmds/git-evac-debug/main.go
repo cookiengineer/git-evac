@@ -2,6 +2,7 @@ package main
 
 import "git-evac/server"
 import "git-evac/structs"
+import "encoding/json"
 import "os"
 import os_user "os/user"
 import "strconv"
@@ -9,10 +10,9 @@ import "strings"
 
 func main() {
 
-	var backup string = ""
-	var folder string = ""
-	var port uint16 = 3000
+	var config string = ""
 
+	user, _ := os_user.Current()
 	console := structs.NewConsole(os.Stderr, os.Stdout, 0)
 
 	if len(os.Args) >= 2 {
@@ -21,7 +21,7 @@ func main() {
 
 		for _, parameter := range parameters {
 
-			if strings.HasPrefix(parameter, "--folder=") {
+			if strings.HasPrefix(parameter, "--config=") {
 
 				tmp := strings.TrimSpace(parameter[9:])
 
@@ -32,36 +32,14 @@ func main() {
 				}
 
 				if strings.HasPrefix(tmp, "~/") {
-
-					user, err := os_user.Current()
-
-					if err == nil {
-						tmp = user.HomeDir + "/" + tmp[2:]
-					}
-
+					tmp = user.HomeDir + "/" + tmp[2:]
 				} else if strings.Contains(tmp, "~") {
-					console.Error("Malformed Folder Parameter: " + tmp)
+					console.Error("Malformed Config Parameter: \"" + tmp + "\"")
 					tmp = ""
 				}
 
-				if tmp != "" {
-
-					stat, err := os.Stat(tmp)
-
-					if err == nil && stat.IsDir() {
-						folder = tmp
-					}
-
-				}
-
-			} else if strings.HasPrefix(parameter, "--port=") {
-
-				tmp := strings.TrimSpace(parameter[7:])
-
-				num, err := strconv.ParseUint(tmp, 10, 16)
-
-				if err == nil && num > 0 && num < 65535 {
-					port = uint16(num)
+				if tmp != "" && strings.HasSuffix(tmp, ".json") {
+					config = tmp
 				}
 
 			}
@@ -70,37 +48,44 @@ func main() {
 
 	}
 
-	if backup == "" {
-
-		user, err := os_user.Current()
-
-		if err == nil {
-			backup = user.HomeDir + "/Backup"
-		}
-
+	if config == "" {
+		config = user.HomeDir + "/.config/git-evac/git-evac.json"
 	}
 
-	if folder == "" {
 
-		user, err := os_user.Current()
+	if config != "" {
 
-		if err == nil {
-			folder = user.HomeDir + "/Software"
+		settings := structs.NewSettings(user.HomeDir + "/Backup", user.HomeDir + "/Software", 3000)
+		buffer1, err1 := os.ReadFile(config)
+
+		valid_config := false
+
+		if err1 == nil {
+
+			err2 := json.Unmarshal(buffer1, settings)
+
+			if err2 == nil {
+				valid_config = true
+			} else {
+				console.Error(err2.Error())
+			}
+
 		}
-
-	}
-
-	if folder != "" {
 
 		fsys := os.DirFS("public")
-		profile := structs.NewProfile(console, backup, folder, port)
+
+		profile := structs.NewProfile(console, settings)
 		profile.Filesystem = &fsys
 
 		console.Clear("")
 		console.Group("git-evac-debug: Command-Line Arguments")
-		console.Log("> Backup: " + backup)
-		console.Log("> Folder: " + folder)
-		console.Log("> Port:   " + strconv.FormatUint(uint64(port), 10))
+
+		if valid_config == true {
+			console.Log("> Config: " + config)
+		} else {
+			console.Warn("> Invalid Config: " + config)
+		}
+
 		console.GroupEnd("git-evac-debug")
 
 		profile.Refresh()
@@ -110,7 +95,7 @@ func main() {
 		server.DispatchHotReload(profile)
 
 		if server.Serve(profile) == false {
-			console.Error("Port " + strconv.FormatUint(uint64(port), 10) + " is already in use.")
+			console.Error("Port " + strconv.FormatUint(uint64(profile.Settings.Port), 10) + " is already in use.")
 			os.Exit(1)
 		} else {
 			os.Exit(0)
