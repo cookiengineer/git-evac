@@ -41,7 +41,7 @@
 		</header>
 		<main data-view="settings">
 			<section data-name="settings" data-label="Settings" data-path="/settings.html" data-state="active">
-				<article id="settings-basic">
+				<article data-name="settings-basic">
 					<h3 data-type="settings">Settings</h3>
 					<fieldset>
 						<div>
@@ -58,6 +58,100 @@
 						</div>
 					</fieldset>
 				</article>
+				<article data-type="owner" data-name="tholian-network">
+					<header>
+						<div></div>
+						<div><h4 data-type="organization">tholian-network</h4></div>
+						<div><button data-action="remove-owner">Remove</button></div>
+					</header>
+					<section data-type="identities">
+						<header>
+							<div></div>
+							<div><h5>Identities</h5></div>
+							<div><button data-action="add-identity">Add Identity</button></div>
+						</header>
+						<fieldset data-type="identity" data-name="cookiengineer">
+							<legend>cookiengineer</legend>
+							<button data-action="remove-identity">Remove</button>
+							<div>
+								<label for="identities-1-name" data-type="name">Name</label>
+								<input id="identities-1-name" type="text" value="cookiengineer"/>
+							</div>
+							<div>
+								<label for="identities-1-sshkey" data-type="key">SSH Key</label>
+								<input id="identities-1-sshkey" type="file" value="~/.ssh/id_rsa"/>
+							</div>
+							<div>
+								<label for="identities-1-git-user-name" data-type="name">Git User Name</label>
+								<input id="identities-1-git-user-name" type="text" value="Cookie Engineer"/>
+							</div>
+							<div>
+								<label for="identities-1-git-user-email" data-type="email">Git User E-Mail</label>
+								<input id="identities-1-git-user-email" type="email" value="cookiengineer@protonmail.ch"/>
+							</div>
+						</fieldset>
+					</section>
+					<section data-type="remotes">
+						<header>
+							<div></div>
+							<div><h5>Remotes</h5></div>
+							<div><button data-action="add-remote">Add Remote</button></div>
+						</header>
+						<fieldset data-type="remote" data-name="origin">
+							<legend>origin</legend>
+							<button data-action="remove-remote">Remove</button>
+							<div>
+								<label for="remotes-origin-name" data-type="name">Name</label>
+								<input id="remotes-origin-name" type="text" value="origin"/>
+							</div>
+							<div>
+								<label for="remotes-origin-url" data-type="url">URL</label>
+								<input id="remotes-origin-url" type="text" value="ssh://git@homeserver:3001/{{owner}}/{{repo}}.git"/>
+							</div>
+							<div>
+								<label for="remotes-origin-type" data-type="type">Type</label>
+								<select id="remotes-origin-type">
+									<option value="github">github</option>
+									<option value="gitlab">gitlab</option>
+									<option value="gitea">gitea</option>
+									<option value="gogs">gogs</option>
+								</select>
+							</div>
+						</fieldset>
+					</section>
+					<section data-type="services">
+						<header>
+							<div></div>
+							<div><h5>Services</h5></div>
+							<div><button data-action="add-service">Add Service</button></div>
+						</header>
+						<fieldset data-type="service" data-name="origin">
+							<legend>origin</legend>
+							<button data-action="remove-service">Remove</button>
+							<div>
+								<label for="services-origin-name" data-type="name">Name</label>
+								<input id="services-origin-name" type="text" value="origin"/>
+							</div>
+							<div>
+								<label for="services-origin-url" data-type="url">API URL</label>
+								<input id="services-origin-url" type="text" value="http://homeserver:3000/api"/>
+							</div>
+							<div>
+								<label for="services-origin-token" data-type="token">Token</label>
+								<input id="services-origin-token" type="text" value="e706f48f75981ac34efc5ff01f8c2ff2a35ddcd9"/>
+							</div>
+							<div>
+								<label for="services-origin-type" data-type="type">Type</label>
+								<select id="services-origin-type">
+									<option value="github">github</option>
+									<option value="gitlab">gitlab</option>
+									<option value="gitea">gitea</option>
+									<option value="gogs">gogs</option>
+								</select>
+							</div>
+						</fieldset>
+					</section>
+				</article>
 			</section>
 		</main>
 		<footer>
@@ -70,6 +164,9 @@
 				<article>
 					<button data-action="close"></button>
 					<h3>Create Organization Settings</h3>
+
+					// TODO: This should just be the name field
+					// Afterwards, support only inline editing
 					<fieldset>
 						<div>
 							<label for="organization-name" data-type="name">Name</label>

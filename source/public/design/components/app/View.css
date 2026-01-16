@@ -1,5 +1,5 @@
 
-main section {
+main > section {
 	position: absolute;
 	top: 0px;
 	right: 0px;
@@ -13,29 +13,29 @@ main section {
 	z-index: 0;
 }
 
-main section[data-state="active"] {
+main > section[data-state="active"] {
 	pointer-events: all;
 	transition: opacity 250ms ease-out;
 	opacity: 1;
 	z-index: 1;
 }
 
-main section,
-main section[data-layout="flow"] {
+main > section,
+main > section[data-layout="flow"] {
 	display: block flow-root;
 	flex-direction: unset;
 	align-items: unset;
 	justify-content: unset;
 }
 
-main section[data-layout="flex"] {
+main > section[data-layout="flex"] {
 	display: block flex;
 	flex-direction: column;
 	align-items: center;
 	justify-content: start;
 }
 
-main section[data-layout="grid"] {
+main > section[data-layout="grid"] {
 	display: block grid;
 	flex-direction: unset;
 	align-items: unset;
