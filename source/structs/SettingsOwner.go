@@ -1,12 +1,13 @@
 package structs
 
+import "git-evac/types"
 import utils_strings "git-evac/utils/strings"
 
 type SettingsOwner struct {
-	Name       string                      `json:"name"`
-	Identities map[string]IdentitySettings `json:"identities"`
-	Remotes    map[string]RemoteSettings   `json:"remotes"`
-	Services   map[string]ServiceSettings  `json:"services"`
+	Name       string                    `json:"name"`
+	Identities map[string]types.Identity `json:"identities"`
+	Remotes    map[string]types.Remote   `json:"remotes"`
+	Services   map[string]types.Service  `json:"services"`
 }
 
 func (settings *SettingsOwner) IsValid() bool {
@@ -36,9 +37,9 @@ func (settings *SettingsOwner) IsValid() bool {
 
 }
 
-func (settings *SettingsOwner) GetIdentity(name string) *IdentitySettings {
+func (settings *SettingsOwner) GetIdentity(name string) *types.Identity {
 
-	var result *IdentitySettings = nil
+	var result *types.Identity = nil
 
 	if name != "" {
 
@@ -54,9 +55,9 @@ func (settings *SettingsOwner) GetIdentity(name string) *IdentitySettings {
 
 }
 
-func (settings *SettingsOwner) GetRemote(name string) *RemoteSettings {
+func (settings *SettingsOwner) GetRemote(name string) *types.Remote {
 
-	var result *RemoteSettings
+	var result *types.Remote = nil
 
 	if name != "" {
 
@@ -72,9 +73,9 @@ func (settings *SettingsOwner) GetRemote(name string) *RemoteSettings {
 
 }
 
-func (settings *SettingsOwner) GetService(name string) *ServiceSettings {
+func (settings *SettingsOwner) GetService(name string) *types.Service {
 
-	var result *ServiceSettings
+	var result *types.Service = nil
 
 	if name != "" {
 
@@ -147,7 +148,7 @@ func (settings *SettingsOwner) RemoveService(name string) bool {
 
 }
 
-func (settings *SettingsOwner) SetIdentity(value IdentitySettings) bool {
+func (settings *SettingsOwner) SetIdentity(value types.Identity) bool {
 
 	var result bool
 
@@ -160,7 +161,7 @@ func (settings *SettingsOwner) SetIdentity(value IdentitySettings) bool {
 
 }
 
-func (settings *SettingsOwner) SetRemote(value RemoteSettings) bool {
+func (settings *SettingsOwner) SetRemote(value types.Remote) bool {
 
 	var result bool
 
@@ -173,7 +174,7 @@ func (settings *SettingsOwner) SetRemote(value RemoteSettings) bool {
 
 }
 
-func (settings *SettingsOwner) SetService(value ServiceSettings) bool {
+func (settings *SettingsOwner) SetService(value types.Service) bool {
 
 	var result bool
 

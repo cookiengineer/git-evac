@@ -1,9 +1,11 @@
 package structs
 
+import "git-evac/types"
+
 type RepositoryOwner struct {
-	Name         string                 `json:"name"`
-	Folder       string                 `json:"folder"`
-	Repositories map[string]*Repository `json:"repositories"`
+	Name         string                       `json:"name"`
+	Folder       string                       `json:"folder"`
+	Repositories map[string]*types.Repository `json:"repositories"`
 }
 
 func NewRepositoryOwner(name string, folder string) RepositoryOwner {
@@ -12,7 +14,7 @@ func NewRepositoryOwner(name string, folder string) RepositoryOwner {
 
 	owner.Name = name
 	owner.Folder = folder
-	owner.Repositories = make(map[string]*Repository)
+	owner.Repositories = make(map[string]*types.Repository)
 
 	return owner
 
@@ -24,7 +26,7 @@ func (owner *RepositoryOwner) AddRepository(name string) bool {
 
 	if ok == false {
 
-		repo := NewRepository(name, owner.Folder + "/" + name + "/.git")
+		repo := types.NewRepository(name, owner.Folder + "/" + name + "/.git")
 		owner.Repositories[name] = &repo
 
 		return true
@@ -35,9 +37,9 @@ func (owner *RepositoryOwner) AddRepository(name string) bool {
 
 }
 
-func (owner *RepositoryOwner) GetRepository(name string) *Repository {
+func (owner *RepositoryOwner) GetRepository(name string) *types.Repository {
 
-	var result *Repository
+	var result *types.Repository = nil
 
 	tmp, ok := owner.Repositories[name]
 

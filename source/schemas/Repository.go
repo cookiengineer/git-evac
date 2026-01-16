@@ -1,7 +1,7 @@
 package schemas
 
-import "git-evac/structs"
+import "git-evac/types"
 
 type Repository struct {
-	Repository structs.Repository `json:"repository"`
+	Repository types.Repository `json:"repository"`
 }

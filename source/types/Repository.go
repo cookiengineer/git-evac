@@ -1,4 +1,4 @@
-package structs
+package types
 
 import "git-evac/git"
 import "os"
@@ -35,6 +35,27 @@ func NewRepository(name string, folder string) Repository {
 	repo.Status()
 
 	return repo
+
+}
+
+func (repo *Repository) Init() bool {
+
+	var result bool
+
+	// TODO: Create repo.Folder
+	// TODO: git init
+
+	return result
+
+}
+
+func (repo *Repository) AddRemote(name string, remote Remote) bool {
+
+	var result bool
+
+	// TODO: git remote add ...
+
+	return result
 
 }
 

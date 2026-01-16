@@ -1,4 +1,4 @@
-package structs
+package types
 
 import utils_strings "git-evac/utils/strings"
 import "strings"

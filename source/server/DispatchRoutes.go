@@ -16,8 +16,20 @@ func DispatchRoutes(profile *structs.Profile) bool {
 
 	// GET /api/repositories
 	http.HandleFunc("/api/repositories", func(response http.ResponseWriter, request *http.Request) {
-		profile.RefreshRepositories()
+
+		profile.RefreshLocalRepositories()
+		profile.RefreshServiceRepositories()
+
+		for _, owner := range profile.Repositories {
+
+			for _, repo := range owner.Repositories {
+				repo.Status()
+			}
+
+		}
+
 		routes.Repositories(profile, request, response)
+
 	})
 
 	// GET /api/backup || POST /api/backup

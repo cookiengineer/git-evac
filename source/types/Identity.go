@@ -1,11 +1,11 @@
-package structs
+package types
 
 import utils_paths   "git-evac/utils/paths"
 import utils_strings "git-evac/utils/strings"
 import "path/filepath"
 import "strings"
 
-type IdentitySettings struct {
+type Identity struct {
 	Name   string `json:"name"`
 	SSHKey string `json:"ssh-key"`
 	Git struct {
@@ -23,9 +23,9 @@ type IdentitySettings struct {
 
 }
 
-func NewIdentitySettings(name string) IdentitySettings {
+func NewIdentity(name string) Identity {
 
-	var settings IdentitySettings
+	var settings Identity
 
 	settings.Name = name
 	settings.SSHKey = ""
@@ -37,7 +37,7 @@ func NewIdentitySettings(name string) IdentitySettings {
 
 }
 
-func (settings *IdentitySettings) IsValid() bool {
+func (settings *Identity) IsValid() bool {
 
 	var result bool
 

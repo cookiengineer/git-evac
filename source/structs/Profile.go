@@ -54,7 +54,18 @@ func (profile *Profile) Update(settings Settings) {
 }
 
 func (profile *Profile) Refresh() {
+
 	profile.RefreshBackups()
-	profile.RefreshRepositories()
+	profile.RefreshLocalRepositories()
+	profile.RefreshServiceRepositories()
+
+	for _, owner := range profile.Repositories {
+
+		for _, repo := range owner.Repositories {
+			repo.Status()
+		}
+
+	}
+
 }
 

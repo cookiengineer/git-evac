@@ -52,7 +52,6 @@ func main() {
 		config = user.HomeDir + "/.config/git-evac/git-evac.json"
 	}
 
-
 	if config != "" {
 
 		settings := structs.NewSettings(user.HomeDir + "/Backup", user.HomeDir + "/Software", 3000)

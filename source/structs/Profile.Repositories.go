@@ -1,14 +1,16 @@
 package structs
 
+import "git-evac/types"
+import services_gogs "git-evac/services/gogs"
 import "os"
 
-func (profile *Profile) RefreshRepositories() {
+func (profile *Profile) RefreshLocalRepositories() {
 
 	stat, err := os.Stat(profile.Settings.Folder)
 
 	if err == nil && stat.IsDir() {
 
-		profile.Console.Group("Refresh Repositories")
+		profile.Console.Group("Refresh Local Repositories")
 
 		info_owners, err_owners := os.ReadDir(profile.Settings.Folder)
 
@@ -38,9 +40,11 @@ func (profile *Profile) RefreshRepositories() {
 									}
 
 									if profile.HasRepository(owner_name, repository_name) == false {
+
+										profile.Console.Log("> Add " + owner_name + "/" + repository_name)
 										owner := profile.GetRepositoryOwner(owner_name)
 										owner.AddRepository(repository_name)
-										profile.Console.Log("> " + owner_name + "/" + repository_name)
+
 									}
 
 								}
@@ -57,18 +61,89 @@ func (profile *Profile) RefreshRepositories() {
 
 		}
 
-		profile.Console.GroupEnd("Refresh Repositories")
+		profile.Console.GroupEnd("Refresh Local Repositories")
 
 	} else {
 		profile.Console.Warn("No Repositories in Folder \"" + profile.Settings.Folder + "\"")
 	}
 
-	for _, owner := range profile.Repositories {
+}
 
-		for _, repo := range owner.Repositories {
-			repo.Status()
+func (profile *Profile) RefreshServiceRepositories() {
+
+	stat, err := os.Stat(profile.Settings.Folder)
+
+	if err == nil && stat.IsDir() {
+
+		profile.Console.Group("Refresh Service Repositories")
+
+		info_owners, err_owners := os.ReadDir(profile.Settings.Folder)
+
+		if err_owners == nil {
+
+			for _, info_owner := range info_owners {
+
+				if info_owner.IsDir() == true {
+
+					owner_name := info_owner.Name()
+
+					_, ok1 := profile.Settings.Owners[owner_name]
+
+					if ok1 == true {
+
+						for remote_name, service := range profile.Settings.Owners[owner_name].Services {
+
+							switch service.Type {
+							case "github":
+								// TODO
+							case "gitlab":
+								// TODO
+							case "gitea":
+								// TODO
+							case "gogs":
+
+								remote_repositories := services_gogs.FetchRepositories(service.URL, owner_name, service.Token, profile.Settings.Folder + "/" + owner_name)
+
+								for _, repository := range remote_repositories {
+
+									repository_name := repository.Name
+
+									if profile.HasRepository(owner_name, repository_name) == false {
+
+										profile.Console.Log("> Init " + owner_name + "/" + repository_name)
+
+										owner := profile.GetRepositoryOwner(owner_name)
+										owner.AddRepository(repository_name)
+
+										repo := owner.GetRepository(repository_name)
+										repo.Init()
+
+										remote, ok2 := profile.Settings.Owners[owner_name].Remotes[remote_name]
+
+										if ok2 == true {
+											repo.AddRemote(remote_name, remote)
+										}
+
+									}
+
+								}
+
+							}
+
+						}
+
+					}
+
+				}
+
+			}
+
 		}
 
+		profile.Console.GroupEnd("Refresh Service Repositories")
+
+	} else {
+		profile.Console.Warn("No Repositories in Folder \"" + profile.Settings.Folder + "\"")
 	}
 
 }
@@ -92,7 +167,7 @@ func (profile *Profile) AddRepositoryOwner(owner_name string, owner_folder strin
 
 func (profile *Profile) GetRepositoryOwner(owner_name string) *RepositoryOwner {
 
-	var result *RepositoryOwner
+	var result *RepositoryOwner = nil
 
 	owner, ok := profile.Repositories[owner_name]
 
@@ -104,9 +179,9 @@ func (profile *Profile) GetRepositoryOwner(owner_name string) *RepositoryOwner {
 
 }
 
-func (profile *Profile) GetRepository(owner_name string, repo_name string) *Repository {
+func (profile *Profile) GetRepository(owner_name string, repo_name string) *types.Repository {
 
-	var result *Repository
+	var result *types.Repository = nil
 
 	owner, ok1 := profile.Repositories[owner_name]
 

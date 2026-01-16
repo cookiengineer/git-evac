@@ -1,17 +1,17 @@
-package structs
+package types
 
 import utils_strings "git-evac/utils/strings"
 
-type ServiceSettings struct {
+type Service struct {
 	Name  string `json:"name"`
 	URL   string `json:"url"`
 	Type  string `json:"type"`
 	Token string `json:"token"`
 }
 
-func NewServiceSettings(name string) ServiceSettings {
+func NewService(name string) Service {
 
-	var settings ServiceSettings
+	var settings Service
 
 	settings.Name = name
 	settings.URL = ""
@@ -22,7 +22,7 @@ func NewServiceSettings(name string) ServiceSettings {
 
 }
 
-func (settings *ServiceSettings) IsValid() bool {
+func (settings *Service) IsValid() bool {
 
 	if utils_strings.IsName(settings.Name) {
 
