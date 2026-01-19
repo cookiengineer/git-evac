@@ -8,6 +8,8 @@
       step if the remotes don't match the schema.
 - [ ] Implement a `FixRemote` action for remotes which are not matching the
       settings schema.
+- [ ] Find out whether `bitbucket` support makes sense.
+- [ ] Find out whether `redmine` support makes sense.
 
 ## Backend
 
@@ -19,9 +21,6 @@
 
 - [ ] Implement `server/DispatchRoutes.go` route `POST /api/commit`
 - [ ] Implement `server/DispatchRoutes.go` route `GET /api/diff`
-- [ ] Implement `services/github/FetchRepositories.go`
-- [ ] Implement `services/gitlab/FetchRepositories.go`
-- [ ] Implement `services/gitea/FetchRepositories.go`
 
 ### server/routes
 

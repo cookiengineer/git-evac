@@ -1,4 +1,4 @@
-package gogs
+package gitea
 
 import "git-evac/types"
 import "fmt"
@@ -51,3 +51,4 @@ func FetchRepositories(api_url string, owner string, token string, parent_folder
 	return result
 
 }
+

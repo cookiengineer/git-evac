@@ -1,8 +1,10 @@
 package structs
 
 import "git-evac/types"
+import services_forgejo "git-evac/services/forgejo"
 import services_github "git-evac/services/github"
-// import services_gitlab "git-evac/services/gitlab"
+import services_gitlab "git-evac/services/gitlab"
+import services_gitea "git-evac/services/gitea"
 import services_gogs "git-evac/services/gogs"
 import "os"
 
@@ -95,50 +97,22 @@ func (profile *Profile) RefreshServiceRepositories() {
 
 						for remote_name, service := range profile.Settings.Owners[owner_name].Services {
 
+							remote_repositories := make([]*types.Repository, 0)
+
 							switch service.Type {
+							case "forgejo":
+								remote_repositories = services_forgejo.FetchRepositories(service.URL, owner_name, service.Token, profile.Settings.Folder + "/" + owner_name)
 							case "github":
-
-								remote_repositories := services_github.FetchRepositories(service.URL, owner_name, service.Token, profile.Settings.Folder + "/" + owner_name)
-
-								for _, repository := range remote_repositories {
-
-									repository_name := repository.Name
-
-									if profile.HasRepository(owner_name, repository_name) == false {
-
-										profile.Console.Log("> Init " + owner_name + "/" + repository_name)
-
-										owner := profile.GetRepositoryOwner(owner_name)
-										owner.AddRepository(repository_name)
-
-										remote, ok2 := profile.Settings.Owners[owner_name].Remotes[remote_name]
-										repo := owner.GetRepository(repository_name)
-
-										if repo != nil && ok2 == true {
-
-											// Use remote as schema
-											repo.AddRemote(owner_name, repository_name, types.Remote{
-												Name: remote.Name,
-												URL:  remote.URL,
-											})
-
-										}
-
-									}
-
-								}
-
+								remote_repositories = services_github.FetchRepositories(service.URL, owner_name, service.Token, profile.Settings.Folder + "/" + owner_name)
 							case "gitlab":
-
-								// TODO: Support gitlab API
-
+								remote_repositories = services_gitlab.FetchRepositories(service.URL, owner_name, service.Token, profile.Settings.Folder + "/" + owner_name)
 							case "gitea":
-
-								// TODO: Support gitea API
-
+								remote_repositories = services_gitea.FetchRepositories(service.URL, owner_name, service.Token, profile.Settings.Folder + "/" + owner_name)
 							case "gogs":
+								remote_repositories = services_gogs.FetchRepositories(service.URL, owner_name, service.Token, profile.Settings.Folder + "/" + owner_name)
+							}
 
-								remote_repositories := services_gogs.FetchRepositories(service.URL, owner_name, service.Token, profile.Settings.Folder + "/" + owner_name)
+							if len(remote_repositories) > 0 {
 
 								for _, repository := range remote_repositories {
 

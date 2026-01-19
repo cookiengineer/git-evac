@@ -77,6 +77,18 @@ queued manner once confirmed in a preceding overview dialog.
   it is renamed to `<repository>.bak` to prevent loss of changes.
 
 
+## Services
+
+These are the supported API endpoints which are used to get an overview of
+available and hosted remote repositories:
+
+- [x] Codeberg / Forgejo API v1 support (use `https://codeberg.org` or `https://forgejo.example.com`)
+- [x] Gitea API v1 support (use `https://gitea.example.com`)
+- [x] GitHub API support (use `https://api.github.com` or `https://github.example.com`)
+- [x] GitLab API v4 support (use `https://gitlab.com` or `https://gitlab.example.com`)
+- [x] Gogs API v1 support (use `https://gogs.example.com`)
+
+
 ## Work-in-Progress
 
 Currently, this tool is highly experimental. There's a separate [TODO.md](/docs/TODO.md)

@@ -1,4 +1,4 @@
-package gogs
+package gitlab
 
 import "git-evac/types"
 import "fmt"
@@ -9,8 +9,8 @@ func FetchRepositories(api_url string, owner string, token string, parent_folder
 
 	result := make([]*types.Repository, 0)
 
-	orgas_url := fmt.Sprintf("%s/api/v1/orgs/%s/repos?limit=0&sort=updated&order=desc", api_url, owner)
-	users_url := fmt.Sprintf("%s/api/v1/users/%s/repos?limit=0&sort=updated&order=desc", api_url, owner)
+	orgas_url := fmt.Sprintf("%s/api/v4/groups/%s/projects?per_page=100&order_by=last_activity_at&sort=desc", api_url, owner)
+	users_url := fmt.Sprintf("%s/api/v4/users/%s/projects?per_page=100&order_by=last_activity_at&sort=desc", api_url, owner)
 
 	orga_repositories, orga_status, orga_err := fetchAPI(orgas_url, token)
 
@@ -18,7 +18,7 @@ func FetchRepositories(api_url string, owner string, token string, parent_folder
 
 		for _, remote_repository := range orga_repositories {
 
-			if remote_repository.Name != "" && strings.HasPrefix(remote_repository.FullName, owner + "/") {
+			if remote_repository.Name != "" && strings.HasPrefix(remote_repository.PathWithNamespace, owner + "/") {
 
 				repository := types.NewRepository(remote_repository.Name, parent_folder + "/" + remote_repository.Name + "/.git")
 				result = append(result, repository)
@@ -35,7 +35,7 @@ func FetchRepositories(api_url string, owner string, token string, parent_folder
 
 			for _, remote_repository := range user_repositories {
 
-				if remote_repository.Name != "" && strings.HasPrefix(remote_repository.FullName, owner + "/") {
+				if remote_repository.Name != "" && strings.HasPrefix(remote_repository.PathWithNamespace, owner + "/") {
 
 					repository := types.NewRepository(remote_repository.Name, parent_folder + "/" + remote_repository.Name + "/.git")
 					result = append(result, repository)
@@ -51,3 +51,4 @@ func FetchRepositories(api_url string, owner string, token string, parent_folder
 	return result
 
 }
+

@@ -17,8 +17,7 @@ type Repository struct {
 	Fork          bool      `json:"fork"`
 	Private       bool      `json:"private"`
 
-	HTMLURL       string    `json:"html_url"`
-	CloneURL      string    `json:"clone_url"`
+	WebURL        string    `json:"html_url"`
 	SSHURL        string    `json:"ssh_url"`
 
 	Permissions struct {
