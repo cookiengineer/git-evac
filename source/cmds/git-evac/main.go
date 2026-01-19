@@ -4,6 +4,7 @@ import "git-evac/public"
 import "git-evac/server"
 import "git-evac/structs"
 import "git-evac/webview"
+import "encoding/json"
 import "io/fs"
 import "os"
 import "os/signal"
@@ -15,21 +16,18 @@ import "time"
 
 func main() {
 
-	var backup string = ""
-	var folder string = ""
-	var port uint16 = 3000
+	var config string = ""
 
+	user, _ := os_user.Current()
 	console := structs.NewConsole(os.Stdout, os.Stderr, 0)
 
 	if len(os.Args) >= 2 {
 
 		parameters := os.Args[1:]
 
-		for p := 0; p < len(parameters); p++ {
+		for _, parameter := range parameters {
 
-			parameter := parameters[p]
-
-			if strings.HasPrefix(parameter, "--backup=") {
+			if strings.HasPrefix(parameter, "--config=") {
 
 				tmp := strings.TrimSpace(parameter[9:])
 
@@ -40,69 +38,14 @@ func main() {
 				}
 
 				if strings.HasPrefix(tmp, "~/") {
-
-					user, err := os_user.Current()
-
-					if err == nil {
-						tmp = user.HomeDir + "/" + tmp[2:]
-					}
-
+					tmp = user.HomeDir + "/" + tmp[2:]
 				} else if strings.Contains(tmp, "~") {
-					console.Error("Malformed Backup Parameter: " + tmp)
+					console.Error("Malformed Config Parameter: \"" + tmp + "\"")
 					tmp = ""
 				}
 
-				if tmp != "" {
-
-					stat, err := os.Stat(tmp)
-
-					if err == nil && stat.IsDir() {
-						backup = tmp
-					}
-
-				}
-
-			} else if strings.HasPrefix(parameter, "--folder=") {
-
-				tmp := strings.TrimSpace(parameter[9:])
-
-				if strings.HasPrefix(tmp, "\"") && strings.HasSuffix(tmp, "\"") {
-					tmp = strings.TrimSpace(tmp[1 : len(tmp)-1])
-				} else {
-					tmp = strings.TrimSpace(tmp)
-				}
-
-				if strings.HasPrefix(tmp, "~/") {
-
-					user, err := os_user.Current()
-
-					if err == nil {
-						tmp = user.HomeDir + "/" + tmp[2:]
-					}
-
-				} else if strings.Contains(tmp, "~") {
-					console.Error("Malformed Folder Parameter: " + tmp)
-					tmp = ""
-				}
-
-				if tmp != "" {
-
-					stat, err := os.Stat(tmp)
-
-					if err == nil && stat.IsDir() {
-						folder = tmp
-					}
-
-				}
-
-			} else if strings.HasPrefix(parameter, "--port=") {
-
-				tmp := strings.TrimSpace(parameter[7:])
-
-				num, err := strconv.ParseUint(tmp, 10, 16)
-
-				if err == nil && num > 0 && num < 65535 {
-					port = uint16(num)
+				if tmp != "" && strings.HasSuffix(tmp, ".json") {
+					config = tmp
 				}
 
 			}
@@ -111,31 +54,43 @@ func main() {
 
 	}
 
-	user, err := os_user.Current()
-
-	if err == nil {
-
-		if backup == "" {
-			backup = user.HomeDir + "/Backup"
-		}
-
-		if folder == "" {
-			folder = user.HomeDir + "/Software"
-		}
-
+	if config == "" {
+		config = user.HomeDir + "/.config/git-evac/git-evac.json"
 	}
 
-	if backup != "" && folder != "" {
+	if config != "" {
 
-		filesystem, _ := fs.Sub(public.FS, ".")
-		profile := structs.NewProfile(console, backup, folder, port)
-		profile.Filesystem = &filesystem
+		settings := structs.NewSettings(user.HomeDir + "/Backup", user.HomeDir + "/Software", 3000)
+		buffer1, err1 := os.ReadFile(config)
+
+		valid_config := false
+
+		if err1 == nil {
+
+			err2 := json.Unmarshal(buffer1, settings)
+
+			if err2 == nil {
+				valid_config = true
+			} else {
+				console.Error(err2.Error())
+			}
+
+		}
+
+
+		fsys, _ := fs.Sub(public.FS, ".")
+		profile := structs.NewProfile(console, settings)
+		profile.Filesystem = &fsys
 
 		console.Clear("")
-		console.Group("git-evac: Command-Line Arguments")
-		console.Log("> Backup: " + backup)
-		console.Log("> Folder: " + folder)
-		console.Log("> Port:   " + strconv.FormatUint(uint64(port), 10))
+		console.Group("git-evac")
+
+		if valid_config == true {
+			console.Log("> Config: " + config)
+		} else {
+			console.Warn("> Invalid Config: " + config)
+		}
+
 		console.GroupEnd("git-evac")
 
 		signal_channel := make(chan os.Signal, 1)
@@ -158,7 +113,7 @@ func main() {
 			result := server.Serve(profile)
 
 			if result == false {
-				console.Error("Port " + strconv.FormatUint(uint64(port), 10) + " is probably already in use?")
+				console.Error("Port " + strconv.FormatUint(uint64(profile.Settings.Port), 10) + " is probably already in use?")
 			}
 
 			done <- result
@@ -174,7 +129,7 @@ func main() {
 			view := webview.New(true)
 			view.SetTitle("Git Evac")
 			view.SetSize(800, 600, webview.HintNone)
-			view.Navigate("http://localhost:" + strconv.FormatUint(uint64(port), 10) + "/index.html")
+			view.Navigate("http://localhost:" + strconv.FormatUint(uint64(profile.Settings.Port), 10) + "/index.html")
 
 			view.Run()
 
@@ -189,7 +144,7 @@ func main() {
 			console.Log("Received OS signal, exiting...")
 		}
 
-		// give webview time to cleanup
+		// Give WebView time to cleanup
 		time.Sleep(250 * time.Millisecond)
 
 	}

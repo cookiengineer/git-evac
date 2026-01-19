@@ -72,12 +72,11 @@ func main() {
 		}
 
 		fsys := os.DirFS("public")
-
 		profile := structs.NewProfile(console, settings)
 		profile.Filesystem = &fsys
 
 		console.Clear("")
-		console.Group("git-evac-debug: Command-Line Arguments")
+		console.Group("git-evac-debug")
 
 		if valid_config == true {
 			console.Log("> Config: " + config)
