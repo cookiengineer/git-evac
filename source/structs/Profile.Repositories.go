@@ -1,6 +1,8 @@
 package structs
 
 import "git-evac/types"
+import services_github "git-evac/services/github"
+// import services_gitlab "git-evac/services/gitlab"
 import services_gogs "git-evac/services/gogs"
 import "os"
 
@@ -96,7 +98,35 @@ func (profile *Profile) RefreshServiceRepositories() {
 							switch service.Type {
 							case "github":
 
-								// TODO: Support github API
+								remote_repositories := services_github.FetchRepositories(service.URL, owner_name, service.Token, profile.Settings.Folder + "/" + owner_name)
+
+								for _, repository := range remote_repositories {
+
+									repository_name := repository.Name
+
+									if profile.HasRepository(owner_name, repository_name) == false {
+
+										profile.Console.Log("> Init " + owner_name + "/" + repository_name)
+
+										owner := profile.GetRepositoryOwner(owner_name)
+										owner.AddRepository(repository_name)
+
+										remote, ok2 := profile.Settings.Owners[owner_name].Remotes[remote_name]
+										repo := owner.GetRepository(repository_name)
+
+										if repo != nil && ok2 == true {
+
+											// Use remote as schema
+											repo.AddRemote(owner_name, repository_name, types.Remote{
+												Name: remote.Name,
+												URL:  remote.URL,
+											})
+
+										}
+
+									}
+
+								}
 
 							case "gitlab":
 
