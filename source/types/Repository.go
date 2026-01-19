@@ -19,7 +19,7 @@ type Repository struct {
 	Identity         string             `json:"identity"`
 }
 
-func NewRepository(name string, folder string) Repository {
+func NewRepository(name string, folder string) *Repository {
 
 	var repo Repository
 
@@ -34,7 +34,7 @@ func NewRepository(name string, folder string) Repository {
 
 	repo.Status()
 
-	return repo
+	return &repo
 
 }
 
@@ -42,18 +42,114 @@ func (repo *Repository) Init() bool {
 
 	var result bool
 
-	// TODO: Create repo.Folder
-	// TODO: git init
+	_, err0 := os.Stat(repo.Folder)
+
+	if os.IsNotExist(err0) == true && strings.HasSuffix(repo.Folder, "/.git") {
+
+		parent_folder := repo.Folder[0:len(repo.Folder)-5]
+
+		err1 := os.MkdirAll(parent_folder, 0755)
+
+		if err1 == nil {
+
+			cmd := exec.Command("git", "init")
+			cmd.Dir = repo.Folder[0:len(repo.Folder)-5]
+
+			buffer2, err2 := cmd.Output()
+
+			if err2 == nil {
+
+				message := strings.TrimSpace(string(buffer2))
+
+				if message == "Initialized empty Git repository in " + repo.Folder + "/" {
+					result = true
+				}
+
+			}
+
+		}
+
+	}
 
 	return result
 
 }
 
-func (repo *Repository) AddRemote(name string, remote Remote) bool {
+func (repo *Repository) AddRemote(owner_name string, repo_name string, schema Remote) bool {
 
 	var result bool
 
-	// TODO: git remote add ...
+	remote_name := schema.Name
+	remote_url  := schema.URL
+	remote_url   = strings.ReplaceAll(remote_url, "{{owner}}", owner_name)
+	remote_url   = strings.ReplaceAll(remote_url, "{{repo}}", repo_name)
+
+	stat, err0 := os.Stat(repo.Folder)
+
+	if err0 == nil && stat.IsDir() && strings.HasSuffix(repo.Folder, "/.git") {
+
+		_, ok := repo.Remotes[remote_name]
+
+		if ok == true {
+
+			repo.Remotes[remote_name] = NewRemote(remote_name, remote_url)
+
+			cmd1 := exec.Command("git", "remote", "remove", remote_name)
+			cmd1.Dir = repo.Folder[0:len(repo.Folder)-5]
+
+			buffer1, err1 := cmd1.Output()
+
+			if err1 == nil {
+
+				message1 := strings.TrimSpace(string(buffer1))
+
+				if message1 == "" {
+
+					cmd2 := exec.Command("git", "remote", "add", remote_name, remote_url)
+					cmd2.Dir = repo.Folder[0:len(repo.Folder)-5]
+
+					buffer2, err2 := cmd2.Output()
+
+					if err2 == nil {
+
+						message2 := strings.TrimSpace(string(buffer2))
+
+						if message2 == "" {
+							result = true
+						}
+
+					}
+
+				}
+
+			}
+
+		} else {
+
+			repo.Remotes[remote_name] = NewRemote(remote_name, remote_url)
+
+			cmd1 := exec.Command("git", "remote", "add", remote_name, remote_url)
+			cmd1.Dir = repo.Folder[0:len(repo.Folder)-5]
+
+			buffer1, err1 := cmd1.Output()
+
+			if err1 == nil {
+
+				message1 := strings.TrimSpace(string(buffer1))
+
+				if message1 == "" {
+					result = true
+				}
+
+			}
+
+		}
+
+	} else if os.IsNotExist(err0) {
+
+		repo.Remotes[remote_name] = NewRemote(remote_name, remote_url)
+
+	}
 
 	return result
 
@@ -253,10 +349,7 @@ func (repo *Repository) Status() bool {
 						if ok == true {
 							repo.Remotes[name].URL = url
 						} else {
-
-							remote := NewRemote(name, url)
-							repo.Remotes[name] = &remote
-
+							repo.Remotes[name] = NewRemote(name, url)
 						}
 
 					}

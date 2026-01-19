@@ -8,6 +8,7 @@ import "github.com/cookiengineer/gooey/components/utils"
 import "github.com/cookiengineer/gooey/components/interfaces"
 import "git-evac/schemas"
 import "git-evac/structs"
+import "git-evac/types"
 import "slices"
 import "sort"
 import "strings"
@@ -297,13 +298,13 @@ func (table *BackupsTable) Render() *dom.Element {
 
 						id := owner_name + "/" + repository_name
 
-						var backup *structs.Backup = nil
+						var backup *types.Backup = nil
 
 						if backup_owner != nil {
 							backup = backup_owner.GetBackup(repository_name)
 						}
 
-						var repository *structs.Repository = nil
+						var repository *types.Repository = nil
 
 						if repository_owner != nil {
 							repository = repository_owner.GetRepository(repository_name)
@@ -423,13 +424,13 @@ func (table *BackupsTable) Selected() map[string]any {
 				id_owner      := id[0:strings.Index(id, "/")]
 				id_repository := id[strings.Index(id, "/")+1:]
 
-				var backup *structs.Backup = nil
+				var backup *types.Backup = nil
 
 				if backup_owner, ok := table.Schemas.Backups.Owners[id_owner]; ok == true {
 					backup = backup_owner.GetBackup(id_repository)
 				}
 
-				var repository *structs.Repository = nil
+				var repository *types.Repository = nil
 
 				if repository_owner, ok := table.Schemas.Repositories.Owners[id_owner]; ok == true {
 					repository = repository_owner.GetRepository(id_repository)
@@ -559,13 +560,13 @@ func (table *BackupsTable) String() string {
 
 				id := owner_name + "/" + repository_name
 
-				var backup *structs.Backup = nil
+				var backup *types.Backup = nil
 
 				if backup_owner != nil {
 					backup = backup_owner.GetBackup(repository_name)
 				}
 
-				var repository *structs.Repository = nil
+				var repository *types.Repository = nil
 
 				if repository_owner != nil {
 					repository = repository_owner.GetRepository(repository_name)

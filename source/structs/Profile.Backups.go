@@ -1,5 +1,6 @@
 package structs
 
+import "git-evac/types"
 import "os"
 import "strings"
 
@@ -101,9 +102,9 @@ func (profile *Profile) GetBackupOwner(owner_name string) *BackupOwner {
 
 }
 
-func (profile *Profile) GetBackup(owner_name string, repo_name string) *Backup {
+func (profile *Profile) GetBackup(owner_name string, repo_name string) *types.Backup {
 
-	var result *Backup
+	var result *types.Backup
 
 	owner, ok1 := profile.Backups[owner_name]
 

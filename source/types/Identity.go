@@ -23,53 +23,53 @@ type Identity struct {
 
 }
 
-func NewIdentity(name string) Identity {
+func NewIdentity(name string) *Identity {
 
-	var settings Identity
+	var identity Identity
 
-	settings.Name = name
-	settings.SSHKey = ""
-	settings.Git.Core.SSHCommand = ""
-	settings.Git.User.Name = ""
-	settings.Git.User.Email = ""
+	identity.Name = name
+	identity.SSHKey = ""
+	identity.Git.Core.SSHCommand = ""
+	identity.Git.User.Name = ""
+	identity.Git.User.Email = ""
 
-	return settings
+	return &identity
 
 }
 
-func (settings *Identity) IsValid() bool {
+func (identity *Identity) IsValid() bool {
 
 	var result bool
 
-	if utils_strings.IsName(settings.Name) {
+	if utils_strings.IsName(identity.Name) {
 
 		valid_sshkey := false
 		valid_git_core := false
 		valid_git_user := false
 
-		folder := filepath.Dir(settings.SSHKey)
+		folder := filepath.Dir(identity.SSHKey)
 
 		if utils_paths.IsFolder(folder) {
 			valid_sshkey = true
 		}
 
-		if strings.HasPrefix(settings.Git.Core.SSHCommand, "ssh -i \"") && strings.HasSuffix(settings.Git.Core.SSHCommand, "\" -F /dev/null") {
+		if strings.HasPrefix(identity.Git.Core.SSHCommand, "ssh -i \"") && strings.HasSuffix(identity.Git.Core.SSHCommand, "\" -F /dev/null") {
 
-			sshkey_file := settings.Git.Core.SSHCommand[8:len(settings.Git.Core.SSHCommand)-14]
+			sshkey_file := identity.Git.Core.SSHCommand[8:len(identity.Git.Core.SSHCommand)-14]
 
-			if strings.HasPrefix(sshkey_file, "/") && sshkey_file == settings.SSHKey {
+			if strings.HasPrefix(sshkey_file, "/") && sshkey_file == identity.SSHKey {
 				valid_git_core = true
 			}
 
 		}
 
-		if strings.Contains(settings.Git.User.Name, " ") {
+		if strings.Contains(identity.Git.User.Name, " ") {
 
-			if utils_strings.IsEmail(settings.Git.User.Email) {
+			if utils_strings.IsEmail(identity.Git.User.Email) {
 
 				valid_git_user = true
 
-				tmp := strings.Split(settings.Git.User.Name, " ")
+				tmp := strings.Split(identity.Git.User.Name, " ")
 
 				for t := 0; t < len(tmp); t++ {
 
@@ -82,9 +82,9 @@ func (settings *Identity) IsValid() bool {
 
 			}
 
-		} else if utils_strings.IsName(settings.Git.User.Name) {
+		} else if utils_strings.IsName(identity.Git.User.Name) {
 
-			if utils_strings.IsEmail(settings.Git.User.Email) {
+			if utils_strings.IsEmail(identity.Git.User.Email) {
 				valid_git_user = true
 			}
 

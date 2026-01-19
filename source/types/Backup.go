@@ -1,4 +1,4 @@
-package structs
+package types
 
 import "os"
 import "strings"
@@ -11,7 +11,7 @@ type Backup struct {
 	Time time.Time `json:"time"`
 }
 
-func NewBackup(name string, file string) Backup {
+func NewBackup(name string, file string) *Backup {
 
 	var backup Backup
 
@@ -20,7 +20,7 @@ func NewBackup(name string, file string) Backup {
 	backup.Size = 0
 	backup.Time = time.Time{}
 
-	return backup
+	return &backup
 
 }
 

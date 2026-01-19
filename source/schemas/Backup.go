@@ -1,7 +1,7 @@
 package schemas
 
-import "git-evac/structs"
+import "git-evac/types"
 
 type Backup struct {
-	Backup structs.Backup `json:"backup"`
+	Backup types.Backup `json:"backup"`
 }

@@ -1,9 +1,11 @@
 
 # TODO
 
+- [ ] Implement `services/github/FetchRepositories.go`
+- [ ] Implement `services/gitlab/FetchRepositories.go`
+- [ ] Implement `services/gitea/FetchRepositories.go`
+
 - [ ] `types/Identity.go`: Implement `Identity.IsValid()`
-- [ ] `types/Repository.go`: Implement `Repository.Init()`
-- [ ] `types/Repository.go`: Implement `Repository.AddRemote(name string, remote types.Remote)`
 
 - [ ] `server/DispatchRoutes.go`: Implement `GET /api/clone`
 - [ ] `server/DispatchRoutes.go`: Implement `POST /api/commit`

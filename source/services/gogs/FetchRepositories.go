@@ -5,9 +5,9 @@ import "fmt"
 import "net/http"
 import "strings"
 
-func FetchRepositories(api_url string, owner string, token string, parent_folder string) []types.Repository {
+func FetchRepositories(api_url string, owner string, token string, parent_folder string) []*types.Repository {
 
-	result := make([]types.Repository, 0)
+	result := make([]*types.Repository, 0)
 
 	orgas_url := fmt.Sprintf("%s/v1/orgs/%s/repos?limit=0&sort=updated&order=desc", api_url, owner)
 	users_url := fmt.Sprintf("%s/v1/users/%s/repos?limit=0&sort=updated&order=desc", api_url, owner)

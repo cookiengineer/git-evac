@@ -37,10 +37,10 @@ func DispatchRoutes(profile *structs.Profile) bool {
 		routes.Backup(profile, request, response)
 	})
 
-	// TODO: GET /api/clone
-	// http.HandleFunc("/api/clone/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {
-	// 	routes.Clone(profile, request, response)
-	// })
+	// POST /api/clone
+	http.HandleFunc("/api/clone/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {
+		routes.Clone(profile, request, response)
+	})
 
 	// TODO: POST /api/commit
 	// http.HandleFunc("/api/commit/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {

@@ -95,11 +95,17 @@ func (profile *Profile) RefreshServiceRepositories() {
 
 							switch service.Type {
 							case "github":
-								// TODO
+
+								// TODO: Support github API
+
 							case "gitlab":
-								// TODO
+
+								// TODO: Support gitlab API
+
 							case "gitea":
-								// TODO
+
+								// TODO: Support gitea API
+
 							case "gogs":
 
 								remote_repositories := services_gogs.FetchRepositories(service.URL, owner_name, service.Token, profile.Settings.Folder + "/" + owner_name)
@@ -115,13 +121,17 @@ func (profile *Profile) RefreshServiceRepositories() {
 										owner := profile.GetRepositoryOwner(owner_name)
 										owner.AddRepository(repository_name)
 
-										repo := owner.GetRepository(repository_name)
-										repo.Init()
-
 										remote, ok2 := profile.Settings.Owners[owner_name].Remotes[remote_name]
+										repo := owner.GetRepository(repository_name)
 
-										if ok2 == true {
-											repo.AddRemote(remote_name, remote)
+										if repo != nil && ok2 == true {
+
+											// Use remote as schema
+											repo.AddRemote(owner_name, repository_name, types.Remote{
+												Name: remote.Name,
+												URL:  remote.URL,
+											})
+
 										}
 
 									}

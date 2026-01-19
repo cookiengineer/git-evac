@@ -9,22 +9,22 @@ type Service struct {
 	Token string `json:"token"`
 }
 
-func NewService(name string) Service {
+func NewService(name string) *Service {
 
-	var settings Service
+	var service Service
 
-	settings.Name = name
-	settings.URL = ""
-	settings.Token = ""
-	settings.Type = "git"
+	service.Name = name
+	service.URL = ""
+	service.Token = ""
+	service.Type = "git"
 
-	return settings
+	return &service
 
 }
 
-func (settings *Service) IsValid() bool {
+func (service *Service) IsValid() bool {
 
-	if utils_strings.IsName(settings.Name) {
+	if utils_strings.IsName(service.Name) {
 
 		// TODO: Valid URL Schemas
 

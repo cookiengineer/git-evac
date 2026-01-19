@@ -4,10 +4,10 @@ import "git-evac/types"
 import utils_strings "git-evac/utils/strings"
 
 type SettingsOwner struct {
-	Name       string                    `json:"name"`
-	Identities map[string]types.Identity `json:"identities"`
-	Remotes    map[string]types.Remote   `json:"remotes"`
-	Services   map[string]types.Service  `json:"services"`
+	Name       string                     `json:"name"`
+	Identities map[string]*types.Identity `json:"identities"`
+	Remotes    map[string]*types.Remote   `json:"remotes"`
+	Services   map[string]*types.Service  `json:"services"`
 }
 
 func (settings *SettingsOwner) IsValid() bool {
@@ -43,10 +43,10 @@ func (settings *SettingsOwner) GetIdentity(name string) *types.Identity {
 
 	if name != "" {
 
-		tmp, ok := settings.Identities[name]
+		identity, ok := settings.Identities[name]
 
 		if ok == true {
-			result = &tmp
+			result = identity
 		}
 
 	}
@@ -61,10 +61,10 @@ func (settings *SettingsOwner) GetRemote(name string) *types.Remote {
 
 	if name != "" {
 
-		tmp, ok := settings.Remotes[name]
+		remote, ok := settings.Remotes[name]
 
 		if ok == true {
-			result = &tmp
+			result = remote
 		}
 
 	}
@@ -79,10 +79,10 @@ func (settings *SettingsOwner) GetService(name string) *types.Service {
 
 	if name != "" {
 
-		tmp, ok := settings.Services[name]
+		service, ok := settings.Services[name]
 
 		if ok == true {
-			result = &tmp
+			result = service
 		}
 
 	}
@@ -153,7 +153,7 @@ func (settings *SettingsOwner) SetIdentity(value types.Identity) bool {
 	var result bool
 
 	if value.Name != "" {
-		settings.Identities[value.Name] = value
+		settings.Identities[value.Name] = &value
 		result = true
 	}
 
@@ -166,7 +166,7 @@ func (settings *SettingsOwner) SetRemote(value types.Remote) bool {
 	var result bool
 
 	if value.Name != "" {
-		settings.Remotes[value.Name] = value
+		settings.Remotes[value.Name] = &value
 		result = true
 	}
 
@@ -179,7 +179,7 @@ func (settings *SettingsOwner) SetService(value types.Service) bool {
 	var result bool
 
 	if value.Name != "" {
-		settings.Services[value.Name] = value
+		settings.Services[value.Name] = &value
 		result = true
 	}
 

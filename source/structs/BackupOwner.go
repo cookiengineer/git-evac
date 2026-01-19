@@ -1,9 +1,11 @@
 package structs
 
+import "git-evac/types"
+
 type BackupOwner struct {
-	Name    string             `json:"name"`
-	Folder  string             `json:"folder"`
-	Backups map[string]*Backup `json:"backups"`
+	Name    string                   `json:"name"`
+	Folder  string                   `json:"folder"`
+	Backups map[string]*types.Backup `json:"backups"`
 }
 
 func NewBackupOwner(name string, folder string) BackupOwner {
@@ -12,7 +14,7 @@ func NewBackupOwner(name string, folder string) BackupOwner {
 
 	owner.Name = name
 	owner.Folder = folder
-	owner.Backups = make(map[string]*Backup)
+	owner.Backups = make(map[string]*types.Backup)
 
 	return owner
 
@@ -24,8 +26,7 @@ func (owner *BackupOwner) AddBackup(name string) bool {
 
 	if ok == false {
 
-		repo := NewBackup(name, owner.Folder + "/" + name + ".tar.gz")
-		owner.Backups[name] = &repo
+		owner.Backups[name] = types.NewBackup(name, owner.Folder + "/" + name + ".tar.gz")
 
 		return true
 
@@ -35,9 +36,9 @@ func (owner *BackupOwner) AddBackup(name string) bool {
 
 }
 
-func (owner *BackupOwner) GetBackup(name string) *Backup {
+func (owner *BackupOwner) GetBackup(name string) *types.Backup {
 
-	var result *Backup
+	var result *types.Backup
 
 	tmp, ok := owner.Backups[name]
 

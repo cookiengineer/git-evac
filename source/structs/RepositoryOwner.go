@@ -26,8 +26,7 @@ func (owner *RepositoryOwner) AddRepository(name string) bool {
 
 	if ok == false {
 
-		repo := types.NewRepository(name, owner.Folder + "/" + name + "/.git")
-		owner.Repositories[name] = &repo
+		owner.Repositories[name] = types.NewRepository(name, owner.Folder + "/" + name + "/.git")
 
 		return true
 
