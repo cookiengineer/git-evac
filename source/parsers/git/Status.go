@@ -17,7 +17,7 @@ const (
 
 )
 
-func ToStatus(value string) Status {
+func ParseStatus(value string) Status {
 
 	var result Status = StatusUntracked
 

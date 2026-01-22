@@ -274,11 +274,11 @@ func (table *RepositoriesTable) Render() *dom.Element {
 							remotes = append(remotes, "<label>" + remote_name + "</label>")
 						}
 
-						if len(branches) == 0 {
+						if repository.NeedsClone() {
 							actions = append(actions, "<button data-action=\"clone\">Clone</button>")
-						} else if repository.HasRemoteChanges == true {
+						} else if repository.NeedsFix() {
 							actions = append(actions, "<button data-action=\"fix\">Fix</button>")
-						} else if repository.HasLocalChanges == true {
+						} else if repository.NeedsCommit() {
 							actions = append(actions, "<button data-action=\"commit\">Commit</button>")
 						} else {
 							actions = append(actions, "<button data-action=\"pull\">Pull</button>")
@@ -386,11 +386,11 @@ func (table *RepositoriesTable) Selected() map[string]any {
 
 						action := ""
 
-						if len(repository.Branches) == 0 {
+						if repository.NeedsClone() {
 							action = "clone"
-						} else if repository.HasRemoteChanges == true {
+						} else if repository.NeedsFix() {
 							action = "fix"
-						} else if repository.HasLocalChanges == true {
+						} else if repository.NeedsCommit() {
 							action = "commit"
 						} else {
 							action = "pull-or-push"
@@ -492,11 +492,11 @@ func (table *RepositoriesTable) String() string {
 					remotes = append(remotes, "<label>" + remote_name + "</label>")
 				}
 
-				if len(branches) == 0 {
+				if repository.NeedsClone() {
 					actions = append(actions, "<button data-action=\"clone\">Clone</button>")
-				} else if repository.HasRemoteChanges == true {
+				} else if repository.NeedsFix() {
 					actions = append(actions, "<button data-action=\"fix\">Fix</button>")
-				} else if repository.HasLocalChanges == true {
+				} else if repository.NeedsCommit() {
 					actions = append(actions, "<button data-action=\"commit\">Commit</button>")
 				} else {
 					actions = append(actions, "<button data-action=\"pull\">Pull</button>")
