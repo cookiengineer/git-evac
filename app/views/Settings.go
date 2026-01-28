@@ -115,11 +115,12 @@ func (view *Settings) Mount() bool {
 
 				if typ == "settings" {
 
-					// TODO: Use a settings component for basic settings
+					// TODO: Use a SettingsArticle component for basic settings
+					components = append(components, layout.ToArticle(element))
 
 				} else if typ == "owner" {
 
-					// TODO: Use a settings component per SettingsOwner
+					// TODO: Use a OwnerArticle component per SettingsOwner
 					components = append(components, layout.ToArticle(element))
 
 				}

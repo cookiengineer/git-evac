@@ -37,7 +37,7 @@
 		</header>
 		<main data-view="settings">
 			<section data-name="settings" data-label="Settings" data-path="/settings.html" data-state="active">
-				<article data-name="settings-basic">
+				<article data-type="settings">
 					<h3 data-type="settings">Settings</h3>
 					<fieldset>
 						<div>
@@ -55,20 +55,11 @@
 					</fieldset>
 				</article>
 				<article data-type="owner" data-name="tholian-network">
-					<header>
-						<div></div>
-						<div><h4 data-type="organization">tholian-network</h4></div>
-						<div><button data-action="remove-owner">Remove</button></div>
-					</header>
+					<h3 data-type="organization">tholian-network <button data-action="remove-owner">Remove</button></h3>
 					<section data-type="identities">
-						<header>
-							<div></div>
-							<div><h5>Identities</h5></div>
-							<div><button data-action="add-identity">Add Identity</button></div>
-						</header>
+						<h4>1 Identity <button data-action="add-identity">Add</button></h4>
 						<fieldset data-type="identity" data-name="cookiengineer">
-							<legend>cookiengineer</legend>
-							<button data-action="remove-identity">Remove</button>
+							<legend>cookiengineer <button data-action="remove-identity">Remove</button></legend>
 							<div>
 								<label for="identities-1-name" data-type="name">Name</label>
 								<input id="identities-1-name" type="text" value="cookiengineer"/>
@@ -88,14 +79,9 @@
 						</fieldset>
 					</section>
 					<section data-type="remotes">
-						<header>
-							<div></div>
-							<div><h5>Remotes</h5></div>
-							<div><button data-action="add-remote">Add Remote</button></div>
-						</header>
+						<h4>1 Remote <button data-action="add-remote">Add</button></h4>
 						<fieldset data-type="remote" data-name="origin">
-							<legend>origin</legend>
-							<button data-action="remove-remote">Remove</button>
+							<legend>origin <button data-action="remove-remote">Remove</button></legend>
 							<div>
 								<label for="remotes-origin-name" data-type="name">Name</label>
 								<input id="remotes-origin-name" type="text" value="origin"/>
@@ -116,14 +102,9 @@
 						</fieldset>
 					</section>
 					<section data-type="services">
-						<header>
-							<div></div>
-							<div><h5>Services</h5></div>
-							<div><button data-action="add-service">Add Service</button></div>
-						</header>
+						<h4>1 Service <button data-action="add-service">Add</button></h4>
 						<fieldset data-type="service" data-name="origin">
-							<legend>origin</legend>
-							<button data-action="remove-service">Remove</button>
+							<legend>origin <button data-action="remove-service">Remove</button></legend>
 							<div>
 								<label for="services-origin-name" data-type="name">Name</label>
 								<input id="services-origin-name" type="text" value="origin"/>
@@ -153,7 +134,7 @@
 		<footer>
 			<div><button data-action="cancel" disabled>Cancel</button></div>
 			<div></div>
-			<div><button data-action="add-organization">Organization</button><button class="primary" data-action="save" disabled>Save</button></div>
+			<div><button data-action="add-owner">Owner</button><button class="primary" data-action="save" disabled>Save</button></div>
 		</footer>
 		<dialog id="dialog">
 			<article>

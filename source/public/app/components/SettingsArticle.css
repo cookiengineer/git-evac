@@ -1,0 +1,45 @@
+
+article[data-type="settings"] {
+	width: calc(66% + 32px);
+	padding: 0px;
+}
+
+article[data-type="settings"] h3 {
+	display: block;
+	position: relative;
+	margin: 0px 0px 16px 0px;
+	padding: 0px 16px;
+	height: 50px;
+	font-family: "cantarell";
+	font-weight: bold;
+	font-size: 30px;
+	background: var(--header-background);
+	border-radius: 8px 8px 0px 0px;
+}
+
+article[data-type="settings"] h3:before {
+	display: inline-block;
+	content: '\e80d';
+	width: 1em;
+	line-height: inherit;
+	margin: 0px;
+	padding: 0px 8px 0px 0px;
+	font-family: "icon";
+	font-size: inherit;
+	font-style: normal;
+	font-weight: normal;
+	text-align: center;
+	text-decoration: none;
+	text-transform: none;
+	font-smooth: antialiased;
+	speak: never;
+}
+
+article[data-type="settings"] fieldset {
+	display: block;
+	position: relative;
+	margin: 16px;
+	padding: 16px;
+	border: 1px solid var(--article-color);
+}
+

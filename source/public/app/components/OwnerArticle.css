@@ -1,0 +1,109 @@
+
+article[data-type="owner"] {
+	width: calc(66% + 32px);
+	padding: 0px;
+}
+
+article[data-type="owner"] h3 {
+	display: block;
+	position: relative;
+	margin: 0px 0px 16px 0px;
+	padding: 0px 16px;
+	height: 50px;
+	font-family: "cantarell";
+	font-weight: bold;
+	font-size: 30px;
+	background: var(--header-background);
+	border-radius: 8px 8px 0px 0px;
+}
+
+article[data-type="owner"] h3:before {
+	display: inline-block;
+	content: '\e80e';
+	width: 1em;
+	line-height: inherit;
+	margin: 0px;
+	padding: 0px 8px 0px 0px;
+	font-family: "icon";
+	font-size: inherit;
+	font-style: normal;
+	font-weight: normal;
+	text-align: center;
+	text-decoration: none;
+	text-transform: none;
+	font-smooth: antialiased;
+	speak: never;
+}
+
+article[data-type="owner"] h3 button[data-action^="remove"] {
+	display: block;
+	position: absolute;
+	top: 10px;
+	right: 8px;
+	bottom: auto;
+	left: auto;
+	color: var(--palette-secondary-color);
+	background: var(--palette-secondary-background);
+}
+
+article[data-type="owner"] section[data-type] {
+	margin: 48px 0px 0px 0px;
+}
+
+article[data-type="owner"] section[data-type]:first-of-type {
+	margin-top: 0px;
+}
+
+article[data-type="owner"] section[data-type] h4 {
+	display: block;
+	position: relative;
+	margin: 0px 0px 0px 0px;
+	padding: 4px 16px;
+	font-family: "cantarell";
+	font-weight: bold;
+	font-size: 20px;
+	border-top: 0px solid transparent;
+	border-right: 0px solid transparent;
+	border-bottom: 1px solid var(--article-color);
+	border-left: 0px solid transparent;
+}
+
+article[data-type="owner"] section[data-type] h4 button[data-action^="add"] {
+	display: block;
+	position: absolute;
+	top: 0px;
+	right: 16px;
+	bottom: auto;
+	left: auto;
+	color: var(--palette-primary-color);
+	background: var(--palette-primary-background);
+}
+
+article[data-type="owner"] section[data-type] fieldset {
+	display: block;
+	position: relative;
+	margin: 16px;
+	padding: 16px;
+	border: 1px solid var(--article-color);
+}
+
+article[data-type="owner"] section[data-type] fieldset:hover {
+	background: rgba(255,255,255,0.04);
+}
+
+article[data-type="owner"] section[data-type] fieldset legend {
+	padding: 0px 4px;
+	border: 1px solid transparent;
+}
+
+article[data-type="owner"] section[data-type] fieldset button[data-action^="remove"] {
+	display: block;
+	position: absolute;
+	top: 2px;
+	right: 16px;
+	bottom: auto;
+	left: auto;
+	color: var(--palette-secondary-color);
+	background: var(--palette-secondary-background);
+}
+

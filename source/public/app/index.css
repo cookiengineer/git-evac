@@ -2,6 +2,8 @@
 @import url("./components/BackupsTable.css");
 @import url("./components/RepositoriesTable.css");
 @import url("./components/SchedulerTable.css");
+@import url("./components/SettingsArticle.css");
+@import url("./components/OwnerArticle.css");
 
 @import url("./views/Backups.css");
 @import url("./views/Repositories.css");
