@@ -1,11 +1,102 @@
 package types
 
-import utils_paths   "git-evac/utils/paths"
 import utils_strings "git-evac/utils/strings"
 import "encoding/json"
 import "path/filepath"
 import "strings"
 import "sync"
+
+func toIdentitySSHCommand(sshkey string) string {
+	return "ssh -i \"" + sshkey + "\" -F /dev/null"
+}
+
+func isValidIdentitySSHKey(sshkey string) bool {
+
+	if sshkey == "" || len(sshkey) > 1024 {
+		return false
+	}
+
+	if strings.ContainsAny(sshkey, "\n\r\t") {
+		return false
+	}
+
+	if strings.Contains(sshkey, "\"") || strings.Contains(sshkey, "\\") {
+		return false
+	}
+
+	if strings.HasPrefix(sshkey, "~/") {
+
+		if strings.Contains(sshkey[2:], "~") {
+			return false
+		}
+
+	} else if strings.HasPrefix(sshkey, "/") {
+
+		if strings.Contains(sshkey, "~") {
+			return false
+		}
+
+	} else {
+		return false
+	}
+
+	if filepath.Clean(sshkey) != sshkey {
+		return false
+	}
+
+	for s := 0; s < len(sshkey); s++ {
+
+		chr := sshkey[s]
+
+		if chr >= 'a' && chr <= 'z' {
+			continue
+		} else if chr >= 'A' && chr <= 'Z' {
+			continue
+		} else if chr >= '0' && chr <= '9' {
+			continue
+		} else if chr == '/' || chr == '-' || chr == '_' || chr == '.' || chr == '~' {
+			continue
+		}
+
+		return false
+
+	}
+
+	return true
+
+}
+
+func isValidIdentityGitUserName(username string) bool {
+
+	if username == "" || len(username) > 64 {
+		return false
+	}
+
+	has_letter := false
+
+	for u := 0; u < len(username); u++ {
+
+		chr := username[u]
+
+		if chr >= 'a' && chr <= 'z' {
+			has_letter = true
+			continue
+		} else if chr >= 'A' && chr <= 'Z' {
+			has_letter = true
+			continue
+		} else if chr >= '0' && chr <= '9' {
+			continue
+		} else if chr == ' ' || chr == '-' || chr == '_' || chr == '.' || chr == '\'' {
+			continue
+		}
+
+		return false
+
+	}
+
+	return has_letter
+
+}
 
 type Identity struct {
 	mutex  sync.RWMutex
@@ -63,72 +154,174 @@ func (identity *Identity) GetName() string {
 
 }
 
-func (identity *Identity) IsValid() bool {
+func (identity *Identity) GetSSHKey() string {
+
+	var result string
+
+	identity.mutex.RLock()
+	result = identity.SSHKey
+	identity.mutex.RUnlock()
+
+	return result
+
+}
+
+func (identity *Identity) GetSSHCommand() string {
+
+	var result string
+
+	identity.mutex.RLock()
+	result = identity.Git.Core.SSHCommand
+	identity.mutex.RUnlock()
+
+	return result
+
+}
+
+func (identity *Identity) GetGitUserName() string {
+
+	var result string
+
+	identity.mutex.RLock()
+	result = identity.Git.User.Name
+	identity.mutex.RUnlock()
+
+	return result
+
+}
+
+func (identity *Identity) GetGitUserEmail() string {
+
+	var result string
+
+	identity.mutex.RLock()
+	result = identity.Git.User.Email
+	identity.mutex.RUnlock()
+
+	return result
+
+}
+
+func (identity *Identity) SetName(value string) bool {
 
 	var result bool
 
-	identity.mutex.RLock()
-	defer identity.mutex.RUnlock()
+	value = strings.TrimSpace(value)
 
-	if utils_strings.IsName(identity.Name) {
+	if utils_strings.IsName(value) == true {
 
-		valid_sshkey := false
-		valid_git_core := false
-		valid_git_user := false
+		identity.mutex.Lock()
+		identity.Name = value
+		identity.mutex.Unlock()
 
-		folder := filepath.Dir(identity.SSHKey)
-
-		if utils_paths.IsFolder(folder) {
-			valid_sshkey = true
-		}
-
-		if strings.HasPrefix(identity.Git.Core.SSHCommand, "ssh -i \"") && strings.HasSuffix(identity.Git.Core.SSHCommand, "\" -F /dev/null") {
-
-			sshkey_file := identity.Git.Core.SSHCommand[8:len(identity.Git.Core.SSHCommand)-14]
-
-			if strings.HasPrefix(sshkey_file, "/") && sshkey_file == identity.SSHKey {
-				valid_git_core = true
-			}
-
-		}
-
-		if strings.Contains(identity.Git.User.Name, " ") {
-
-			if utils_strings.IsEmail(identity.Git.User.Email) {
-
-				valid_git_user = true
-
-				tmp := strings.Split(identity.Git.User.Name, " ")
-
-				for t := 0; t < len(tmp); t++ {
-
-					if !utils_strings.IsName(strings.ToLower(tmp[t])) {
-						valid_git_user = false
-						break
-					}
-
-				}
-
-			}
-
-		} else if utils_strings.IsName(identity.Git.User.Name) {
-
-			if utils_strings.IsEmail(identity.Git.User.Email) {
-				valid_git_user = true
-			}
-
-		}
-
-		return valid_sshkey && valid_git_core && valid_git_user
+		result = true
 
 	}
 
-	// TODO: Validate name
-	// TODO: Validate key path (being absolute or with ~/ prefix)
-	// TODO: Set Git.Core.SSHCommand value
-	// TODO: Set Git.User.Name value
-	// TODO: Set Git.User.Email value
+	return result
+
+}
+
+func (identity *Identity) SetSSHKey(value string) bool {
+
+	var result bool
+
+	value = strings.TrimSpace(value)
+
+	if isValidIdentitySSHKey(value) == true {
+
+		identity.mutex.Lock()
+		identity.SSHKey = value
+		identity.Git.Core.SSHCommand = toIdentitySSHCommand(value)
+		identity.mutex.Unlock()
+
+		result = true
+
+	}
 
 	return result
+
+}
+
+func (identity *Identity) SetGitUserName(value string) bool {
+
+	var result bool
+
+	value = strings.TrimSpace(value)
+
+	if isValidIdentityGitUserName(value) == true {
+
+		identity.mutex.Lock()
+		identity.Git.User.Name = value
+		identity.mutex.Unlock()
+
+		result = true
+
+	}
+
+	return result
+
+}
+
+func (identity *Identity) SetGitUserEmail(value string) bool {
+
+	var result bool
+
+	value = strings.TrimSpace(value)
+
+	if utils_strings.IsEmail(value) == true {
+
+		identity.mutex.Lock()
+		identity.Git.User.Email = value
+		identity.mutex.Unlock()
+
+		result = true
+
+	}
+
+	return result
+
+}
+
+func (identity *Identity) Sanitize() bool {
+
+	identity.mutex.Lock()
+	defer identity.mutex.Unlock()
+
+	name      := strings.TrimSpace(identity.Name)
+	sshkey    := strings.TrimSpace(identity.SSHKey)
+	username  := strings.TrimSpace(identity.Git.User.Name)
+	useremail := strings.TrimSpace(identity.Git.User.Email)
+
+	if utils_strings.IsName(name) == false {
+		return false
+	}
+
+	if isValidIdentitySSHKey(sshkey) == false {
+		return false
+	}
+
+	if isValidIdentityGitUserName(username) == false {
+		return false
+	}
+
+	if utils_strings.IsEmail(useremail) == false {
+		return false
+	}
+
+	identity.Name = name
+	identity.SSHKey = sshkey
+	identity.Git.Core.SSHCommand = toIdentitySSHCommand(sshkey)
+	identity.Git.User.Name = username
+	identity.Git.User.Email = useremail
+
+	return true
+
+}
+
+func (identity *Identity) IsValid() bool {
+
+	// Sanitizing normalizes the untrusted input and derives the SSH command
+	return identity.Sanitize()
 
 }
