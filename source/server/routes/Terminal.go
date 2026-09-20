@@ -26,7 +26,7 @@ func Terminal(profile *structs.Profile, request *http.Request, response http.Res
 			response.WriteHeader(http.StatusOK)
 
 			payload, _ := json.MarshalIndent(schemas.Repository{
-				Repository: *repo,
+				Repository: repo,
 			}, "", "\t")
 			response.Write(payload)
 

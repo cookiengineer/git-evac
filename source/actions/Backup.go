@@ -17,19 +17,19 @@ func Backup(profile *structs.Profile, owner_name string, repo_name string) error
 
 			repository.Status()
 
-			if _, err := os.Stat(profile.Settings.Backup + "/" + owner.Name); os.IsNotExist(err) {
-				os.MkdirAll(profile.Settings.Backup + "/" + owner.Name, 0755)
+			if _, err := os.Stat(profile.Settings.GetBackup() + "/" + owner.Name); os.IsNotExist(err) {
+				os.MkdirAll(profile.Settings.GetBackup() + "/" + owner.Name, 0755)
 			}
 
-			stat0, err0 := os.Stat(profile.Settings.Backup + "/" + owner.Name)
+			stat0, err0 := os.Stat(profile.Settings.GetBackup() + "/" + owner.Name)
 
 			if err0 == nil && stat0.IsDir() {
 
 				cmd := exec.Command(
 					"tar",
 					"-czvf",
-					profile.Settings.Backup + "/" + owner.Name + "/" + repository.Name + ".tar.gz",
-					repository.Name,
+					profile.Settings.GetBackup() + "/" + owner.Name + "/" + repository.GetName() + ".tar.gz",
+					repository.GetName(),
 				)
 				cmd.Dir = owner.Folder
 

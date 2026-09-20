@@ -9,29 +9,17 @@ func GuessOrigin(owner *structs.RepositoryOwner, repository string) string {
 
 	candidates := make(map[string]int)
 
-	for _, repo := range owner.Repositories {
+	for _, repo := range owner.SnapshotRepositories() {
 
-		remote, ok := repo.Remotes["origin"]
+		remote := repo.GetRemote("origin")
 
-		if ok == true {
+		if remote != nil {
 
-			url := remote.URL
+			url := remote.GetURL()
 
-			if strings.HasPrefix(url, "git@bitbucket.org") && strings.HasSuffix(url, "/" + repo.Name + ".git") {
+			if strings.HasPrefix(url, "git@bitbucket.org") && strings.HasSuffix(url, "/" + repo.GetName() + ".git") {
 
-				candidate := url[0:strings.Index(url, "/" + repo.Name + ".git")] + "/" + repository + ".git"
-
-				rank, ok := candidates[candidate]
-
-				if ok == true {
-					candidates[candidate] = rank + 1
-				} else {
-					candidates[candidate] = 1
-				}
-
-			} else if strings.HasPrefix(url, "https://gitlab.com") && strings.HasSuffix(url, "/" + repo.Name + ".git") {
-
-				candidate := url[0:strings.Index(url, "/" + repo.Name + ".git")] + "/" + repository + ".git"
+				candidate := url[0:strings.Index(url, "/" + repo.GetName() + ".git")] + "/" + repository + ".git"
 
 				rank, ok := candidates[candidate]
 
@@ -41,21 +29,9 @@ func GuessOrigin(owner *structs.RepositoryOwner, repository string) string {
 					candidates[candidate] = 1
 				}
 
-			} else if strings.HasPrefix(url, "git@gitlab.com") && strings.HasSuffix(url, "/" + repo.Name + ".git") {
+			} else if strings.HasPrefix(url, "https://gitlab.com") && strings.HasSuffix(url, "/" + repo.GetName() + ".git") {
 
-				candidate := url[0:strings.Index(url, "/" + repo.Name + ".git")] + "/" + repository + ".git"
-
-				rank, ok := candidates[candidate]
-
-				if ok == true {
-					candidates[candidate] = rank + 1
-				} else {
-					candidates[candidate] = 1
-				}
-
-			} else if strings.HasPrefix(url, "https://github.com") && strings.HasSuffix(url, "/" + repo.Name + ".git") {
-
-				candidate := url[0:strings.Index(url, "/" + repo.Name + ".git")] + "/" + repository + ".git"
+				candidate := url[0:strings.Index(url, "/" + repo.GetName() + ".git")] + "/" + repository + ".git"
 
 				rank, ok := candidates[candidate]
 
@@ -65,9 +41,9 @@ func GuessOrigin(owner *structs.RepositoryOwner, repository string) string {
 					candidates[candidate] = 1
 				}
 
-			} else if strings.HasPrefix(url, "git@github.com") && strings.HasSuffix(url, "/" + repo.Name + ".git") {
+			} else if strings.HasPrefix(url, "git@gitlab.com") && strings.HasSuffix(url, "/" + repo.GetName() + ".git") {
 
-				candidate := url[0:strings.Index(url, "/" + repo.Name + ".git")] + "/" + repository + ".git"
+				candidate := url[0:strings.Index(url, "/" + repo.GetName() + ".git")] + "/" + repository + ".git"
 
 				rank, ok := candidates[candidate]
 
@@ -77,9 +53,33 @@ func GuessOrigin(owner *structs.RepositoryOwner, repository string) string {
 					candidates[candidate] = 1
 				}
 
-			} else if strings.HasSuffix(url, "/" + repo.Name + ".git") {
+			} else if strings.HasPrefix(url, "https://github.com") && strings.HasSuffix(url, "/" + repo.GetName() + ".git") {
 
-				candidate := url[0:strings.Index(url, "/" + repo.Name + ".git")] + "/" + repository + ".git"
+				candidate := url[0:strings.Index(url, "/" + repo.GetName() + ".git")] + "/" + repository + ".git"
+
+				rank, ok := candidates[candidate]
+
+				if ok == true {
+					candidates[candidate] = rank + 1
+				} else {
+					candidates[candidate] = 1
+				}
+
+			} else if strings.HasPrefix(url, "git@github.com") && strings.HasSuffix(url, "/" + repo.GetName() + ".git") {
+
+				candidate := url[0:strings.Index(url, "/" + repo.GetName() + ".git")] + "/" + repository + ".git"
+
+				rank, ok := candidates[candidate]
+
+				if ok == true {
+					candidates[candidate] = rank + 1
+				} else {
+					candidates[candidate] = 1
+				}
+
+			} else if strings.HasSuffix(url, "/" + repo.GetName() + ".git") {
+
+				candidate := url[0:strings.Index(url, "/" + repo.GetName() + ".git")] + "/" + repository + ".git"
 
 				rank, ok := candidates[candidate]
 

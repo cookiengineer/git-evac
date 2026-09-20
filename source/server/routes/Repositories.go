@@ -10,7 +10,7 @@ func Repositories(profile *structs.Profile, request *http.Request, response http
 	if request.Method == http.MethodGet {
 
 		payload, _ := json.MarshalIndent(schemas.Repositories{
-			Owners: profile.Repositories,
+			Owners: profile.SnapshotRepositories(),
 		}, "", "\t")
 
 		profile.Console.Log("> " + request.Method + " /api/repositories: " + http.StatusText(http.StatusOK))

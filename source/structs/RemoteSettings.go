@@ -1,8 +1,11 @@
 package structs
 
 import utils_strings "git-evac/utils/strings"
+import "encoding/json"
+import "sync"
 
 type RemoteSettings struct {
+	mutex sync.RWMutex
 	// "github"
 	// map[remote-name]Remote{
 	//   Name: "github",
@@ -14,7 +17,7 @@ type RemoteSettings struct {
 	Type string `json:"type"`
 }
 
-func NewRemoteSettings(name string) RemoteSettings {
+func NewRemoteSettings(name string) *RemoteSettings {
 
 	var settings RemoteSettings
 
@@ -22,11 +25,25 @@ func NewRemoteSettings(name string) RemoteSettings {
 	settings.URL = ""
 	settings.Type = "git"
 
-	return settings
+	return &settings
+
+}
+
+func (settings *RemoteSettings) MarshalJSON() ([]byte, error) {
+
+	settings.mutex.RLock()
+	defer settings.mutex.RUnlock()
+
+	type Alias RemoteSettings
+
+	return json.Marshal((*Alias)(settings))
 
 }
 
 func (settings *RemoteSettings) IsValid() bool {
+
+	settings.mutex.RLock()
+	defer settings.mutex.RUnlock()
 
 	if utils_strings.IsName(settings.Name) {
 
@@ -35,7 +52,7 @@ func (settings *RemoteSettings) IsValid() bool {
 		return true
 
 	}
-	
+
 	return false
 
 }

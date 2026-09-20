@@ -1,12 +1,15 @@
 package types
 
+import "encoding/json"
+import "sync"
 import "time"
 
 type Backup struct {
-	Name string    `json:"name"`
-	File string    `json:"file"` // /path/to/file.tar.gz
-	Size int64     `json:"size"`
-	Time time.Time `json:"time"`
+	mutex sync.RWMutex
+	Name  string    `json:"name"`
+	File  string    `json:"file"` // /path/to/file.tar.gz
+	Size  int64     `json:"size"`
+	Time  time.Time `json:"time"`
 }
 
 func NewBackup(name string, file string) *Backup {
@@ -22,3 +25,13 @@ func NewBackup(name string, file string) *Backup {
 
 }
 
+func (backup *Backup) MarshalJSON() ([]byte, error) {
+
+	backup.mutex.RLock()
+	defer backup.mutex.RUnlock()
+
+	type Alias Backup
+
+	return json.Marshal((*Alias)(backup))
+
+}

@@ -8,9 +8,12 @@ import "os/exec"
 import "slices"
 import "strings"
 
-func (repo *Repository) AddRemote(owner_name string, repo_name string, schema Remote) bool {
+func (repo *Repository) AddRemote(owner_name string, repo_name string, schema *Remote) bool {
 
 	var result bool
+
+	repo.mutex.Lock()
+	defer repo.mutex.Unlock()
 
 	remote_name := schema.Name
 	remote_url  := schema.URL
@@ -92,6 +95,9 @@ func (repo *Repository) RemoveRemote(remote_name string) bool {
 
 	var result bool
 
+	repo.mutex.Lock()
+	defer repo.mutex.Unlock()
+
 	stat, err0 := os.Stat(repo.Folder)
 
 	if err0 == nil && stat.IsDir() && strings.HasSuffix(repo.Folder, "/.git") {
@@ -134,6 +140,9 @@ func (repo *Repository) RemoveRemote(remote_name string) bool {
 
 func (repo *Repository) Init() bool {
 
+	repo.mutex.Lock()
+	defer repo.mutex.Unlock()
+
 	_, err0 := os.Stat(repo.Folder)
 
 	if os.IsNotExist(err0) == true && strings.HasSuffix(repo.Folder, "/.git") {
@@ -170,6 +179,9 @@ func (repo *Repository) Init() bool {
 func (repo *Repository) Status() bool {
 
 	var result bool
+
+	repo.mutex.Lock()
+	defer repo.mutex.Unlock()
 
 	stat, err0 := os.Stat(repo.Folder)
 
@@ -359,7 +371,7 @@ func (repo *Repository) Status() bool {
 						_, ok := repo.Remotes[name]
 
 						if ok == true {
-							repo.Remotes[name].URL = url
+							repo.Remotes[name].SetURL(url)
 						} else {
 							repo.Remotes[name] = NewRemote(name, url)
 						}

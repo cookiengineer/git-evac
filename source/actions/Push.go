@@ -17,10 +17,10 @@ func Push(profile *structs.Profile, owner_name string, repo_name string) error {
 			repository := owner.GetRepository(repo_name)
 			messages := make(map[string]string)
 
-			for remote, _ := range repository.Remotes {
+			for remote := range repository.SnapshotRemotes() {
 
-				cmd := exec.Command("git", "push", remote, repository.CurrentBranch)
-				folder := repository.Folder
+				cmd := exec.Command("git", "push", remote, repository.GetCurrentBranch())
+				folder := repository.GetFolder()
 
 				if strings.HasSuffix(folder, "/.git") {
 					folder = folder[0:len(folder)-5]

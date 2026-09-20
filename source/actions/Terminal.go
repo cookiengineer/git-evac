@@ -16,7 +16,7 @@ func Terminal(profile *structs.Profile, owner_name string, repo_name string) err
 			repository := owner.GetRepository(repo_name)
 
 			cmd := exec.Command("kitty")
-			folder := repository.Folder
+			folder := repository.GetFolder()
 
 			if strings.HasSuffix(folder, "/.git") {
 				folder = folder[0:len(folder)-5]

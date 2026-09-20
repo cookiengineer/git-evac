@@ -7,6 +7,9 @@ import "strings"
 
 func (backup *Backup) Status() bool {
 
+	backup.mutex.Lock()
+	defer backup.mutex.Unlock()
+
 	stat, err0 := os.Stat(backup.File)
 
 	if err0 == nil && stat.Mode().IsRegular() && strings.HasSuffix(backup.File, ".tar.gz") {

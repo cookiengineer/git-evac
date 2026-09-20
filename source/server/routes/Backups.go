@@ -10,7 +10,7 @@ func Backups(profile *structs.Profile, request *http.Request, response http.Resp
 	if request.Method == http.MethodGet {
 
 		payload, _ := json.MarshalIndent(schemas.Backups{
-			Owners: profile.Backups,
+			Owners: profile.SnapshotBackups(),
 		}, "", "\t")
 
 		profile.Console.Log("> " + request.Method + " /api/backups: " + http.StatusText(http.StatusOK))

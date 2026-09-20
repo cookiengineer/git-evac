@@ -15,14 +15,14 @@ func Restore(profile *structs.Profile, owner_name string, repo_name string) erro
 
 			repository := owner.GetRepository(repo_name)
 
-			stat0, err0 := os.Stat(profile.Settings.Backup + "/" + owner.Name + "/" + repository.Name + ".tar.gz")
-			_, err1 := os.Stat(profile.Settings.Folder + "/" + owner.Name + "/" + repository.Name + ".bak")
+			stat0, err0 := os.Stat(profile.Settings.GetBackup() + "/" + owner.Name + "/" + repository.GetName() + ".tar.gz")
+			_, err1 := os.Stat(profile.Settings.GetFolder() + "/" + owner.Name + "/" + repository.GetName() + ".bak")
 
 			if err0 == nil && !stat0.IsDir() && os.IsNotExist(err1) {
 
 				err2 := os.Rename(
-					profile.Settings.Folder + "/" + owner.Name + "/" + repository.Name,
-					profile.Settings.Folder + "/" + owner.Name + "/" + repository.Name + ".bak",
+					profile.Settings.GetFolder() + "/" + owner.Name + "/" + repository.GetName(),
+					profile.Settings.GetFolder() + "/" + owner.Name + "/" + repository.GetName() + ".bak",
 				)
 
 				if err2 == nil {
@@ -30,8 +30,8 @@ func Restore(profile *structs.Profile, owner_name string, repo_name string) erro
 					cmd := exec.Command(
 						"tar",
 						"-xzvf",
-						profile.Settings.Backup + "/" + owner.Name + "/" + repository.Name + ".tar.gz",
-						repository.Name,
+						profile.Settings.GetBackup() + "/" + owner.Name + "/" + repository.GetName() + ".tar.gz",
+						repository.GetName(),
 					)
 					cmd.Dir = owner.Folder
 
@@ -59,14 +59,14 @@ func Restore(profile *structs.Profile, owner_name string, repo_name string) erro
 
 		} else {
 
-			stat0, err0 := os.Stat(profile.Settings.Backup + "/" + owner_name + "/" + repo_name + ".tar.gz")
+			stat0, err0 := os.Stat(profile.Settings.GetBackup() + "/" + owner_name + "/" + repo_name + ".tar.gz")
 
 			if err0 == nil && !stat0.IsDir() {
 
 				cmd := exec.Command(
 					"tar",
 					"-xzvf",
-					profile.Settings.Backup + "/" + owner.Name + "/" + repo_name + ".tar.gz",
+					profile.Settings.GetBackup() + "/" + owner.Name + "/" + repo_name + ".tar.gz",
 					repo_name,
 				)
 				cmd.Dir = owner.Folder

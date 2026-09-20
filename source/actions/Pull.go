@@ -16,7 +16,7 @@ func Pull(profile *structs.Profile, owner_name string, repo_name string) error {
 		if owner != nil && owner.HasRepository(repo_name) {
 
 			repository := owner.GetRepository(repo_name)
-			folder := repository.Folder
+			folder := repository.GetFolder()
 
 			if strings.HasSuffix(folder, "/.git") {
 				folder = folder[0:len(folder)-5]
@@ -43,7 +43,7 @@ func Pull(profile *structs.Profile, owner_name string, repo_name string) error {
 					"git",
 					"diff",
 					"--name-status",
-					repository.CurrentBranch + "..origin/" + repository.CurrentBranch,
+					repository.GetCurrentBranch() + "..origin/" + repository.GetCurrentBranch(),
 				)
 				cmd_diff.Dir = folder
 				cmd_diff.Stdout = &stdout_diff
@@ -72,7 +72,7 @@ func Pull(profile *structs.Profile, owner_name string, repo_name string) error {
 							"git",
 							"merge",
 							"--no-edit",
-							"origin/" + repository.CurrentBranch,
+							"origin/" + repository.GetCurrentBranch(),
 						)
 						cmd_merge.Dir = folder
 						cmd_merge.Stdout = &stdout_merge

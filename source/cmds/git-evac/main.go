@@ -113,7 +113,7 @@ func main() {
 			result := server.Serve(profile)
 
 			if result == false {
-				console.Error("Port " + strconv.FormatUint(uint64(profile.Settings.Port), 10) + " is probably already in use?")
+				console.Error("Port " + strconv.FormatUint(uint64(profile.Settings.GetPort()), 10) + " is probably already in use?")
 			}
 
 			done <- result
@@ -129,7 +129,7 @@ func main() {
 			view := webview.New(true)
 			view.SetTitle("Git Evac")
 			view.SetSize(800, 600, webview.HintNone)
-			view.Navigate("http://localhost:" + strconv.FormatUint(uint64(profile.Settings.Port), 10) + "/index.html")
+			view.Navigate("http://localhost:" + strconv.FormatUint(uint64(profile.Settings.GetPort()), 10) + "/index.html")
 
 			view.Run()
 

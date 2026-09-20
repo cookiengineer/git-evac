@@ -2,10 +2,13 @@ package types
 
 import utils_paths   "git-evac/utils/paths"
 import utils_strings "git-evac/utils/strings"
+import "encoding/json"
 import "path/filepath"
 import "strings"
+import "sync"
 
 type Identity struct {
+	mutex  sync.RWMutex
 	Name   string `json:"name"`
 	SSHKey string `json:"ssh-key"`
 	Git struct {
@@ -37,9 +40,35 @@ func NewIdentity(name string) *Identity {
 
 }
 
+func (identity *Identity) MarshalJSON() ([]byte, error) {
+
+	identity.mutex.RLock()
+	defer identity.mutex.RUnlock()
+
+	type Alias Identity
+
+	return json.Marshal((*Alias)(identity))
+
+}
+
+func (identity *Identity) GetName() string {
+
+	var result string
+
+	identity.mutex.RLock()
+	result = identity.Name
+	identity.mutex.RUnlock()
+
+	return result
+
+}
+
 func (identity *Identity) IsValid() bool {
 
 	var result bool
+
+	identity.mutex.RLock()
+	defer identity.mutex.RUnlock()
 
 	if utils_strings.IsName(identity.Name) {
 

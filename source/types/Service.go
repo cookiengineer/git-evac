@@ -1,9 +1,12 @@
 package types
 
 import utils_strings "git-evac/utils/strings"
+import "encoding/json"
 import "strings"
+import "sync"
 
 type Service struct {
+	mutex sync.RWMutex
 	Name  string `json:"name"`
 	URL   string `json:"url"`
 	Type  string `json:"type"`
@@ -23,7 +26,69 @@ func NewService(name string) *Service {
 
 }
 
+func (service *Service) MarshalJSON() ([]byte, error) {
+
+	service.mutex.RLock()
+	defer service.mutex.RUnlock()
+
+	type Alias Service
+
+	return json.Marshal((*Alias)(service))
+
+}
+
+func (service *Service) GetName() string {
+
+	var result string
+
+	service.mutex.RLock()
+	result = service.Name
+	service.mutex.RUnlock()
+
+	return result
+
+}
+
+func (service *Service) GetURL() string {
+
+	var result string
+
+	service.mutex.RLock()
+	result = service.URL
+	service.mutex.RUnlock()
+
+	return result
+
+}
+
+func (service *Service) GetType() string {
+
+	var result string
+
+	service.mutex.RLock()
+	result = service.Type
+	service.mutex.RUnlock()
+
+	return result
+
+}
+
+func (service *Service) GetToken() string {
+
+	var result string
+
+	service.mutex.RLock()
+	result = service.Token
+	service.mutex.RUnlock()
+
+	return result
+
+}
+
 func (service *Service) IsValid() bool {
+
+	service.mutex.RLock()
+	defer service.mutex.RUnlock()
 
 	if utils_strings.IsName(service.Name) {
 
@@ -40,6 +105,9 @@ func (service *Service) IsValid() bool {
 func (service *Service) SetURL(value string) bool {
 
 	var result bool
+
+	service.mutex.Lock()
+	defer service.mutex.Unlock()
 
 	if strings.HasPrefix(value, "https://codeberg.org") {
 
@@ -83,6 +151,9 @@ func (service *Service) SetToken(value string) bool {
 
 	var result bool
 
+	service.mutex.Lock()
+	defer service.mutex.Unlock()
+
 	if strings.TrimSpace(value) != "" {
 		service.Token = strings.TrimSpace(value)
 	}
@@ -94,6 +165,9 @@ func (service *Service) SetToken(value string) bool {
 func (service *Service) SetType(value string) bool {
 
 	var result bool
+
+	service.mutex.Lock()
+	defer service.mutex.Unlock()
 
 	switch value {
 	case "forgejo":

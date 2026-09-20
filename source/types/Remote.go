@@ -1,11 +1,14 @@
 package types
 
 import utils_strings "git-evac/utils/strings"
+import "encoding/json"
 import "strings"
+import "sync"
 
 type Remote struct {
-	Name string `json:"name"`
-	URL  string `json:"url"` // TODO: should be net/url.URL pointer
+	mutex sync.RWMutex
+	Name  string `json:"name"`
+	URL   string `json:"url"` // TODO: should be net/url.URL pointer
 }
 
 func NewRemote(name string, url string) *Remote {
@@ -19,7 +22,72 @@ func NewRemote(name string, url string) *Remote {
 
 }
 
+func (remote *Remote) MarshalJSON() ([]byte, error) {
+
+	remote.mutex.RLock()
+	defer remote.mutex.RUnlock()
+
+	type Alias Remote
+
+	return json.Marshal((*Alias)(remote))
+
+}
+
+func (remote *Remote) GetName() string {
+
+	var result string
+
+	remote.mutex.RLock()
+	result = remote.Name
+	remote.mutex.RUnlock()
+
+	return result
+
+}
+
+func (remote *Remote) GetURL() string {
+
+	var result string
+
+	remote.mutex.RLock()
+	result = remote.URL
+	remote.mutex.RUnlock()
+
+	return result
+
+}
+
+func (remote *Remote) SetURL(value string) {
+
+	remote.mutex.Lock()
+	remote.URL = value
+	remote.mutex.Unlock()
+
+}
+
+func (remote *Remote) SetName(value string) {
+
+	remote.mutex.Lock()
+	remote.Name = value
+	remote.mutex.Unlock()
+
+}
+
 func (remote *Remote) IsValid() bool {
+
+	var result bool
+
+	remote.mutex.RLock()
+
+	result = remote.isValidLocked()
+
+	remote.mutex.RUnlock()
+
+	return result
+
+}
+
+func (remote *Remote) isValidLocked() bool {
 
 	name := remote.Name
 	url := remote.URL
@@ -69,7 +137,21 @@ func (remote *Remote) IsValid() bool {
 
 func (remote *Remote) IsValidSchema() bool {
 
-	if remote.IsValid() {
+	var result bool
+
+	remote.mutex.RLock()
+
+	result = remote.isValidSchemaLocked()
+
+	remote.mutex.RUnlock()
+
+	return result
+
+}
+
+func (remote *Remote) isValidSchemaLocked() bool {
+
+	if remote.isValidLocked() {
 
 		url := remote.URL
 
@@ -89,15 +171,19 @@ func (remote *Remote) ToURL(owner string, repository string) string {
 
 	var result string = ""
 
-	if remote.IsValidSchema() {
+	remote.mutex.RLock()
+
+	if remote.isValidSchemaLocked() {
 
 		tmp := remote.URL
 		tmp = strings.ReplaceAll(tmp, "{owner}", owner)
 		tmp = strings.ReplaceAll(tmp, "{repository}", repository)
 
-		return tmp
+		result = tmp
 
 	}
+
+	remote.mutex.RUnlock()
 
 	return result
 

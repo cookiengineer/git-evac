@@ -80,7 +80,7 @@ func Dispatch(profile *structs.Profile) bool {
 		if request.Method == http.MethodGet {
 
 			payload, _ := json.MarshalIndent(schemas.Settings{
-				Settings: *profile.Settings,
+				Settings: profile.Settings,
 			}, "", "\t")
 
 			profile.Console.Log("> GET /api/settings:" + http.StatusText(http.StatusOK))
@@ -101,20 +101,20 @@ func Dispatch(profile *structs.Profile) bool {
 
 				if err1 == nil && schema.IsValid() {
 
-					profile.Settings.Backup = schema.Settings.Backup
-					profile.Settings.Folder = schema.Settings.Folder
-					profile.Settings.Port = schema.Settings.Port
-					profile.Settings.Owners = schema.Settings.Owners
+					profile.Settings.SetBackup(schema.Settings.Backup)
+					profile.Settings.SetFolder(schema.Settings.Folder)
+					profile.Settings.SetPort(schema.Settings.Port)
+					profile.Settings.SetOwners(schema.Settings.Owners)
 
-					stat2, err2 := os.Stat(profile.Settings.Folder)
+					stat2, err2 := os.Stat(profile.Settings.GetFolder())
 
 					if err2 == nil && stat2.IsDir() {
 
 						payload, _ := json.MarshalIndent(schemas.Settings{
-							Settings: *profile.Settings,
+							Settings: profile.Settings,
 						}, "", "\t")
 
-						err3 := os.WriteFile(profile.Settings.Folder+"/git-evac.json", payload, 0666)
+						err3 := os.WriteFile(profile.Settings.GetFolder()+"/git-evac.json", payload, 0666)
 
 						if err3 == nil {
 

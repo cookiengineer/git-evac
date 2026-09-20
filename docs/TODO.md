@@ -1,15 +1,32 @@
 
 # git-evac
 
-## Stories
+## Remotes
 
-- [ ] Implement a View that compares remotes and their remote URLs according
-      to the settings schema. This View should offer to use the `FixRemote`
-      step if the remotes don't match the schema.
+### app/components
+
+- [ ] Implement `RemotesTable` Component for the "Remotes" View
+
+### app/views
+
+- [ ] Implement a "Remotes" View that compares remotes and their remote URLs
+      according to the settings schema. This View should offer to use the
+      `FixRemote` step if the remotes don't match the schema.
+
+### app/actions
+
 - [ ] Implement a `FixRemote` action for remotes which are not matching the
-      settings schema.
-- [ ] Find out whether `bitbucket` support makes sense.
-- [ ] Find out whether `redmine` support makes sense.
+      settings schema, where e.g. `origin`, `github`, and `gitlab` are universally
+      set based on the schema's URL templates.
+
+### app/controllers/Settings
+
+- [ ] Implement `public/settings.html` Controller and View
+- [ ] Change Remote Properties (URL, Type)
+- [ ] Change Identity Properties (SSH Key, User Name, User Email)
+- [ ] Save Settings
+
+
 
 ## Backend
 
@@ -27,12 +44,6 @@
 - [ ] Implement `routes.Commit()`
 - [ ] Implement `routes.Diff()`
 
-### structs
-
-- [ ] `Profile.Refresh()` needs to create new RepositoryOwner instances if there are new ones
-- [ ] `Profile.Refresh()` needs to remove owners if they were deleted
-- [ ] `Profile.Refresh()` needs to remove repos if they were deleted
-
 ### actions
 
 - [ ] Implement `actions/Commit.go`
@@ -41,17 +52,6 @@
 
 
 ## Frontend
-
-### app/components
-
-- [ ] Implement `RemotesTable` Component
-
-### app/controllers/Settings
-
-- [ ] Implement `public/settings.html` Controller and View
-- [ ] Change Remote Properties (URL, Type)
-- [ ] Change Identity Properties (SSH Key, User Name, User Email)
-- [ ] Save Settings
 
 ### app/structs
 

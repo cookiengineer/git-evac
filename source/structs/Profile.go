@@ -4,8 +4,10 @@ import "io/fs"
 import os_user "os/user"
 
 import "fmt"
+import "sync"
 
 type Profile struct {
+	mutex        sync.RWMutex
 	Backups      map[string]*BackupOwner     `json:"backups"`
 	Repositories map[string]*RepositoryOwner `json:"repositories"`
 	Settings     *Settings                   `json:"settings"`
@@ -46,7 +48,7 @@ func NewProfile(console *Console, settings *Settings) *Profile {
 
 }
 
-func (profile *Profile) Update(settings Settings) {
+func (profile *Profile) Update(settings *Settings) {
 
 	// TODO
 	fmt.Println(settings)
@@ -59,9 +61,9 @@ func (profile *Profile) Refresh() {
 	profile.RefreshLocalRepositories()
 	profile.RefreshServiceRepositories()
 
-	for _, owner := range profile.Repositories {
+	for _, owner := range profile.SnapshotRepositories() {
 
-		for _, repo := range owner.Repositories {
+		for _, repo := range owner.SnapshotRepositories() {
 			repo.Status()
 		}
 
@@ -69,3 +71,32 @@ func (profile *Profile) Refresh() {
 
 }
 
+func (profile *Profile) SnapshotRepositories() map[string]*RepositoryOwner {
+
+	profile.mutex.RLock()
+	defer profile.mutex.RUnlock()
+
+	result := make(map[string]*RepositoryOwner, len(profile.Repositories))
+
+	for name, owner := range profile.Repositories {
+		result[name] = owner
+	}
+
+	return result
+
+}
+
+func (profile *Profile) SnapshotBackups() map[string]*BackupOwner {
+
+	profile.mutex.RLock()
+	defer profile.mutex.RUnlock()
+
+	result := make(map[string]*BackupOwner, len(profile.Backups))
+
+	for name, owner := range profile.Backups {
+		result[name] = owner
+	}
+
+	return result
+
+}

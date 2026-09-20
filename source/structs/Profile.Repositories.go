@@ -10,21 +10,34 @@ import "os"
 
 func (profile *Profile) RefreshLocalRepositories() {
 
-	stat, err := os.Stat(profile.Settings.Folder)
+	folder := profile.Settings.GetFolder()
+
+	stat, err := os.Stat(folder)
 
 	if err == nil && stat.IsDir() {
 
 		profile.Console.Group("Refresh Local Repositories")
 
-		info_owners, err_owners := os.ReadDir(profile.Settings.Folder)
+		info_owners, err_owners := os.ReadDir(folder)
 
 		if err_owners == nil {
+
+			owners_on_disk       := make(map[string]bool)
+			repositories_on_disk := make(map[string]bool)
 
 			for _, info_owner := range info_owners {
 
 				if info_owner.IsDir() == true {
 
-					info_repositories, err_repositories := os.ReadDir(profile.Settings.Folder + "/" + info_owner.Name())
+					owner_name := info_owner.Name()
+
+					owners_on_disk[owner_name] = true
+
+					if profile.HasRepositoryOwner(owner_name) == false {
+						profile.AddRepositoryOwner(owner_name, folder + "/" + owner_name)
+					}
+
+					info_repositories, err_repositories := os.ReadDir(folder + "/" + owner_name)
 
 					if err_repositories == nil {
 
@@ -32,22 +45,22 @@ func (profile *Profile) RefreshLocalRepositories() {
 
 							if info_repository.IsDir() == true {
 
-								stat, err := os.Stat(profile.Settings.Folder + "/" + info_owner.Name() + "/" + info_repository.Name() + "/.git")
+								stat, err := os.Stat(folder + "/" + owner_name + "/" + info_repository.Name() + "/.git")
 
 								if err == nil && stat.IsDir() == true {
 
-									owner_name := info_owner.Name()
 									repository_name := info_repository.Name()
 
-									if profile.HasRepositoryOwner(owner_name) == false {
-										profile.AddRepositoryOwner(owner_name, profile.Settings.Folder + "/" + owner_name)
-									}
+									repositories_on_disk[owner_name + "/" + repository_name] = true
 
 									if profile.HasRepository(owner_name, repository_name) == false {
 
 										profile.Console.Log("> Add " + owner_name + "/" + repository_name)
 										owner := profile.GetRepositoryOwner(owner_name)
-										owner.AddRepository(repository_name)
+
+										if owner != nil {
+											owner.AddRepository(repository_name)
+										}
 
 									}
 
@@ -63,25 +76,53 @@ func (profile *Profile) RefreshLocalRepositories() {
 
 			}
 
+			for owner_name, owner := range profile.SnapshotRepositories() {
+
+				if owners_on_disk[owner_name] == false {
+
+					if profile.RemoveRepositoryOwner(owner_name) == true {
+						profile.Console.Log("> Remove " + owner_name)
+					}
+
+				} else {
+
+					for repository_name := range owner.SnapshotRepositories() {
+
+						if repositories_on_disk[owner_name + "/" + repository_name] == false {
+
+							if owner.RemoveRepository(repository_name) == true {
+								profile.Console.Log("> Remove " + owner_name + "/" + repository_name)
+							}
+
+						}
+
+					}
+
+				}
+
+			}
+
 		}
 
 		profile.Console.GroupEnd("Refresh Local Repositories")
 
 	} else {
-		profile.Console.Warn("No Repositories in Folder \"" + profile.Settings.Folder + "\"")
+		profile.Console.Warn("No Repositories in Folder \"" + folder + "\"")
 	}
 
 }
 
 func (profile *Profile) RefreshServiceRepositories() {
 
-	stat, err := os.Stat(profile.Settings.Folder)
+	folder := profile.Settings.GetFolder()
+
+	stat, err := os.Stat(folder)
 
 	if err == nil && stat.IsDir() {
 
 		profile.Console.Group("Refresh Service Repositories")
 
-		info_owners, err_owners := os.ReadDir(profile.Settings.Folder)
+		info_owners, err_owners := os.ReadDir(folder)
 
 		if err_owners == nil {
 
@@ -91,50 +132,52 @@ func (profile *Profile) RefreshServiceRepositories() {
 
 					owner_name := info_owner.Name()
 
-					_, ok1 := profile.Settings.Owners[owner_name]
+					settings_owner := profile.Settings.GetOwner(owner_name)
 
-					if ok1 == true {
+					if settings_owner != nil {
 
-						for remote_name, service := range profile.Settings.Owners[owner_name].Services {
+						for remote_name, service := range settings_owner.SnapshotServices() {
 
 							remote_repositories := make([]*types.Repository, 0)
 
-							switch service.Type {
+							switch service.GetType() {
 							case "forgejo":
-								remote_repositories = services_forgejo.FetchRepositories(service.URL, owner_name, service.Token, profile.Settings.Folder + "/" + owner_name)
+								remote_repositories = services_forgejo.FetchRepositories(service.GetURL(), owner_name, service.GetToken(), folder + "/" + owner_name)
 							case "github":
-								remote_repositories = services_github.FetchRepositories(service.URL, owner_name, service.Token, profile.Settings.Folder + "/" + owner_name)
+								remote_repositories = services_github.FetchRepositories(service.GetURL(), owner_name, service.GetToken(), folder + "/" + owner_name)
 							case "gitlab":
-								remote_repositories = services_gitlab.FetchRepositories(service.URL, owner_name, service.Token, profile.Settings.Folder + "/" + owner_name)
+								remote_repositories = services_gitlab.FetchRepositories(service.GetURL(), owner_name, service.GetToken(), folder + "/" + owner_name)
 							case "gitea":
-								remote_repositories = services_gitea.FetchRepositories(service.URL, owner_name, service.Token, profile.Settings.Folder + "/" + owner_name)
+								remote_repositories = services_gitea.FetchRepositories(service.GetURL(), owner_name, service.GetToken(), folder + "/" + owner_name)
 							case "gogs":
-								remote_repositories = services_gogs.FetchRepositories(service.URL, owner_name, service.Token, profile.Settings.Folder + "/" + owner_name)
+								remote_repositories = services_gogs.FetchRepositories(service.GetURL(), owner_name, service.GetToken(), folder + "/" + owner_name)
 							}
 
 							if len(remote_repositories) > 0 {
 
 								for _, repository := range remote_repositories {
 
-									repository_name := repository.Name
+									repository_name := repository.GetName()
 
 									if profile.HasRepository(owner_name, repository_name) == false {
 
 										profile.Console.Log("> Init " + owner_name + "/" + repository_name)
 
 										owner := profile.GetRepositoryOwner(owner_name)
-										owner.AddRepository(repository_name)
 
-										remote, ok2 := profile.Settings.Owners[owner_name].Remotes[remote_name]
-										repo := owner.GetRepository(repository_name)
+										if owner != nil {
 
-										if repo != nil && ok2 == true {
+											owner.AddRepository(repository_name)
 
-											// Use remote as schema
-											repo.AddRemote(owner_name, repository_name, types.Remote{
-												Name: remote.Name,
-												URL:  remote.URL,
-											})
+											remote := settings_owner.GetRemote(remote_name)
+											repo   := owner.GetRepository(repository_name)
+
+											if repo != nil && remote != nil {
+
+												// Use remote as schema
+												repo.AddRemote(owner_name, repository_name, types.NewRemote(remote.GetName(), remote.GetURL()))
+
+											}
 
 										}
 
@@ -157,25 +200,52 @@ func (profile *Profile) RefreshServiceRepositories() {
 		profile.Console.GroupEnd("Refresh Service Repositories")
 
 	} else {
-		profile.Console.Warn("No Repositories in Folder \"" + profile.Settings.Folder + "\"")
+		profile.Console.Warn("No Repositories in Folder \"" + folder + "\"")
 	}
 
 }
 
 func (profile *Profile) AddRepositoryOwner(owner_name string, owner_folder string) bool {
 
+	var result bool
+
+	profile.mutex.Lock()
+
 	_, ok := profile.Repositories[owner_name]
 
 	if ok == false {
 
-		owner := NewRepositoryOwner(owner_name, owner_folder)
-		profile.Repositories[owner_name] = &owner
-
-		return true
+		profile.Repositories[owner_name] = NewRepositoryOwner(owner_name, owner_folder)
+		result = true
 
 	}
 
-	return false
+	profile.mutex.Unlock()
+
+	return result
+
+}
+
+func (profile *Profile) RemoveRepositoryOwner(owner_name string) bool {
+
+	var result bool
+
+	if owner_name != "" {
+
+		profile.mutex.Lock()
+
+		_, ok := profile.Repositories[owner_name]
+
+		if ok == true {
+			delete(profile.Repositories, owner_name)
+			result = true
+		}
+
+		profile.mutex.Unlock()
+
+	}
+
+	return result
 
 }
 
@@ -183,11 +253,15 @@ func (profile *Profile) GetRepositoryOwner(owner_name string) *RepositoryOwner {
 
 	var result *RepositoryOwner = nil
 
+	profile.mutex.RLock()
+
 	owner, ok := profile.Repositories[owner_name]
 
 	if ok == true {
 		result = owner
 	}
+
+	profile.mutex.RUnlock()
 
 	return result
 
@@ -197,16 +271,24 @@ func (profile *Profile) GetRepository(owner_name string, repo_name string) *type
 
 	var result *types.Repository = nil
 
-	owner, ok1 := profile.Repositories[owner_name]
+	owner := profile.GetRepositoryOwner(owner_name)
 
-	if ok1 == true {
+	if owner != nil {
+		result = owner.GetRepository(repo_name)
+	}
 
-		repository, ok2 := owner.Repositories[repo_name]
+	return result
 
-		if ok2 == true {
-			result = repository
-		}
+}
 
+func (profile *Profile) RemoveRepository(owner_name string, repo_name string) bool {
+
+	var result bool
+
+	owner := profile.GetRepositoryOwner(owner_name)
+
+	if owner != nil {
+		result = owner.RemoveRepository(repo_name)
 	}
 
 	return result
@@ -217,11 +299,15 @@ func (profile *Profile) HasRepositoryOwner(owner_name string) bool {
 
 	var result bool
 
+	profile.mutex.RLock()
+
 	_, ok := profile.Repositories[owner_name]
 
 	if ok == true {
 		result = true
 	}
+
+	profile.mutex.RUnlock()
 
 	return result
 
@@ -231,16 +317,10 @@ func (profile *Profile) HasRepository(owner_name string, repo_name string) bool 
 
 	var result bool
 
-	owner, ok1 := profile.Repositories[owner_name]
+	owner := profile.GetRepositoryOwner(owner_name)
 
-	if ok1 == true {
-
-		_, ok2 := owner.Repositories[repo_name]
-
-		if ok2 == true {
-			result = true
-		}
-
+	if owner != nil {
+		result = owner.HasRepository(repo_name)
 	}
 
 	return result

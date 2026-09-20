@@ -16,7 +16,7 @@ func Clone(profile *structs.Profile, owner_name string, repo_name string) error 
 
 		if repository != nil {
 
-			stat, err0 := os.Stat(repository.Folder)
+			stat, err0 := os.Stat(repository.GetFolder())
 
 			if err0 == nil && stat.IsDir() {
 
@@ -25,7 +25,7 @@ func Clone(profile *structs.Profile, owner_name string, repo_name string) error 
 
 			} else if os.IsNotExist(err0) {
 
-				folder := repository.Folder
+				folder := repository.GetFolder()
 
 				if strings.HasSuffix(folder, "/.git") {
 					folder = folder[0:len(folder)-5]
@@ -34,9 +34,9 @@ func Clone(profile *structs.Profile, owner_name string, repo_name string) error 
 				parent := filepath.Dir(folder)
 
 				// Repository does not exist, clone from origin
-				origin, ok := repository.Remotes["origin"]
+				origin := repository.GetRemote("origin")
 
-				if ok == true {
+				if origin != nil {
 
 					var stdout_clone bytes.Buffer
 					var stderr_clone bytes.Buffer
@@ -45,8 +45,8 @@ func Clone(profile *structs.Profile, owner_name string, repo_name string) error 
 						"git",
 						"clone",
 						"--single-branch",
-						origin.URL,
-						"./" + repository.Name,
+						origin.GetURL(),
+						"./" + repository.GetName(),
 					)
 					cmd_clone.Dir = parent
 					cmd_clone.Stdout = &stdout_clone

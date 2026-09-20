@@ -20,9 +20,9 @@ func DispatchRoutes(profile *structs.Profile) bool {
 		profile.RefreshLocalRepositories()
 		profile.RefreshServiceRepositories()
 
-		for _, owner := range profile.Repositories {
+		for _, owner := range profile.SnapshotRepositories() {
 
-			for _, repo := range owner.Repositories {
+			for _, repo := range owner.SnapshotRepositories() {
 				repo.Status()
 			}
 

@@ -93,7 +93,7 @@ func main() {
 		server.DispatchHotReload(profile)
 
 		if server.Serve(profile) == false {
-			console.Error("Port " + strconv.FormatUint(uint64(profile.Settings.Port), 10) + " is already in use.")
+			console.Error("Port " + strconv.FormatUint(uint64(profile.Settings.GetPort()), 10) + " is already in use.")
 			os.Exit(1)
 		} else {
 			os.Exit(0)

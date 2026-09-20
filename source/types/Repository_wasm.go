@@ -4,7 +4,10 @@ package types
 
 import "strings"
 
-func (repo *Repository) AddRemote(owner_name string, repo_name string, schema Remote) bool {
+func (repo *Repository) AddRemote(owner_name string, repo_name string, schema *Remote) bool {
+
+	repo.mutex.Lock()
+	defer repo.mutex.Unlock()
 
 	remote_name := schema.Name
 	remote_url  := schema.URL
@@ -18,6 +21,9 @@ func (repo *Repository) AddRemote(owner_name string, repo_name string, schema Re
 }
 
 func (repo *Repository) RemoveRemote(remote_name string) bool {
+
+	repo.mutex.Lock()
+	defer repo.mutex.Unlock()
 
 	_, ok := repo.Remotes[remote_name]
 

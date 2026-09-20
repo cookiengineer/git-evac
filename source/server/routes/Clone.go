@@ -26,7 +26,7 @@ func Clone(profile *structs.Profile, request *http.Request, response http.Respon
 			response.WriteHeader(http.StatusOK)
 
 			payload, _ := json.MarshalIndent(schemas.Repository{
-				Repository: *repo,
+				Repository: repo,
 			}, "", "\t")
 			response.Write(payload)
 

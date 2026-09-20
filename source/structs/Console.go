@@ -24,11 +24,11 @@ func toConsoleIndent(offset int) string {
 }
 
 type Console struct {
+	mutex      sync.RWMutex
 	Messages   []ConsoleMessage `json:"messages"`
 	Stdout     *os.File         `json:"stdout"`
 	Stderr     *os.File         `json:"stderr"`
 	methods    map[string]bool  `json:"-"`
-	mutex      *sync.RWMutex    `json:"-"`
 	offset     int              `json:"-"`
 	width      int              `json:"-"`
 	height     int              `json:"-"`
@@ -54,7 +54,6 @@ func NewConsole(stdout *os.File, stderr *os.File, offset int) *Console {
 		"Error": true,
 		"Progress": true,
 	}
-	console.mutex = &sync.RWMutex{}
 
 	if stdout != nil && stderr != nil {
 
@@ -118,6 +117,32 @@ func (console *Console) GetOffset() int {
 	result = console.offset
 
 	console.mutex.RUnlock()
+
+	return result
+
+}
+
+func (console *Console) GetHeight() int {
+
+	var result int
+
+	console.mutex.RLock()
+
+	result = console.height
+
+	console.mutex.RUnlock()
+
+	return result
+
+}
+
+func (console *Console) SnapshotMessages() []ConsoleMessage {
+
+	console.mutex.RLock()
+	defer console.mutex.RUnlock()
+
+	result := make([]ConsoleMessage, len(console.Messages))
+	copy(result, console.Messages)
 
 	return result
 
@@ -235,17 +260,20 @@ func (console *Console) EnableMethod(method string) bool {
 
 func (console *Console) Render(target *Console) {
 
-	console.mutex.RLock()
+	if target == nil {
+		return
+	}
 
-	preserved := console.Messages[0:len(console.Messages)]
+	preserved := console.SnapshotMessages()
+	height    := target.GetHeight()
 
-	if target.height > 0 && len(preserved) > target.height {
+	if height > 0 && len(preserved) > height {
 
 		target.mutex.Lock()
-		target.Messages = append(target.Messages, preserved[0:len(preserved) - target.height]...)
+		target.Messages = append(target.Messages, preserved[0:len(preserved)-height]...)
 		target.mutex.Unlock()
 
-		preserved = preserved[len(preserved) - target.height:]
+		preserved = preserved[len(preserved)-height:]
 
 	}
 
@@ -270,8 +298,6 @@ func (console *Console) Render(target *Console) {
 		}
 
 	}
-
-	console.mutex.RUnlock()
 
 }
 
@@ -352,12 +378,14 @@ func (console *Console) Clear(raw string) {
 		raw = raw[0:strings.Index(raw, "\n")]
 	}
 
+	messages := console.SnapshotMessages()
+
 	found_start := -1
 	found_end   := -1
 
-	for m := 0; m < len(console.Messages); m++ {
+	for m := 0; m < len(messages); m++ {
 
-		message := console.Messages[m]
+		message := messages[m]
 
 		if message.Method == "Group" {
 
@@ -372,9 +400,9 @@ func (console *Console) Clear(raw string) {
 
 	if found_start >= 0 {
 
-		for m := found_start; m < len(console.Messages); m++ {
+		for m := found_start; m < len(messages); m++ {
 
-			message := console.Messages[m]
+			message := messages[m]
 
 			if message.Method == "GroupEnd" {
 
@@ -394,7 +422,7 @@ func (console *Console) Clear(raw string) {
 		preserved := make([]ConsoleMessage, 0)
 
 		for m := 0; m <= found_start; m++ {
-			preserved = append(preserved, console.Messages[m])
+			preserved = append(preserved, messages[m])
 		}
 
 		console.mutex.Lock()
@@ -412,13 +440,15 @@ func (console *Console) Clear(raw string) {
 
 		}
 
-		if console.height > 0 && len(preserved) > console.height {
+		height := console.GetHeight()
+
+		if height > 0 && len(preserved) > height {
 
 			console.mutex.Lock()
-			console.Messages = preserved[0:len(preserved) - console.height]
+			console.Messages = preserved[0:len(preserved)-height]
 			console.mutex.Unlock()
 
-			preserved = preserved[len(preserved) - console.height:]
+			preserved = preserved[len(preserved)-height:]
 
 		}
 
@@ -457,14 +487,14 @@ func (console *Console) Group(raw string) {
 
 	message := NewConsoleMessage("Group", raw)
 
-	if enabled, _ := console.methods["Group"]; enabled == true {
+	if console.UseMethod("Group") == true {
 
-		indent := toConsoleIndent(console.offset)
+		indent := toConsoleIndent(console.GetOffset())
 		lines := message.Lines()
 
 		if len(lines) == 1 && console.Stdout != nil {
 
-			if console.use_colors == true {
+			if console.UseColors() == true {
 				console.Stdout.WriteString("\u001b[40m" + indent + "/" + lines[0] + "\u001b[K\u001b[0m\n")
 			} else {
 				console.Stdout.WriteString(indent + "/" + lines[0] + "\n")
@@ -490,7 +520,7 @@ func (console *Console) GroupEnd(raw string) {
 
 	message := NewConsoleMessage("GroupEnd", raw)
 
-	if enabled, _ := console.methods["Group"]; enabled == true {
+	if console.UseMethod("Group") == true {
 
 		console.mutex.Lock()
 
@@ -499,12 +529,12 @@ func (console *Console) GroupEnd(raw string) {
 		}
 		console.mutex.Unlock()
 
-		indent := toConsoleIndent(console.offset)
+		indent := toConsoleIndent(console.GetOffset())
 		lines := message.Lines()
 
 		if len(lines) == 1 && console.Stdout != nil {
 
-			if console.use_colors == true {
+			if console.UseColors() == true {
 				console.Stdout.WriteString("\u001b[40m" + indent + "\\" + lines[0] + "\u001b[K\u001b[0m\n")
 			} else {
 				console.Stdout.WriteString(indent + "\\" + lines[0] + "\n")
@@ -524,14 +554,14 @@ func (console *Console) Log(raw string) {
 
 	message := NewConsoleMessage("Log", raw)
 
-	if enabled, _ := console.methods["Log"]; enabled == true {
+	if console.UseMethod("Log") == true {
 
-		indent := toConsoleIndent(console.offset)
+		indent := toConsoleIndent(console.GetOffset())
 		lines  := message.Lines()
 
 		if len(lines) > 0 && console.Stdout != nil {
 
-			if console.use_colors == true {
+			if console.UseColors() == true {
 
 				for _, line := range lines {
 					console.Stdout.WriteString("\u001b[40m" + indent + line + "\u001b[K\n")
@@ -561,14 +591,14 @@ func (console *Console) Error(raw string) {
 
 	message := NewConsoleMessage("Error", raw)
 
-	if enabled, _ := console.methods["Error"]; enabled == true {
+	if console.UseMethod("Error") == true {
 
-		indent := toConsoleIndent(console.offset)
+		indent := toConsoleIndent(console.GetOffset())
 		lines  := message.Lines()
 
 		if len(lines) > 0 && console.Stderr != nil {
 
-			if console.use_colors == true {
+			if console.UseColors() == true {
 
 				for _, line := range lines {
 					console.Stderr.WriteString("\u001b[41m" + indent + line + "\u001b[K\n")
@@ -598,14 +628,14 @@ func (console *Console) Info(raw string) {
 
 	message := NewConsoleMessage("Info", raw)
 
-	if enabled, _ := console.methods["Info"]; enabled == true {
+	if console.UseMethod("Info") == true {
 
-		indent := toConsoleIndent(console.offset)
+		indent := toConsoleIndent(console.GetOffset())
 		lines  := message.Lines()
 
 		if len(lines) > 0 && console.Stdout != nil {
 
-			if console.use_colors == true {
+			if console.UseColors() == true {
 
 				for _, line := range lines {
 					console.Stdout.WriteString("\u001b[42m" + indent + line + "\u001b[K\n")
@@ -640,9 +670,9 @@ func (console *Console) Progress(raw string) {
 
 	message := NewConsoleMessage("Progress", raw)
 
-	if enabled, _ := console.methods["Progress"]; enabled == true {
+	if console.UseMethod("Progress") == true {
 
-		indent := toConsoleIndent(console.offset)
+		indent := toConsoleIndent(console.GetOffset())
 		lines  := message.Lines()
 
 		if len(lines) == 1 {
@@ -742,14 +772,14 @@ func (console *Console) Warn(raw string) {
 
 	message := NewConsoleMessage("Warn", raw)
 
-	if enabled, _ := console.methods["Warn"]; enabled == true {
+	if console.UseMethod("Warn") == true {
 
-		indent := toConsoleIndent(console.offset)
+		indent := toConsoleIndent(console.GetOffset())
 		lines  := message.Lines()
 
 		if len(lines) > 0 && console.Stdout != nil {
 
-			if console.use_colors == true {
+			if console.UseColors() == true {
 
 				for _, line := range lines {
 					console.Stdout.WriteString("\u001b[43m" + indent + line + "\u001b[K\n")
@@ -774,4 +804,3 @@ func (console *Console) Warn(raw string) {
 	}
 
 }
-
