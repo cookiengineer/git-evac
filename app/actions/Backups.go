@@ -9,7 +9,7 @@ func Backups() (*schemas.Backups, error) {
 	var result_schema *schemas.Backups = nil
 	var result_error error = nil
 
-	response, err1 := fetch.Fetch("/api/backups", &fetch.Request{
+	response, err1 := fetch.Fetch("/api/backups", &fetch.RequestInit{
 		Method:   fetch.MethodGet,
 		Mode:     fetch.ModeSameOrigin,
 		Cache:    fetch.CacheDefault,

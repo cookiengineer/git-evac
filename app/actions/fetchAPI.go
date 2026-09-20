@@ -14,7 +14,7 @@ func fetchAPI(method string, path string, owner string, repository string) (*sch
 
 	if strings.HasPrefix(path, "/api/") && !strings.Contains(owner, "/") && !strings.Contains(repository, "/") {
 
-		response, err1 := fetch.Fetch(path + "/" + owner + "/" + repository, &fetch.Request{
+		response, err1 := fetch.Fetch(path + "/" + owner + "/" + repository, &fetch.RequestInit{
 			Method:   fetch.Method(method),
 			Mode:     fetch.ModeSameOrigin,
 			Cache:    fetch.CacheDefault,

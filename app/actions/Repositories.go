@@ -9,7 +9,7 @@ func Repositories() (*schemas.Repositories, error) {
 	var result_schema *schemas.Repositories = nil
 	var result_error error = nil
 
-	response, err1 := fetch.Fetch("/api/repositories", &fetch.Request{
+	response, err1 := fetch.Fetch("/api/repositories", &fetch.RequestInit{
 		Method:   fetch.MethodGet,
 		Mode:     fetch.ModeSameOrigin,
 		Cache:    fetch.CacheDefault,

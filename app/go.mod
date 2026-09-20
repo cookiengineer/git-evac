@@ -6,7 +6,7 @@ replace git-evac => ../source
 
 require git-evac v0.0.0
 
-require github.com/cookiengineer/gooey v0.0.6
+require github.com/cookiengineer/gooey v0.0.9
 
 require (
 	golang.org/x/sys v0.37.0 // indirect

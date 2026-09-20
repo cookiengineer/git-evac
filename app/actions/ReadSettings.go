@@ -9,7 +9,7 @@ func ReadSettings() (*schemas.Settings, error) {
 	var result_schema *schemas.Settings = nil
 	var result_error error = nil
 
-	response, err1 := fetch.Fetch("/api/settings", &fetch.Request{
+	response, err1 := fetch.Fetch("/api/settings", &fetch.RequestInit{
 		Method:   fetch.MethodGet,
 		Mode:     fetch.ModeSameOrigin,
 		Cache:    fetch.CacheDefault,

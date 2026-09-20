@@ -5,14 +5,14 @@ package controllers
 import "github.com/cookiengineer/gooey/components/app"
 // import "github.com/cookiengineer/gooey/components/content"
 import "github.com/cookiengineer/gooey/components/interfaces"
+import "git-evac/schemas"
 // import "git-evac-app/actions"
 import app_views "git-evac-app/views"
 
 type Settings struct {
 	Main   *app.Main           `json:"main"`
-	Schema any                 `json:"schema"`
 	View   *app_views.Settings `json:"view"`
-	// TODO: Schema schemas.Settigns?
+	Schema *schemas.Settings   `json:"schema"`
 }
 
 func NewSettings(main *app.Main, view interfaces.View) *Settings {
