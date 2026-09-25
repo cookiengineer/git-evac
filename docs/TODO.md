@@ -6,12 +6,14 @@
 ### app/components
 
 - [ ] Implement `RemotesTable` Component for the "Remotes" View
+- [ ] Implement a `RemotesDialog` Component for the remotes view
 
-### app/views
+### app/views and app/controllers
 
-- [ ] Implement a "Remotes" View that compares remotes and their remote URLs
-      according to the settings schema. This View should offer to use the
-      `FixRemote` step if the remotes don't match the schema.
+- [ ] Implement a "Remotes" View and Remotes Controller that compares remotes
+      and their remote URLs according to the settings schema. This View should
+      offer to use the `FixRemote` step if the remotes don't match the schema.
+- [ ] Integrate the view to the app
 
 ### app/actions
 
