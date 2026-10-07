@@ -30,7 +30,7 @@ correct HTTP verbs to reflect their idempotency. Each action on a repository wil
 | [x] | `GET`         | `/api/backups`                   | [routes.Backups](/source/server/routes/Backups.go)           | [schemas.Backups](/source/schemas/Backups.go)           |
 | [x] | `GET`         | `/api/repositories`              | [routes.Repositories](/source/server/routes/Repositories.go) | [schemas.Repositories](/source/schemas/Repositories.go) |
 | [ ] | `GET`         | `/api/diff/<owner>/<repository>` | [routes.Diff](/source/server/routes/Clone.go)                | [schemas.Diff](/source/schemas/Diff.go)                 |
-| [ ] | `GET`, `POST` | `/api/settings`                  | [routes.Settings](/source/server/routes/Settings.go)         | [schemas.Settings](/source/schemas/Settings.go)         |
+| [x] | `GET`, `POST` | `/api/settings`                  | [routes.Settings](/source/server/routes/Settings.go)         | [schemas.Settings](/source/schemas/Settings.go)         |
 
 ### Git Repository APIs
 
@@ -40,6 +40,8 @@ correct HTTP verbs to reflect their idempotency. Each action on a repository wil
 | [ ] | `GET`           | `/api/clone/<owner>/<repository>`    | [routes.Clone](/source/server/routes/Clone.go)       | [schemas.Repository](/source/schemas/Repository.go) |
 | [ ] | `PATCH`         | `/api/commit/<owner>/<repository>`   | [routes.Commit](/source/server/routes/Commit.go)     | [schemas.Repository](/source/schemas/Repository.go) |
 | [x] | `GET`           | `/api/fix/<owner>/<repository>`      | [routes.Terminal](/source/server/routes/Terminal.go) | [schemas.Repository](/source/schemas/Repository.go) |
+| [x] | `PATCH`         | `/api/fixremotes/<owner>/<repository>` | [routes.FixRemotes](/source/server/routes/FixRemotes.go) | [schemas.Repository](/source/schemas/Repository.go) |
+| [x] | `PATCH`         | `/api/fixidentity/<owner>/<repository>` | [routes.FixIdentity](/source/server/routes/FixIdentity.go) | [schemas.Repository](/source/schemas/Repository.go) |
 | [x] | `PATCH`         | `/api/pull/<owner>/<repository>`     | [routes.Pull](/source/server/routes/Pull.go)         | [schemas.Repository](/source/schemas/Repository.go) |
 | [x] | `GET`           | `/api/push/<owner>/<repository>`     | [routes.Push](/source/server/routes/Push.go)         | [schemas.Repository](/source/schemas/Repository.go) |
 | [x] | `PATCH`         | `/api/restore/<owner>/<repository>`  | [routes.Restore](/source/server/routes/Restore.go)   | [schemas.Repository](/source/schemas/Repository.go) |

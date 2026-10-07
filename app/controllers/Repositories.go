@@ -12,11 +12,16 @@ import app_actions "git-evac-app/actions"
 import app_components "git-evac-app/components"
 import app_views "git-evac-app/views"
 import "strconv"
+import "strings"
 
 type Repositories struct {
-	Main   *app.Main               `json:"main"`
-	Schema *schemas.Repositories   `json:"schema"`
-	View   *app_views.Repositories `json:"view"`
+	Main        *app.Main                   `json:"main"`
+	Schema      *schemas.Repositories       `json:"schema"`
+	View        *app_views.Repositories     `json:"view"`
+	Pin         *app_components.PinSettings `json:"-"`
+	PinSettings *schemas.Settings           `json:"-"`
+	PinOwner    string                      `json:"-"`
+	PinRepo     string                      `json:"-"`
 }
 
 func NewRepositories(main *app.Main, view interfaces.View) *Repositories {
@@ -44,7 +49,15 @@ func (controller *Repositories) Enter() bool {
 
 				if ok == true {
 
-					if action == "confirm" {
+					if controller.Pin != nil {
+
+						if action == "confirm" {
+							controller.confirmPin()
+						} else if action == "cancel" || action == "close" {
+							controller.cancelPin()
+						}
+
+					} else if action == "confirm" {
 
 						scheduler_table, ok2 := components.UnwrapComponent[*app_components.SchedulerTable](controller.Main.Dialog.Query("dialog > table[data-name=\"scheduler\"]"))
 
@@ -145,7 +158,21 @@ func (controller *Repositories) Enter() bool {
 					action, ok := raw_action.(string)
 
 					if ok == true {
+
+						if action == "pin" {
+
+							parts := strings.SplitN(repository, "/", 2)
+
+							if len(parts) == 2 {
+								controller.showPin(parts[0], parts[1])
+							}
+
+							return
+
+						}
+
 						filtered[repository] = action
+
 					}
 
 				}
@@ -162,11 +189,11 @@ func (controller *Repositories) Enter() bool {
 
 			if event == "select" {
 
-				actions_clone  := make([]string, 0)
-				actions_fix    := make([]string, 0)
+				actions_clone := make([]string, 0)
+				actions_fix := make([]string, 0)
 				actions_commit := make([]string, 0)
-				actions_pull   := make([]string, 0)
-				actions_push   := make([]string, 0)
+				actions_pull := make([]string, 0)
+				actions_push := make([]string, 0)
 
 				for repository, raw_action := range attributes {
 
@@ -417,12 +444,12 @@ func (controller *Repositories) showDialog(selected map[string]string) {
 
 	if controller.Main.Dialog != nil {
 
-		dialog         := controller.Main.Dialog
-		actions_clone  := make(map[string]string)
-		actions_fix    := make(map[string]string)
+		dialog := controller.Main.Dialog
+		actions_clone := make(map[string]string)
+		actions_fix := make(map[string]string)
 		actions_commit := make(map[string]string)
-		actions_pull   := make(map[string]string)
-		actions_push   := make(map[string]string)
+		actions_pull := make(map[string]string)
+		actions_push := make(map[string]string)
 
 		for repository, action := range selected {
 
@@ -492,6 +519,79 @@ func (controller *Repositories) showDialog(selected map[string]string) {
 
 		}
 
+	}
+
+}
+
+func (controller *Repositories) showPin(owner_name string, repository_name string) {
+
+	if controller.Main.Dialog == nil {
+		return
+	}
+
+	settings, err := app_actions.ReadSettings()
+
+	if err != nil || settings == nil || settings.Settings == nil {
+		return
+	}
+
+	owner := settings.Settings.GetOwner(owner_name)
+
+	if owner == nil {
+		return
+	}
+
+	controller.PinSettings = settings
+	controller.PinOwner = owner_name
+	controller.PinRepo = repository_name
+
+	pin := app_components.NewPinSettings(owner, repository_name)
+	controller.Pin = &pin
+
+	controller.Main.Dialog.SetTitle("Pin Settings: " + owner_name + "/" + repository_name)
+	controller.Main.Dialog.SetContent(interfaces.Component(controller.Pin))
+	controller.Main.Dialog.Enable()
+	controller.Main.Dialog.Show()
+
+}
+
+func (controller *Repositories) confirmPin() {
+
+	if controller.Pin == nil || controller.PinSettings == nil {
+		controller.cancelPin()
+		return
+	}
+
+	pinned := controller.Pin.GetPinned()
+
+	if controller.PinSettings.Settings != nil {
+
+		owner := controller.PinSettings.Settings.GetOwner(controller.PinOwner)
+
+		if owner != nil {
+			owner.SetRepository(pinned)
+			app_actions.SaveSettings(*controller.PinSettings)
+			app_actions.FixRemotes(controller.PinOwner, controller.PinRepo)
+			app_actions.FixIdentity(controller.PinOwner, controller.PinRepo)
+		}
+
+	}
+
+	controller.cancelPin()
+	location.GetLocation().Reload()
+
+}
+
+func (controller *Repositories) cancelPin() {
+
+	controller.Pin = nil
+	controller.PinSettings = nil
+	controller.PinOwner = ""
+	controller.PinRepo = ""
+
+	if controller.Main.Dialog != nil {
+		controller.Main.Dialog.Disable()
+		controller.Main.Dialog.Hide()
 	}
 
 }

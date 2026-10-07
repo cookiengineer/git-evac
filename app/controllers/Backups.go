@@ -1,3 +1,5 @@
+//go:build wasm
+
 package controllers
 
 import "github.com/cookiengineer/gooey/bindings/location"
@@ -188,7 +190,7 @@ func (controller *Backups) Enter() bool {
 				for _, owner := range controller.Schemas.Backups.Owners {
 
 					for _, backup := range owner.Backups {
-						mapped[owner.Name + "/" + backup.Name] = true
+						mapped[owner.Name+"/"+backup.Name] = true
 					}
 
 				}
@@ -196,7 +198,7 @@ func (controller *Backups) Enter() bool {
 				for _, owner := range controller.Schemas.Repositories.Owners {
 
 					for _, repository := range owner.Repositories {
-						mapped[owner.Name + "/" + repository.Name] = true
+						mapped[owner.Name+"/"+repository.Name] = true
 					}
 
 				}
@@ -330,7 +332,7 @@ func (controller *Backups) Update() {
 				for _, backup_owner := range controller.Schemas.Backups.Owners {
 
 					for _, backup := range backup_owner.Backups {
-						mapped[backup_owner.Name + "/" + backup.Name] = true
+						mapped[backup_owner.Name+"/"+backup.Name] = true
 					}
 
 				}
@@ -338,7 +340,7 @@ func (controller *Backups) Update() {
 				for _, repository_owner := range controller.Schemas.Repositories.Owners {
 
 					for _, repository := range repository_owner.Repositories {
-						mapped[repository_owner.Name + "/" + repository.Name] = false
+						mapped[repository_owner.Name+"/"+repository.Name] = false
 					}
 
 				}

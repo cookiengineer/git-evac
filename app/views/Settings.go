@@ -3,21 +3,23 @@
 package views
 
 import "github.com/cookiengineer/gooey/bindings/dom"
-import "github.com/cookiengineer/gooey/components/layout"
 import "github.com/cookiengineer/gooey/components/utils"
 import "github.com/cookiengineer/gooey/components/interfaces"
 import "github.com/cookiengineer/gooey/components/types"
-// TODO: import app_components "git-evac-app/components"
+import app_components "git-evac-app/components"
+import "git-evac/schemas"
+import "git-evac/structs"
 import "sort"
 import "strings"
 
 type Settings struct {
-	Element *dom.Element           `json:"element"`
-	Layout  types.Layout           `json:"layout"`
-	Content []interfaces.Component `json:"content"`
-	name    string                 `json:"name"`
-	label   string                 `json:"label"`
-	path    string                 `json:"path"`
+	Element   *dom.Element           `json:"element"`
+	Layout    types.Layout           `json:"layout"`
+	Content   []interfaces.Component `json:"content"`
+	name      string
+	label     string
+	path      string
+	scheduler interfaces.Scheduler
 }
 
 func ToSettings(element *dom.Element) *Settings {
@@ -25,12 +27,12 @@ func ToSettings(element *dom.Element) *Settings {
 	var view Settings
 
 	view.Element = element
-	view.Layout  = types.LayoutFlow
+	view.Layout = types.LayoutFlow
 	view.Content = make([]interfaces.Component, 0)
 
-	view.name  = strings.ToLower(element.GetAttribute("data-name"))
+	view.name = strings.ToLower(element.GetAttribute("data-name"))
 	view.label = element.GetAttribute("data-label")
-	view.path  = strings.ToLower(element.GetAttribute("data-path"))
+	view.path = strings.ToLower(element.GetAttribute("data-path"))
 
 	return &view
 
@@ -49,6 +51,20 @@ func (view *Settings) Enable() bool {
 	// TODO: Enable all buttons and input elements
 
 	return false
+
+}
+
+func (view *Settings) SetScheduler(scheduler interfaces.Scheduler) {
+
+	view.scheduler = scheduler
+
+	for _, component := range view.Content {
+
+		if component != nil {
+			component.SetScheduler(scheduler)
+		}
+
+	}
 
 }
 
@@ -104,7 +120,7 @@ func (view *Settings) Mount() bool {
 			view.path = strings.ToLower(tmp_path)
 		}
 
-		elements   := view.Element.Children()
+		elements := view.Element.Children()
 		components := make([]interfaces.Component, 0)
 
 		for _, element := range elements {
@@ -114,15 +130,9 @@ func (view *Settings) Mount() bool {
 				typ := element.GetAttribute("data-type")
 
 				if typ == "settings" {
-
-					// TODO: Use a SettingsArticle component for basic settings
-					components = append(components, layout.ToArticle(element))
-
+					components = append(components, app_components.ToSettingsArticle(element))
 				} else if typ == "owner" {
-
-					// TODO: Use a OwnerArticle component per SettingsOwner
-					components = append(components, layout.ToArticle(element))
-
+					components = append(components, app_components.ToOwnerArticle(element))
 				}
 
 			}
@@ -215,7 +225,6 @@ func (view *Settings) QuerySelectorAll(query string) []*dom.Element {
 
 }
 
-
 func (view *Settings) Render() *dom.Element {
 
 	if view.Element != nil {
@@ -249,6 +258,120 @@ func (view *Settings) Render() *dom.Element {
 	}
 
 	return nil
+
+}
+
+func (view *Settings) SetSchema(schema *schemas.Settings) {
+
+	if schema == nil || schema.Settings == nil {
+		return
+	}
+
+	content := make([]interfaces.Component, 0)
+
+	var settings_article *app_components.SettingsArticle = nil
+
+	for _, component := range view.Content {
+
+		if article, ok := component.(*app_components.SettingsArticle); ok == true {
+			settings_article = article
+			break
+		}
+
+	}
+
+	if settings_article == nil {
+
+		if view.Element != nil {
+
+			element := view.Element.QuerySelector("article[data-type=\"settings\"]")
+
+			if element != nil {
+				settings_article = app_components.ToSettingsArticle(element)
+				settings_article.Mount()
+			}
+
+		}
+
+	}
+
+	if settings_article != nil {
+		settings_article.SetSchema(schema.Settings)
+		content = append(content, settings_article)
+	}
+
+	names := make([]string, 0)
+
+	for name := range schema.Settings.Owners {
+		names = append(names, name)
+	}
+
+	sort.Strings(names)
+
+	for _, name := range names {
+
+		owner := schema.Settings.Owners[name]
+
+		if owner == nil {
+			continue
+		}
+
+		element := dom.GetDocument().CreateElement("article")
+		element.SetAttribute("data-type", "owner")
+		element.SetAttribute("data-name", name)
+
+		article := app_components.ToOwnerArticle(element)
+		article.Mount()
+		article.SetOwner(owner)
+
+		content = append(content, article)
+
+	}
+
+	view.Content = content
+	view.Render()
+
+}
+
+func (view *Settings) ApplyToSchema(schema *schemas.Settings) {
+
+	if schema == nil || schema.Settings == nil {
+		return
+	}
+
+	for _, component := range view.Content {
+
+		if article, ok := component.(*app_components.SettingsArticle); ok == true {
+			schema.Settings.SetBackup(article.GetBackup())
+			schema.Settings.SetFolder(article.GetFolder())
+			schema.Settings.SetPort(article.GetPort())
+		}
+
+	}
+
+	owners := make(map[string]*structs.SettingsOwner)
+
+	for _, component := range view.Content {
+
+		if article, ok := component.(*app_components.OwnerArticle); ok == true {
+
+			fresh := article.GetOwner()
+
+			if fresh == nil || fresh.Name == "" {
+				continue
+			}
+
+			if existing, ok := schema.Settings.Owners[fresh.Name]; ok == true && existing != nil {
+				fresh.SetRepositories(existing.SnapshotRepositories())
+			}
+
+			owners[fresh.Name] = fresh
+
+		}
+
+	}
+
+	schema.Settings.SetOwners(owners)
 
 }
 

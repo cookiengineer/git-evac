@@ -17,16 +17,22 @@
 
 ### app/actions
 
-- [ ] Implement a `FixRemote` action for remotes which are not matching the
+- [x] Implement a `FixRemotes` action for remotes which are not matching the
       settings schema, where e.g. `origin`, `github`, and `gitlab` are universally
       set based on the schema's URL templates.
+- [x] Implement a `FixIdentity` action for identities which are not matching the
+      settings schema, applying `user.name`, `user.email` and `core.sshCommand`.
+- [ ] Implement a "Remotes" View that offers the `FixRemotes` step for the
+      repositories whose remotes don't match the schema.
 
 ### app/controllers/Settings
 
-- [ ] Implement `public/settings.html` Controller and View
-- [ ] Change Remote Properties (URL, Type)
-- [ ] Change Identity Properties (SSH Key, User Name, User Email)
-- [ ] Save Settings
+- [x] Implement `public/settings.html` Controller and View
+- [x] Change Remote Properties (URL, Type)
+- [x] Change Identity Properties (SSH Key, User Name, User Email)
+- [x] Save Settings
+- [x] Persist settings to the `--config` file path
+- [x] Pin per-repository remote/identity overrides from the Repositories view
 
 
 
@@ -34,12 +40,14 @@
 
 ### types
 
-- [ ] Implement `types/Identity.go` method `IsValid()`
+- [x] Implement `types/Identity.go` method `IsValid()`
 
 ### server
 
 - [ ] Implement `server/DispatchRoutes.go` route `POST /api/commit`
 - [ ] Implement `server/DispatchRoutes.go` route `GET /api/diff`
+- [x] Implement `server/DispatchRoutes.go` route `PATCH /api/fixremotes/<owner>/<repository>`
+- [x] Implement `server/DispatchRoutes.go` route `PATCH /api/fixidentity/<owner>/<repository>`
 
 ### server/routes
 

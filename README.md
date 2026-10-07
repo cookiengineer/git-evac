@@ -89,6 +89,24 @@ available and hosted remote repositories:
 - [x] Gogs API v1 support (use `https://gogs.example.com`)
 
 
+## Settings
+
+Settings are stored per owner (organization or username) and are automatically applied to the
+local repositories below `~/Software/{{owner}}/{{repo}}`. The settings file is read from and
+written to the `--config` path (default `~/.config/git-evac/git-evac.json`).
+
+- `Remotes` are URL templates that use the `{{owner}}` and `{{repo}}` placeholders, for example
+  `ssh://git@github.com/{{owner}}/{{repo}}.git`. Missing remotes are added automatically, but
+  existing remotes are never overwritten unless the `FixRemotes` action is triggered.
+- `Identities` store the SSH key, Git user name and Git user e-mail. The `identity` property of an
+  owner selects the default identity for all its repositories.
+- `Services` are the API endpoints (and tokens) used to discover hosted repositories.
+
+Individual repositories can **pin** their own overrides from the Repositories view. A pinned entry
+takes precedence over the owner defaults, and a pinned `null` value removes an inherited remote
+(which is useful when only some repositories of an owner are public and the rest are private).
+
+
 ## Work-in-Progress
 
 Currently, this tool is highly experimental. There's a separate [TODO.md](/docs/TODO.md)

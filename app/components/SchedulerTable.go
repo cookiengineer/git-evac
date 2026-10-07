@@ -18,11 +18,12 @@ type scheduler_progress struct {
 }
 
 type SchedulerTable struct {
-	Name       string                      `json:"name"`
-	Schema     map[string]string           `json:"schema"`
-	Component  *components.Component       `json:"component"`
-	Scheduler  *structs.Scheduler          `json:"scheduler"`
-	progress   map[string]*scheduler_progress
+	Name      string                `json:"name"`
+	Schema    map[string]string     `json:"schema"`
+	Component *components.Component `json:"component"`
+	Scheduler *structs.Scheduler    `json:"scheduler"`
+	progress  map[string]*scheduler_progress
+	scheduler interfaces.Scheduler
 }
 
 func NewSchedulerTable(name string, schema map[string]string) SchedulerTable {
@@ -32,11 +33,11 @@ func NewSchedulerTable(name string, schema map[string]string) SchedulerTable {
 	element := document.CreateElement("table")
 	component := components.NewComponent(element)
 
-	table.Schema    = make(map[string]string)
+	table.Schema = make(map[string]string)
 	table.Component = &component
-	table.Name      = strings.TrimSpace(strings.ToLower(name))
+	table.Name = strings.TrimSpace(strings.ToLower(name))
 	table.Scheduler = structs.NewScheduler()
-	table.progress  = make(map[string]*scheduler_progress)
+	table.progress = make(map[string]*scheduler_progress)
 
 	table.SetSchema(schema)
 
@@ -50,11 +51,11 @@ func ToSchedulerTable(element *dom.Element) *SchedulerTable {
 
 	component := components.NewComponent(element)
 
-	table.Schema    = make(map[string]string)
+	table.Schema = make(map[string]string)
 	table.Component = &component
-	table.Name      = ""
+	table.Name = ""
 	table.Scheduler = structs.NewScheduler()
-	table.progress  = make(map[string]*scheduler_progress)
+	table.progress = make(map[string]*scheduler_progress)
 
 	return &table
 
@@ -66,6 +67,16 @@ func (table *SchedulerTable) Disable() bool {
 
 func (table *SchedulerTable) Enable() bool {
 	return false
+}
+
+func (table *SchedulerTable) SetScheduler(scheduler interfaces.Scheduler) {
+
+	table.scheduler = scheduler
+
+	if table.Component != nil {
+		table.Component.SetScheduler(scheduler)
+	}
+
 }
 
 func (table *SchedulerTable) Mount() bool {
@@ -218,7 +229,7 @@ func (table *SchedulerTable) Render() *dom.Element {
 
 func (table *SchedulerTable) Reset() {
 
-	table.Schema   = make(map[string]string)
+	table.Schema = make(map[string]string)
 	table.Scheduler.Reset()
 	table.progress = make(map[string]*scheduler_progress)
 
@@ -250,7 +261,7 @@ func (table *SchedulerTable) SetSchema(schema map[string]string) {
 
 	if len(schema) > 0 {
 
-		table.Schema   = schema
+		table.Schema = schema
 		table.progress = make(map[string]*scheduler_progress)
 
 		for repository, action := range table.Schema {
@@ -264,7 +275,7 @@ func (table *SchedulerTable) SetSchema(schema map[string]string) {
 
 					table.Scheduler.Add(action, owner, repo)
 
-					table.progress[owner + "/" + repo] = &scheduler_progress{
+					table.progress[owner+"/"+repo] = &scheduler_progress{
 						Start:    time.Time{},
 						Stop:     time.Time{},
 						Finished: false,
@@ -273,7 +284,6 @@ func (table *SchedulerTable) SetSchema(schema map[string]string) {
 				}
 
 			}
-
 
 		}
 
@@ -308,7 +318,7 @@ func (table *SchedulerTable) Start() {
 
 		if action.Error != nil {
 
-			progress, ok := table.progress[action.Owner + "/" + action.Repository]
+			progress, ok := table.progress[action.Owner+"/"+action.Repository]
 
 			if ok == true {
 				progress.Stop = time.Now()
@@ -317,7 +327,7 @@ func (table *SchedulerTable) Start() {
 
 		} else if action.Response != nil {
 
-			progress, ok := table.progress[action.Owner + "/" + action.Repository]
+			progress, ok := table.progress[action.Owner+"/"+action.Repository]
 
 			if ok == true {
 				progress.Stop = time.Now()

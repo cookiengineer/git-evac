@@ -12,12 +12,13 @@ import "sort"
 import "strings"
 
 type Repositories struct {
-	Element *dom.Element           `json:"element"`
-	Layout  types.Layout           `json:"layout"`
-	Content []interfaces.Component `json:"content"`
-	name    string                 `json:"name"`
-	label   string                 `json:"label"`
-	path    string                 `json:"path"`
+	Element   *dom.Element           `json:"element"`
+	Layout    types.Layout           `json:"layout"`
+	Content   []interfaces.Component `json:"content"`
+	name      string
+	label     string
+	path      string
+	scheduler interfaces.Scheduler
 }
 
 func ToRepositories(element *dom.Element) *Repositories {
@@ -25,12 +26,12 @@ func ToRepositories(element *dom.Element) *Repositories {
 	var view Repositories
 
 	view.Element = element
-	view.Layout  = types.LayoutFlow
+	view.Layout = types.LayoutFlow
 	view.Content = make([]interfaces.Component, 0)
 
-	view.name  = strings.ToLower(element.GetAttribute("data-name"))
+	view.name = strings.ToLower(element.GetAttribute("data-name"))
 	view.label = element.GetAttribute("data-label")
-	view.path  = strings.ToLower(element.GetAttribute("data-path"))
+	view.path = strings.ToLower(element.GetAttribute("data-path"))
 
 	return &view
 
@@ -42,6 +43,20 @@ func (view *Repositories) Disable() bool {
 
 func (view *Repositories) Enable() bool {
 	return false
+}
+
+func (view *Repositories) SetScheduler(scheduler interfaces.Scheduler) {
+
+	view.scheduler = scheduler
+
+	for _, component := range view.Content {
+
+		if component != nil {
+			component.SetScheduler(scheduler)
+		}
+
+	}
+
 }
 
 func (view *Repositories) Enter() bool {
@@ -96,7 +111,7 @@ func (view *Repositories) Mount() bool {
 			view.path = strings.ToLower(tmp_path)
 		}
 
-		elements   := view.Element.Children()
+		elements := view.Element.Children()
 		components := make([]interfaces.Component, 0)
 
 		for _, element := range elements {
@@ -194,7 +209,6 @@ func (view *Repositories) QuerySelectorAll(query string) []*dom.Element {
 	return result
 
 }
-
 
 func (view *Repositories) Render() *dom.Element {
 

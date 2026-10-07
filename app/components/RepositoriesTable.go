@@ -11,10 +11,11 @@ import "sort"
 import "strings"
 
 type RepositoriesTable struct {
-	Name       string                `json:"name"`
-	Schema     *schemas.Repositories `json:"schema"`
-	Component  *components.Component `json:"component"`
-	selected   map[string]bool
+	Name      string                `json:"name"`
+	Schema    *schemas.Repositories `json:"schema"`
+	Component *components.Component `json:"component"`
+	selected  map[string]bool
+	scheduler interfaces.Scheduler
 }
 
 func ToRepositoriesTable(element *dom.Element) *RepositoriesTable {
@@ -24,9 +25,9 @@ func ToRepositoriesTable(element *dom.Element) *RepositoriesTable {
 	component := components.NewComponent(element)
 
 	table.Component = &component
-	table.Name      = ""
-	table.Schema    = nil
-	table.selected  = make(map[string]bool)
+	table.Name = ""
+	table.Schema = nil
+	table.selected = make(map[string]bool)
 
 	return &table
 
@@ -69,6 +70,16 @@ func (table *RepositoriesTable) Enable() bool {
 	}
 
 	return result
+
+}
+
+func (table *RepositoriesTable) SetScheduler(scheduler interfaces.Scheduler) {
+
+	table.scheduler = scheduler
+
+	if table.Component != nil {
+		table.Component.SetScheduler(scheduler)
+	}
 
 }
 
@@ -119,7 +130,7 @@ func (table *RepositoriesTable) Mount() bool {
 
 					} else {
 
-						is_active  := event.Target.Value.Get("checked").Bool()
+						is_active := event.Target.Value.Get("checked").Bool()
 						identifier := event.Target.QueryParent("tr").GetAttribute("data-id")
 
 						if is_active == true {
@@ -146,7 +157,7 @@ func (table *RepositoriesTable) Mount() bool {
 					table.Render()
 					table.Component.FireEventListeners("select", table.Selected())
 
-				} else if action == "fix" || action == "commit" || action == "pull" || action == "push" {
+				} else if action == "fix" || action == "commit" || action == "pull" || action == "push" || action == "pin" {
 
 					tr := event.Target.QueryParent("tr")
 					id := tr.GetAttribute("data-id")
@@ -267,22 +278,26 @@ func (table *RepositoriesTable) Render() *dom.Element {
 						remotes := make([]string, 0)
 
 						for _, branch_name := range repository.Branches {
-							branches = append(branches, "<label>" + branch_name + "</label>")
+							branches = append(branches, "<label>"+branch_name+"</label>")
 						}
 
 						for remote_name, _ := range repository.Remotes {
-							remotes = append(remotes, "<label>" + remote_name + "</label>")
+							remotes = append(remotes, "<label>"+remote_name+"</label>")
 						}
 
 						if repository.NeedsClone() {
 							actions = append(actions, "<button data-action=\"clone\">Clone</button>")
-						} else if repository.NeedsFix() {
-							actions = append(actions, "<button data-action=\"fix\">Fix</button>")
-						} else if repository.NeedsCommit() {
-							actions = append(actions, "<button data-action=\"commit\">Commit</button>")
 						} else {
-							actions = append(actions, "<button data-action=\"pull\">Pull</button>")
-							actions = append(actions, "<button data-action=\"push\">Push</button>")
+							if repository.NeedsFix() {
+								actions = append(actions, "<button data-action=\"fix\">Fix</button>")
+							} else if repository.NeedsCommit() {
+								actions = append(actions, "<button data-action=\"commit\">Commit</button>")
+							} else {
+								actions = append(actions, "<button data-action=\"pull\">Pull</button>")
+								actions = append(actions, "<button data-action=\"push\">Push</button>")
+							}
+
+							actions = append(actions, "<button data-action=\"pin\">Pin</button>")
 						}
 
 						sort.Strings(actions)
@@ -330,7 +345,7 @@ func (table *RepositoriesTable) Render() *dom.Element {
 
 func (table *RepositoriesTable) Reset() {
 
-	table.Schema   = nil
+	table.Schema = nil
 	table.selected = make(map[string]bool)
 
 }
@@ -373,7 +388,7 @@ func (table *RepositoriesTable) Selected() map[string]any {
 
 			if is_selected == true {
 
-				id_owner      := id[0:strings.Index(id, "/")]
+				id_owner := id[0:strings.Index(id, "/")]
 				id_repository := id[strings.Index(id, "/")+1:]
 
 				_, ok1 := table.Schema.Owners[id_owner]
@@ -424,7 +439,7 @@ func (table *RepositoriesTable) SetSchema(schema *schemas.Repositories) bool {
 		for _, owner := range table.Schema.Owners {
 
 			for _, repository := range owner.Repositories {
-				table.selected[owner.Name + "/" + repository.Name] = false
+				table.selected[owner.Name+"/"+repository.Name] = false
 			}
 
 		}
@@ -485,11 +500,11 @@ func (table *RepositoriesTable) String() string {
 				remotes := make([]string, 0)
 
 				for _, branch_name := range repository.Branches {
-					branches = append(branches, "<label>" + branch_name + "</label>")
+					branches = append(branches, "<label>"+branch_name+"</label>")
 				}
 
 				for remote_name, _ := range repository.Remotes {
-					remotes = append(remotes, "<label>" + remote_name + "</label>")
+					remotes = append(remotes, "<label>"+remote_name+"</label>")
 				}
 
 				if repository.NeedsClone() {

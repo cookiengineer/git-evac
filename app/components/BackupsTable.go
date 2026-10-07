@@ -13,13 +13,14 @@ import "sort"
 import "strings"
 
 type BackupsTable struct {
-	Name       string                `json:"name"`
-	Component  *components.Component `json:"component"`
-	Schemas struct {
+	Name      string                `json:"name"`
+	Component *components.Component `json:"component"`
+	Schemas   struct {
 		Backups      *schemas.Backups      `json:"backups"`
 		Repositories *schemas.Repositories `json:"repositories"`
 	} `json:"schemas"`
-	selected   map[string]bool
+	selected  map[string]bool
+	scheduler interfaces.Scheduler
 }
 
 func ToBackupsTable(element *dom.Element) *BackupsTable {
@@ -28,11 +29,11 @@ func ToBackupsTable(element *dom.Element) *BackupsTable {
 
 	component := components.NewComponent(element)
 
-	table.Component            = &component
-	table.Name                 = ""
-	table.Schemas.Backups      = nil
+	table.Component = &component
+	table.Name = ""
+	table.Schemas.Backups = nil
 	table.Schemas.Repositories = nil
-	table.selected             = make(map[string]bool)
+	table.selected = make(map[string]bool)
 
 	return &table
 
@@ -75,6 +76,16 @@ func (table *BackupsTable) Enable() bool {
 	}
 
 	return result
+
+}
+
+func (table *BackupsTable) SetScheduler(scheduler interfaces.Scheduler) {
+
+	table.scheduler = scheduler
+
+	if table.Component != nil {
+		table.Component.SetScheduler(scheduler)
+	}
 
 }
 
@@ -125,7 +136,7 @@ func (table *BackupsTable) Mount() bool {
 
 					} else {
 
-						is_active  := event.Target.Value.Get("checked").Bool()
+						is_active := event.Target.Value.Get("checked").Bool()
 						identifier := event.Target.QueryParent("tr").GetAttribute("data-id")
 
 						if is_active == true {
@@ -376,9 +387,9 @@ func (table *BackupsTable) Render() *dom.Element {
 
 func (table *BackupsTable) Reset() {
 
-	table.Schemas.Backups      = nil
+	table.Schemas.Backups = nil
 	table.Schemas.Repositories = nil
-	table.selected             = make(map[string]bool)
+	table.selected = make(map[string]bool)
 
 }
 
@@ -420,7 +431,7 @@ func (table *BackupsTable) Selected() map[string]any {
 
 			if is_selected == true {
 
-				id_owner      := id[0:strings.Index(id, "/")]
+				id_owner := id[0:strings.Index(id, "/")]
 				id_repository := id[strings.Index(id, "/")+1:]
 
 				var backup *types.Backup = nil
@@ -466,7 +477,7 @@ func (table *BackupsTable) SetSchema(schema1 *schemas.Backups, schema2 *schemas.
 		for _, owner := range table.Schemas.Backups.Owners {
 
 			for _, backup := range owner.Backups {
-				table.selected[owner.Name + "/" + backup.Name] = false
+				table.selected[owner.Name+"/"+backup.Name] = false
 			}
 
 		}
@@ -474,7 +485,7 @@ func (table *BackupsTable) SetSchema(schema1 *schemas.Backups, schema2 *schemas.
 		for _, owner := range table.Schemas.Repositories.Owners {
 
 			for _, repository := range owner.Repositories {
-				table.selected[owner.Name + "/" + repository.Name] = false
+				table.selected[owner.Name+"/"+repository.Name] = false
 			}
 
 		}
