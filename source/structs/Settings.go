@@ -7,6 +7,7 @@ import "sync"
 
 type Settings struct {
 	mutex  sync.RWMutex
+	Config string                    `json:"-"`
 	Backup string                    `json:"backup"`
 	Folder string                    `json:"folder"`
 	Port   uint16                    `json:"port"`
@@ -17,9 +18,10 @@ func NewSettings(backup string, folder string, port uint16) *Settings {
 
 	var settings Settings
 
+	settings.Config = ""
 	settings.Backup = backup
 	settings.Folder = folder
-	settings.Port   = port
+	settings.Port = port
 	settings.Owners = make(map[string]*SettingsOwner)
 
 	return &settings
@@ -34,6 +36,40 @@ func (settings *Settings) MarshalJSON() ([]byte, error) {
 	type Alias Settings
 
 	return json.Marshal((*Alias)(settings))
+
+}
+
+func (settings *Settings) UnmarshalJSON(data []byte) error {
+
+	settings.mutex.Lock()
+	defer settings.mutex.Unlock()
+
+	type Alias Settings
+	alias := (*Alias)(settings)
+
+	err := json.Unmarshal(data, alias)
+
+	if err != nil {
+		return err
+	}
+
+	if settings.Owners == nil {
+		settings.Owners = make(map[string]*SettingsOwner)
+	}
+
+	return nil
+
+}
+
+func (settings *Settings) GetConfig() string {
+
+	var result string
+
+	settings.mutex.RLock()
+	result = settings.Config
+	settings.mutex.RUnlock()
+
+	return result
 
 }
 
@@ -110,6 +146,14 @@ func (settings *Settings) GetOwners() map[string]*SettingsOwner {
 
 }
 
+func (settings *Settings) SetConfig(value string) {
+
+	settings.mutex.Lock()
+	settings.Config = value
+	settings.mutex.Unlock()
+
+}
+
 func (settings *Settings) SetBackup(value string) {
 
 	settings.mutex.Lock()
@@ -148,7 +192,7 @@ func (settings *Settings) IsValid() bool {
 
 	backup := settings.Backup
 	folder := settings.Folder
-	port   := settings.Port
+	port := settings.Port
 
 	owners := make(map[string]*SettingsOwner, len(settings.Owners))
 

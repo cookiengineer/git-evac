@@ -155,9 +155,9 @@ func (remote *Remote) isValidSchemaLocked() bool {
 
 		url := remote.URL
 
-		if strings.Contains(url, "{owner}") && strings.Contains(url, "{repository}") {
+		if strings.Contains(url, "{{owner}}") && strings.Contains(url, "{{repo}}") {
 			return true
-		} else if strings.Contains(url, "{") || strings.Contains(url, "}") {
+		} else if strings.Contains(url, "{{") || strings.Contains(url, "}}") {
 			return false
 		}
 
@@ -176,8 +176,8 @@ func (remote *Remote) ToURL(owner string, repository string) string {
 	if remote.isValidSchemaLocked() {
 
 		tmp := remote.URL
-		tmp = strings.ReplaceAll(tmp, "{owner}", owner)
-		tmp = strings.ReplaceAll(tmp, "{repository}", repository)
+		tmp = strings.ReplaceAll(tmp, "{{owner}}", owner)
+		tmp = strings.ReplaceAll(tmp, "{{repo}}", repository)
 
 		result = tmp
 

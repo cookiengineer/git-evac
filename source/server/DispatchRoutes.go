@@ -14,6 +14,11 @@ func DispatchRoutes(profile *structs.Profile) bool {
 		routes.Backups(profile, request, response)
 	})
 
+	// GET /api/settings || POST /api/settings
+	http.HandleFunc("/api/settings", func(response http.ResponseWriter, request *http.Request) {
+		routes.Settings(profile, request, response)
+	})
+
 	// GET /api/repositories
 	http.HandleFunc("/api/repositories", func(response http.ResponseWriter, request *http.Request) {
 
@@ -60,6 +65,16 @@ func DispatchRoutes(profile *structs.Profile) bool {
 	// GET /api/fix is canonical to GET /api/terminal
 	http.HandleFunc("/api/fix/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {
 		routes.Terminal(profile, request, response)
+	})
+
+	// PATCH /api/fixremotes
+	http.HandleFunc("/api/fixremotes/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {
+		routes.FixRemotes(profile, request, response)
+	})
+
+	// PATCH /api/fixidentity
+	http.HandleFunc("/api/fixidentity/{owner}/{repository}", func(response http.ResponseWriter, request *http.Request) {
+		routes.FixIdentity(profile, request, response)
 	})
 
 	// PATCH /api/pull

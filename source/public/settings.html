@@ -141,26 +141,10 @@
 				<article>
 					<button data-action="close"></button>
 					<h3>Create Organization Settings</h3>
-
-					// TODO: This should just be the name field
-					// Afterwards, support only inline editing
 					<fieldset>
 						<div>
 							<label for="organization-name" data-type="name">Name</label>
 							<input id="organization-name" type="text" placeholder="stark-industries"/>
-						</div>
-						<div>
-							<label data-type="remote-type">Remotes</label>
-							<div>
-								<input type="checkbox" data-remote="bitbucket" title="bitbucket" value="bitbucket"/>
-								<input type="checkbox" data-remote="github" title="github" value="github"/>
-								<input type="checkbox" data-remote="gitlab" title="gitlab" value="gitlab"/>
-								<input type="checkbox" data-remote="gitea" title="gitea" value="gitea"/>
-							</div>
-						</div>
-						<div>
-							<label for="organization-origin" data-type="remote-origin">Origin</label>
-							<input id="organization-origin" type="text" placeholder="git@github:com/{orga}/{repo}.git"/>
 						</div>
 					</fieldset>
 					<footer>

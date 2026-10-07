@@ -59,8 +59,8 @@ func main() {
 	}
 
 	if config != "" {
-
 		settings := structs.NewSettings(user.HomeDir + "/Backup", user.HomeDir + "/Software", 3000)
+		settings.SetConfig(config)
 		buffer1, err1 := os.ReadFile(config)
 
 		valid_config := false

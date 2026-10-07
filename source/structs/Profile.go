@@ -3,7 +3,6 @@ package structs
 import "io/fs"
 import os_user "os/user"
 
-import "fmt"
 import "sync"
 
 type Profile struct {
@@ -37,7 +36,7 @@ func NewProfile(console *Console, settings *Settings) *Profile {
 		user, err := os_user.Current()
 
 		if err == nil {
-			profile.Settings = NewSettings(user.HomeDir + "/Backup", user.HomeDir + "/Software", 3000)
+			profile.Settings = NewSettings(user.HomeDir+"/Backup", user.HomeDir+"/Software", 3000)
 		}
 
 	}
@@ -50,8 +49,26 @@ func NewProfile(console *Console, settings *Settings) *Profile {
 
 func (profile *Profile) Update(settings *Settings) {
 
-	// TODO
-	fmt.Println(settings)
+	if settings != nil {
+
+		profile.mutex.Lock()
+
+		target := profile.Settings
+
+		if target == nil {
+			target = NewSettings(settings.GetBackup(), settings.GetFolder(), settings.GetPort())
+			target.SetConfig(settings.GetConfig())
+			profile.Settings = target
+		}
+
+		profile.mutex.Unlock()
+
+		target.SetBackup(settings.GetBackup())
+		target.SetFolder(settings.GetFolder())
+		target.SetPort(settings.GetPort())
+		target.SetOwners(settings.GetOwners())
+
+	}
 
 }
 

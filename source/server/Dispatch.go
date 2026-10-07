@@ -1,11 +1,8 @@
 package server
 
-import "git-evac/schemas"
 import "git-evac/structs"
-import "encoding/json"
 import "io"
 import "net/http"
-import "os"
 
 func Dispatch(profile *structs.Profile) bool {
 
@@ -73,113 +70,6 @@ func Dispatch(profile *structs.Profile) bool {
 	http.HandleFunc("/FS.go", func(response http.ResponseWriter, request *http.Request) {
 		response.WriteHeader(http.StatusNotFound)
 		response.Write([]byte(""))
-	})
-
-	http.HandleFunc("/api/settings", func(response http.ResponseWriter, request *http.Request) {
-
-		if request.Method == http.MethodGet {
-
-			payload, _ := json.MarshalIndent(schemas.Settings{
-				Settings: profile.Settings,
-			}, "", "\t")
-
-			profile.Console.Log("> GET /api/settings:" + http.StatusText(http.StatusOK))
-
-			response.Header().Set("Content-Type", "application/json")
-			response.WriteHeader(http.StatusOK)
-			response.Write(payload)
-
-		} else if request.Method == http.MethodPost {
-
-			bytes0, err0 := io.ReadAll(request.Body)
-
-			if err0 == nil {
-
-				var schema schemas.Settings
-
-				err1 := json.Unmarshal(bytes0, &schema)
-
-				if err1 == nil && schema.IsValid() {
-
-					profile.Settings.SetBackup(schema.Settings.Backup)
-					profile.Settings.SetFolder(schema.Settings.Folder)
-					profile.Settings.SetPort(schema.Settings.Port)
-					profile.Settings.SetOwners(schema.Settings.Owners)
-
-					stat2, err2 := os.Stat(profile.Settings.GetFolder())
-
-					if err2 == nil && stat2.IsDir() {
-
-						payload, _ := json.MarshalIndent(schemas.Settings{
-							Settings: profile.Settings,
-						}, "", "\t")
-
-						err3 := os.WriteFile(profile.Settings.GetFolder()+"/git-evac.json", payload, 0666)
-
-						if err3 == nil {
-
-							profile.Console.Log("> POST /api/settings: " + http.StatusText(http.StatusOK))
-
-							response.Header().Set("Content-Type", "application/json")
-							response.WriteHeader(http.StatusOK)
-							response.Write(payload)
-
-						} else {
-
-							profile.Console.Error("> POST /api/settings: " + http.StatusText(http.StatusInternalServerError))
-							profile.Console.Error("> " + err3.Error())
-
-							response.Header().Set("Content-Type", "application/json")
-							response.WriteHeader(http.StatusInternalServerError)
-							response.Write([]byte("{}"))
-
-						}
-
-					} else {
-
-						profile.Console.Error("> POST /api/settings: " + http.StatusText(http.StatusConflict))
-						profile.Console.Error("> " + err2.Error())
-
-						response.Header().Set("Content-Type", "application/json")
-						response.WriteHeader(http.StatusConflict)
-						response.Write([]byte("{}"))
-
-					}
-
-				} else {
-
-					profile.Console.Error("> POST /api/settings: " + http.StatusText(http.StatusBadRequest))
-
-					if err1 != nil {
-						profile.Console.Error("> " + err1.Error())
-					}
-
-					response.Header().Set("Content-Type", "application/json")
-					response.WriteHeader(http.StatusBadRequest)
-					response.Write([]byte("{}"))
-
-				}
-
-			} else {
-
-				profile.Console.Error("> POST /api/settings: " + http.StatusText(http.StatusBadRequest))
-
-				response.Header().Set("Content-Type", "application/json")
-				response.WriteHeader(http.StatusBadRequest)
-				response.Write([]byte("{}"))
-
-			}
-
-		} else {
-
-			profile.Console.Error("> " + request.Method + " /api/settings: " + http.StatusText(http.StatusMethodNotAllowed))
-
-			response.Header().Set("Content-Type", "application/json")
-			response.WriteHeader(http.StatusMethodNotAllowed)
-			response.Write([]byte("[]"))
-
-		}
-
 	})
 
 	return result

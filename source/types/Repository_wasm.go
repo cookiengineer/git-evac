@@ -20,6 +20,16 @@ func (repo *Repository) AddRemote(owner_name string, repo_name string, schema *R
 
 }
 
+func (repo *Repository) ApplyIdentity(identity *Identity) error {
+
+	if identity != nil {
+		repo.SetIdentity(identity.GetName())
+	}
+
+	return nil
+
+}
+
 func (repo *Repository) RemoveRemote(remote_name string) bool {
 
 	repo.mutex.Lock()
@@ -37,6 +47,10 @@ func (repo *Repository) RemoveRemote(remote_name string) bool {
 
 	return false
 
+}
+
+func (repo *Repository) IsCloned() bool {
+	return false
 }
 
 func (repo *Repository) Init() bool {

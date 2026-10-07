@@ -95,6 +95,26 @@ func (repo *Repository) GetCurrentRemote() string {
 
 }
 
+func (repo *Repository) GetIdentity() string {
+
+	var result string
+
+	repo.mutex.RLock()
+	result = repo.Identity
+	repo.mutex.RUnlock()
+
+	return result
+
+}
+
+func (repo *Repository) SetIdentity(value string) {
+
+	repo.mutex.Lock()
+	repo.Identity = value
+	repo.mutex.Unlock()
+
+}
+
 func (repo *Repository) GetRemote(name string) *Remote {
 
 	var result *Remote = nil

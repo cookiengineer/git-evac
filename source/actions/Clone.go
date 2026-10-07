@@ -55,7 +55,16 @@ func Clone(profile *structs.Profile, owner_name string, repo_name string) error 
 					err_clone := cmd_clone.Run()
 
 					if err_clone == nil {
+
+						// Refresh remotes from disk and apply the owner's
+						// template settings (remotes + identity).
+						repository.Status()
+
+						FixRemotes(profile, owner_name, repo_name)
+						FixIdentity(profile, owner_name, repo_name)
+
 						return nil
+
 					} else {
 						return errors.New("Repository \"" + owner_name + "/" + repo_name + "\" failed to clone from origin remote")
 					}

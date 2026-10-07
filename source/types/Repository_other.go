@@ -3,6 +3,7 @@
 package types
 
 import "git-evac/parsers/git"
+import "errors"
 import "os"
 import "os/exec"
 import "slices"
@@ -16,9 +17,9 @@ func (repo *Repository) AddRemote(owner_name string, repo_name string, schema *R
 	defer repo.mutex.Unlock()
 
 	remote_name := schema.Name
-	remote_url  := schema.URL
-	remote_url   = strings.ReplaceAll(remote_url, "{{owner}}", owner_name)
-	remote_url   = strings.ReplaceAll(remote_url, "{{repo}}", repo_name)
+	remote_url := schema.URL
+	remote_url = strings.ReplaceAll(remote_url, "{{owner}}", owner_name)
+	remote_url = strings.ReplaceAll(remote_url, "{{repo}}", repo_name)
 
 	stat, err0 := os.Stat(repo.Folder)
 
@@ -26,65 +27,94 @@ func (repo *Repository) AddRemote(owner_name string, repo_name string, schema *R
 
 		_, ok := repo.Remotes[remote_name]
 
+		args := []string{"remote", "add", remote_name, remote_url}
+
 		if ok == true {
+			args = []string{"remote", "set-url", remote_name, remote_url}
+		}
 
+		cmd := exec.Command("git", args...)
+		cmd.Dir = repo.Folder[0 : len(repo.Folder)-5]
+
+		_, err1 := cmd.Output()
+
+		if err1 == nil {
 			repo.Remotes[remote_name] = NewRemote(remote_name, remote_url)
-
-			cmd1 := exec.Command("git", "remote", "remove", remote_name)
-			cmd1.Dir = repo.Folder[0:len(repo.Folder)-5]
-
-			buffer1, err1 := cmd1.Output()
-
-			if err1 == nil {
-
-				message1 := strings.TrimSpace(string(buffer1))
-
-				if message1 == "" {
-
-					cmd2 := exec.Command("git", "remote", "add", remote_name, remote_url)
-					cmd2.Dir = repo.Folder[0:len(repo.Folder)-5]
-
-					buffer2, err2 := cmd2.Output()
-
-					if err2 == nil {
-
-						message2 := strings.TrimSpace(string(buffer2))
-
-						if message2 == "" {
-							result = true
-						}
-
-					}
-
-				}
-
-			}
-
-		} else {
-
-			repo.Remotes[remote_name] = NewRemote(remote_name, remote_url)
-
-			cmd1 := exec.Command("git", "remote", "add", remote_name, remote_url)
-			cmd1.Dir = repo.Folder[0:len(repo.Folder)-5]
-
-			buffer1, err1 := cmd1.Output()
-
-			if err1 == nil {
-
-				message1 := strings.TrimSpace(string(buffer1))
-
-				if message1 == "" {
-					result = true
-				}
-
-			}
-
+			result = true
 		}
 
 	} else if os.IsNotExist(err0) {
 
 		repo.Remotes[remote_name] = NewRemote(remote_name, remote_url)
 
+	}
+
+	return result
+
+}
+
+func (repo *Repository) ApplyIdentity(identity *Identity) error {
+
+	if identity == nil {
+		return errors.New("Identity is invalid")
+	}
+
+	folder := repo.GetFolder()
+
+	repo.SetIdentity(identity.GetName())
+
+	stat, err0 := os.Stat(folder)
+
+	if err0 != nil || stat.IsDir() == false || strings.HasSuffix(folder, "/.git") == false {
+		return nil
+	}
+
+	folder = folder[0 : len(folder)-5]
+
+	configs := []struct {
+		Key   string
+		Value string
+	}{
+		{"user.name", identity.GetGitUserName()},
+		{"user.email", identity.GetGitUserEmail()},
+		{"core.sshCommand", identity.GetSSHCommand()},
+	}
+
+	for _, config := range configs {
+
+		if config.Value == "" {
+			continue
+		}
+
+		cmd := exec.Command("git", "config", "--local", config.Key, config.Value)
+		cmd.Dir = folder
+
+		buffer, err := cmd.CombinedOutput()
+
+		if err != nil {
+			return errors.New("git config --local " + config.Key + " failed: " + strings.TrimSpace(string(buffer)))
+		}
+
+	}
+
+	return nil
+
+}
+
+func (repo *Repository) IsCloned() bool {
+
+	var result bool
+
+	if repo == nil {
+		return false
+	}
+
+	folder := repo.GetFolder()
+
+	stat, err := os.Stat(folder)
+
+	if err == nil && stat.IsDir() && strings.HasSuffix(folder, "/.git") {
+		result = true
 	}
 
 	return result
@@ -107,7 +137,7 @@ func (repo *Repository) RemoveRemote(remote_name string) bool {
 		if ok == true {
 
 			cmd1 := exec.Command("git", "remote", "remove", remote_name)
-			cmd1.Dir = repo.Folder[0:len(repo.Folder)-5]
+			cmd1.Dir = repo.Folder[0 : len(repo.Folder)-5]
 
 			buffer1, err1 := cmd1.Output()
 
@@ -147,14 +177,14 @@ func (repo *Repository) Init() bool {
 
 	if os.IsNotExist(err0) == true && strings.HasSuffix(repo.Folder, "/.git") {
 
-		parent_folder := repo.Folder[0:len(repo.Folder)-5]
+		parent_folder := repo.Folder[0 : len(repo.Folder)-5]
 
 		err1 := os.MkdirAll(parent_folder, 0755)
 
 		if err1 == nil {
 
 			cmd := exec.Command("git", "init")
-			cmd.Dir = repo.Folder[0:len(repo.Folder)-5]
+			cmd.Dir = repo.Folder[0 : len(repo.Folder)-5]
 
 			buffer2, err2 := cmd.Output()
 
@@ -162,7 +192,7 @@ func (repo *Repository) Init() bool {
 
 				message := strings.TrimSpace(string(buffer2))
 
-				if message == "Initialized empty Git repository in " + repo.Folder + "/" {
+				if message == "Initialized empty Git repository in "+repo.Folder+"/" {
 					return true
 				}
 
@@ -188,7 +218,7 @@ func (repo *Repository) Status() bool {
 	if err0 == nil && stat.IsDir() && strings.HasSuffix(repo.Folder, "/.git") {
 
 		cmd1 := exec.Command("git", "status", "--branch", "--short")
-		cmd1.Dir = repo.Folder[0:len(repo.Folder)-5]
+		cmd1.Dir = repo.Folder[0 : len(repo.Folder)-5]
 
 		buffer1, err1 := cmd1.Output()
 
@@ -257,7 +287,7 @@ func (repo *Repository) Status() bool {
 				if strings.HasPrefix(lines[0], "## ") {
 
 					repo.HasRemoteChanges = false
-					repo.HasLocalChanges  = false
+					repo.HasLocalChanges = false
 
 					tmp := strings.Split(lines[0][3:], "...")
 
@@ -280,7 +310,7 @@ func (repo *Repository) Status() bool {
 		}
 
 		cmd2 := exec.Command("git", "branch", "--all")
-		cmd2.Dir = repo.Folder[0:len(repo.Folder)-5]
+		cmd2.Dir = repo.Folder[0 : len(repo.Folder)-5]
 
 		buffer2, err2 := cmd2.Output()
 
@@ -347,7 +377,7 @@ func (repo *Repository) Status() bool {
 		}
 
 		cmd3 := exec.Command("git", "remote", "--verbose")
-		cmd3.Dir = repo.Folder[0:len(repo.Folder)-5]
+		cmd3.Dir = repo.Folder[0 : len(repo.Folder)-5]
 
 		buffer3, err3 := cmd3.Output()
 

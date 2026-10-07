@@ -22,7 +22,7 @@ func (profile *Profile) RefreshLocalRepositories() {
 
 		if err_owners == nil {
 
-			owners_on_disk       := make(map[string]bool)
+			owners_on_disk := make(map[string]bool)
 			repositories_on_disk := make(map[string]bool)
 
 			for _, info_owner := range info_owners {
@@ -34,7 +34,7 @@ func (profile *Profile) RefreshLocalRepositories() {
 					owners_on_disk[owner_name] = true
 
 					if profile.HasRepositoryOwner(owner_name) == false {
-						profile.AddRepositoryOwner(owner_name, folder + "/" + owner_name)
+						profile.AddRepositoryOwner(owner_name, folder+"/"+owner_name)
 					}
 
 					info_repositories, err_repositories := os.ReadDir(folder + "/" + owner_name)
@@ -51,7 +51,7 @@ func (profile *Profile) RefreshLocalRepositories() {
 
 									repository_name := info_repository.Name()
 
-									repositories_on_disk[owner_name + "/" + repository_name] = true
+									repositories_on_disk[owner_name+"/"+repository_name] = true
 
 									if profile.HasRepository(owner_name, repository_name) == false {
 
@@ -88,7 +88,7 @@ func (profile *Profile) RefreshLocalRepositories() {
 
 					for repository_name := range owner.SnapshotRepositories() {
 
-						if repositories_on_disk[owner_name + "/" + repository_name] == false {
+						if repositories_on_disk[owner_name+"/"+repository_name] == false {
 
 							if owner.RemoveRepository(repository_name) == true {
 								profile.Console.Log("> Remove " + owner_name + "/" + repository_name)
@@ -96,6 +96,48 @@ func (profile *Profile) RefreshLocalRepositories() {
 
 						}
 
+					}
+
+				}
+
+			}
+
+			// Automatically apply missing template remotes and identities to
+			// local repositories. Existing (manually configured) remotes are
+			// left untouched; removals only happen via an explicit FixRemotes.
+			for owner_name, owner := range profile.SnapshotRepositories() {
+
+				settings_owner := profile.Settings.GetOwner(owner_name)
+
+				if settings_owner == nil {
+					continue
+				}
+
+				for repository_name, repository := range owner.SnapshotRepositories() {
+
+					effective := settings_owner.Effective(repository_name)
+
+					if effective == nil {
+						continue
+					}
+
+					for remote_name, remote := range effective.SnapshotRemotes() {
+
+						if remote == nil {
+							continue
+						}
+
+						if repository.GetRemote(remote_name) == nil {
+							repository.AddRemote(owner_name, repository_name, remote)
+						}
+
+					}
+
+					if repository.GetIdentity() == "" {
+						identity := settings_owner.EffectiveIdentity(repository_name)
+						if identity != nil {
+							repository.ApplyIdentity(identity)
+						}
 					}
 
 				}
@@ -136,21 +178,21 @@ func (profile *Profile) RefreshServiceRepositories() {
 
 					if settings_owner != nil {
 
-						for remote_name, service := range settings_owner.SnapshotServices() {
+						for _, service := range settings_owner.SnapshotServices() {
 
 							remote_repositories := make([]*types.Repository, 0)
 
 							switch service.GetType() {
 							case "forgejo":
-								remote_repositories = services_forgejo.FetchRepositories(service.GetURL(), owner_name, service.GetToken(), folder + "/" + owner_name)
+								remote_repositories = services_forgejo.FetchRepositories(service.GetURL(), owner_name, service.GetToken(), folder+"/"+owner_name)
 							case "github":
-								remote_repositories = services_github.FetchRepositories(service.GetURL(), owner_name, service.GetToken(), folder + "/" + owner_name)
+								remote_repositories = services_github.FetchRepositories(service.GetURL(), owner_name, service.GetToken(), folder+"/"+owner_name)
 							case "gitlab":
-								remote_repositories = services_gitlab.FetchRepositories(service.GetURL(), owner_name, service.GetToken(), folder + "/" + owner_name)
+								remote_repositories = services_gitlab.FetchRepositories(service.GetURL(), owner_name, service.GetToken(), folder+"/"+owner_name)
 							case "gitea":
-								remote_repositories = services_gitea.FetchRepositories(service.GetURL(), owner_name, service.GetToken(), folder + "/" + owner_name)
+								remote_repositories = services_gitea.FetchRepositories(service.GetURL(), owner_name, service.GetToken(), folder+"/"+owner_name)
 							case "gogs":
-								remote_repositories = services_gogs.FetchRepositories(service.GetURL(), owner_name, service.GetToken(), folder + "/" + owner_name)
+								remote_repositories = services_gogs.FetchRepositories(service.GetURL(), owner_name, service.GetToken(), folder+"/"+owner_name)
 							}
 
 							if len(remote_repositories) > 0 {
@@ -169,13 +211,24 @@ func (profile *Profile) RefreshServiceRepositories() {
 
 											owner.AddRepository(repository_name)
 
-											remote := settings_owner.GetRemote(remote_name)
-											repo   := owner.GetRepository(repository_name)
+											repo := owner.GetRepository(repository_name)
 
-											if repo != nil && remote != nil {
+											if repo != nil {
 
-												// Use remote as schema
-												repo.AddRemote(owner_name, repository_name, types.NewRemote(remote.GetName(), remote.GetURL()))
+												// Use all effective remotes as schema
+												effective := settings_owner.Effective(repository_name)
+
+												if effective != nil {
+
+													for _, remote := range effective.SnapshotRemotes() {
+
+														if remote != nil {
+															repo.AddRemote(owner_name, repository_name, remote)
+														}
+
+													}
+
+												}
 
 											}
 
